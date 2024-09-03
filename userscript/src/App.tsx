@@ -9,12 +9,15 @@ import dayjs, { Dayjs } from "dayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import GodFeatures from "./GodFeatures";
 
 interface AppContextProps {
   isMacroEnabled: boolean;
   setMacroEnabled: (_: boolean) => void;
   macroTime: Dayjs | null;
   setMacroTime: (_: Dayjs | null) => void;
+  isGodMode: boolean;
+  setGodMode: (_: boolean) => void;
 }
 
 export const AppContext = React.createContext<AppContextProps | null>(null);
@@ -39,6 +42,7 @@ function App() {
   const changedTime: Dayjs = setNext9(defaultTime);
 
   const [isMacroEnabled, setMacroEnabled] = useState(false);
+  const [isGodMode, setGodMode] = useState(true);
   const [macroTime, setMacroTime] = useState<Dayjs | null>(changedTime);
 
   useEffect(() => {
@@ -58,10 +62,18 @@ function App() {
     <div className="App IconButton">
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <AppContext.Provider
-          value={{ isMacroEnabled, setMacroEnabled, macroTime, setMacroTime }}
+          value={{
+            isMacroEnabled,
+            setMacroEnabled,
+            macroTime,
+            setMacroTime,
+            isGodMode,
+            setGodMode,
+          }}
         >
           <TimePicker value={macroTime} />
           <Macro />
+          <GodFeatures />
           <Dialog.Root>
             <Dialog.Trigger asChild id="trigger">
               <div className={"IconButton"}>
