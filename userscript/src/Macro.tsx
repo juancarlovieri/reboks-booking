@@ -53,14 +53,12 @@ export default function Macro() {
       console.log(macroTime.unix() - time);
       const id = setTimeout(() => {
         // -500ms offset on target
-        // Pushing on -500, -200, 0, 200
+        // Pushing on -200, 0, 200
 
-        book();
-        setTimeout(book, 200);
+        // book();
         setTimeout(book, 300);
         setTimeout(book, 500);
         setTimeout(book, 700);
-        setTimeout(book, 800);
 
         console.log("Pushed updates");
       }, (macroTime.unix() - time) * 1000 - 500);

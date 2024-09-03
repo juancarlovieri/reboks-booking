@@ -39251,12 +39251,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       if (macroTime) {
         console.log(macroTime.unix() - time);
         const id2 = setTimeout(() => {
-          book();
-          setTimeout(book, 200);
           setTimeout(book, 300);
           setTimeout(book, 500);
           setTimeout(book, 700);
-          setTimeout(book, 800);
           console.log("Pushed updates");
         }, (macroTime.unix() - time) * 1e3 - 500);
         return () => clearTimeout(id2);
