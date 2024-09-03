@@ -11211,11 +11211,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return func(props, cache2, ref);
     });
   };
-  var ThemeContext = /* @__PURE__ */ reactExports.createContext({});
+  var ThemeContext$1 = /* @__PURE__ */ reactExports.createContext({});
   require_extends();
   var Global = /* @__PURE__ */ withEmotionCache(function(props, cache2) {
     var styles2 = props.styles;
-    var serialized = serializeStyles([styles2], void 0, reactExports.useContext(ThemeContext));
+    var serialized = serializeStyles([styles2], void 0, reactExports.useContext(ThemeContext$1));
     var sheetRef = reactExports.useRef();
     useInsertionEffectWithLayoutFallback(function() {
       var key = cache2.key + "-global";
@@ -11347,7 +11347,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
           for (var key in props) {
             mergedProps[key] = props[key];
           }
-          mergedProps.theme = reactExports.useContext(ThemeContext);
+          mergedProps.theme = reactExports.useContext(ThemeContext$1);
         }
         if (typeof props.className === "string") {
           className = getRegisteredStyles(cache2.registered, classInterpolations, props.className);
@@ -11584,7 +11584,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     __proto__: null,
     GlobalStyles: GlobalStyles$2,
     StyledEngineProvider,
-    ThemeContext,
+    ThemeContext: ThemeContext$1,
     css,
     default: styled$1,
     internal_processStyles,
@@ -11779,7 +11779,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     getFunctionName
   }, Symbol.toStringTag, { value: "Module" }));
   const require$$6 = /* @__PURE__ */ getAugmentedNamespace(getDisplayName);
-  const _excluded$1y = ["values", "unit", "step"];
+  const _excluded$1A = ["values", "unit", "step"];
   const sortBreakpointsValues = (values2) => {
     const breakpointsAsArray = Object.keys(values2).map((key) => ({
       key,
@@ -11810,7 +11810,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       },
       unit = "px",
       step = 5
-    } = breakpoints, other = _objectWithoutPropertiesLoose(breakpoints, _excluded$1y);
+    } = breakpoints, other = _objectWithoutPropertiesLoose(breakpoints, _excluded$1A);
     const sortedValues = sortBreakpointsValues(values2);
     const keys = Object.keys(sortedValues);
     function up(key) {
@@ -11883,16 +11883,16 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     up: (key) => `@media (min-width:${values$1[key]}px)`
   };
   function handleBreakpoints(props, propValue, styleFromPropValue) {
-    const theme = props.theme || {};
+    const theme2 = props.theme || {};
     if (Array.isArray(propValue)) {
-      const themeBreakpoints = theme.breakpoints || defaultBreakpoints;
+      const themeBreakpoints = theme2.breakpoints || defaultBreakpoints;
       return propValue.reduce((acc, item, index) => {
         acc[themeBreakpoints.up(themeBreakpoints.keys[index])] = styleFromPropValue(propValue[index]);
         return acc;
       }, {});
     }
     if (typeof propValue === "object") {
-      const themeBreakpoints = theme.breakpoints || defaultBreakpoints;
+      const themeBreakpoints = theme2.breakpoints || defaultBreakpoints;
       return Object.keys(propValue).reduce((acc, breakpoint) => {
         if (Object.keys(themeBreakpoints.values || values$1).indexOf(breakpoint) !== -1) {
           const mediaKey = themeBreakpoints.up(breakpoint);
@@ -11969,8 +11969,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         return null;
       }
       const propValue = props[prop];
-      const theme = props.theme;
-      const themeMapping = getPath(theme, themeKey) || {};
+      const theme2 = props.theme;
+      const themeMapping = getPath(theme2, themeKey) || {};
       const styleFromPropValue = (propValueFinal) => {
         let value = getStyleValue$1(themeMapping, transform, propValueFinal);
         if (propValueFinal === value && typeof propValueFinal === "string") {
@@ -12032,9 +12032,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   const marginKeys = ["m", "mt", "mr", "mb", "ml", "mx", "my", "margin", "marginTop", "marginRight", "marginBottom", "marginLeft", "marginX", "marginY", "marginInline", "marginInlineStart", "marginInlineEnd", "marginBlock", "marginBlockStart", "marginBlockEnd"];
   const paddingKeys = ["p", "pt", "pr", "pb", "pl", "px", "py", "padding", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft", "paddingX", "paddingY", "paddingInline", "paddingInlineStart", "paddingInlineEnd", "paddingBlock", "paddingBlockStart", "paddingBlockEnd"];
   [...marginKeys, ...paddingKeys];
-  function createUnaryUnit(theme, themeKey, defaultValue, propName) {
+  function createUnaryUnit(theme2, themeKey, defaultValue, propName) {
     var _getPath;
-    const themeSpacing = (_getPath = getPath(theme, themeKey, false)) != null ? _getPath : defaultValue;
+    const themeSpacing = (_getPath = getPath(theme2, themeKey, false)) != null ? _getPath : defaultValue;
     if (typeof themeSpacing === "number") {
       return (abs2) => {
         if (typeof abs2 === "string") {
@@ -12056,8 +12056,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }
     return () => void 0;
   }
-  function createUnarySpacing(theme) {
-    return createUnaryUnit(theme, "spacing", 8);
+  function createUnarySpacing(theme2) {
+    return createUnaryUnit(theme2, "spacing", 8);
   }
   function getValue(transformer, propValue) {
     if (typeof propValue === "string" || propValue == null) {
@@ -12618,10 +12618,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return typeof maybeFn === "function" ? maybeFn(arg) : maybeFn;
   }
   function unstable_createStyleFunctionSx() {
-    function getThemeValue(prop, val, theme, config2) {
+    function getThemeValue(prop, val, theme2, config2) {
       const props = {
         [prop]: val,
-        theme
+        theme: theme2
       };
       const options2 = config2[prop];
       if (!options2) {
@@ -12643,7 +12643,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
           [prop]: val
         };
       }
-      const themeMapping = getPath(theme, themeKey) || {};
+      const themeMapping = getPath(theme2, themeKey) || {};
       if (style2) {
         return style2(props);
       }
@@ -12665,48 +12665,48 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       var _theme$unstable_sxCon;
       const {
         sx,
-        theme = {}
+        theme: theme2 = {}
       } = props || {};
       if (!sx) {
         return null;
       }
-      const config2 = (_theme$unstable_sxCon = theme.unstable_sxConfig) != null ? _theme$unstable_sxCon : defaultSxConfig;
+      const config2 = (_theme$unstable_sxCon = theme2.unstable_sxConfig) != null ? _theme$unstable_sxCon : defaultSxConfig;
       function traverse(sxInput) {
         let sxObject = sxInput;
         if (typeof sxInput === "function") {
-          sxObject = sxInput(theme);
+          sxObject = sxInput(theme2);
         } else if (typeof sxInput !== "object") {
           return sxInput;
         }
         if (!sxObject) {
           return null;
         }
-        const emptyBreakpoints = createEmptyBreakpointObject(theme.breakpoints);
+        const emptyBreakpoints = createEmptyBreakpointObject(theme2.breakpoints);
         const breakpointsKeys = Object.keys(emptyBreakpoints);
         let css2 = emptyBreakpoints;
         Object.keys(sxObject).forEach((styleKey) => {
-          const value = callIfFn(sxObject[styleKey], theme);
+          const value = callIfFn(sxObject[styleKey], theme2);
           if (value !== null && value !== void 0) {
             if (typeof value === "object") {
               if (config2[styleKey]) {
-                css2 = merge$1(css2, getThemeValue(styleKey, value, theme, config2));
+                css2 = merge$1(css2, getThemeValue(styleKey, value, theme2, config2));
               } else {
                 const breakpointsValues = handleBreakpoints({
-                  theme
+                  theme: theme2
                 }, value, (x2) => ({
                   [styleKey]: x2
                 }));
                 if (objectsHaveSameKeys(breakpointsValues, value)) {
                   css2[styleKey] = styleFunctionSx2({
                     sx: value,
-                    theme
+                    theme: theme2
                   });
                 } else {
                   css2 = merge$1(css2, breakpointsValues);
                 }
               }
             } else {
-              css2 = merge$1(css2, getThemeValue(styleKey, value, theme, config2));
+              css2 = merge$1(css2, getThemeValue(styleKey, value, theme2, config2));
             }
           }
         });
@@ -12719,26 +12719,26 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   const styleFunctionSx$1 = unstable_createStyleFunctionSx();
   styleFunctionSx$1.filterProps = ["sx"];
   function applyStyles$2(key, styles2) {
-    const theme = this;
-    if (theme.vars && typeof theme.getColorSchemeSelector === "function") {
-      const selector = theme.getColorSchemeSelector(key).replace(/(\[[^\]]+\])/, "*:where($1)");
+    const theme2 = this;
+    if (theme2.vars && typeof theme2.getColorSchemeSelector === "function") {
+      const selector = theme2.getColorSchemeSelector(key).replace(/(\[[^\]]+\])/, "*:where($1)");
       return {
         [selector]: styles2
       };
     }
-    if (theme.palette.mode === key) {
+    if (theme2.palette.mode === key) {
       return styles2;
     }
     return {};
   }
-  const _excluded$1x = ["breakpoints", "palette", "spacing", "shape"];
+  const _excluded$1z = ["breakpoints", "palette", "spacing", "shape"];
   function createTheme$2(options2 = {}, ...args) {
     const {
       breakpoints: breakpointsInput = {},
       palette: paletteInput = {},
       spacing: spacingInput,
       shape: shapeInput = {}
-    } = options2, other = _objectWithoutPropertiesLoose(options2, _excluded$1x);
+    } = options2, other = _objectWithoutPropertiesLoose(options2, _excluded$1z);
     const breakpoints = createBreakpoints(breakpointsInput);
     const spacing = createSpacing(spacingInput);
     let muiTheme = deepmerge$1({
@@ -12770,7 +12770,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     unstable_applyStyles: applyStyles$2
   }, Symbol.toStringTag, { value: "Module" }));
   const require$$7 = /* @__PURE__ */ getAugmentedNamespace(createTheme$1);
-  const _excluded$1w = ["sx"];
+  const _excluded$1y = ["sx"];
   const splitProps = (props) => {
     var _props$theme$unstable, _props$theme;
     const result = {
@@ -12790,7 +12790,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   function extendSxProp(props) {
     const {
       sx: inSx
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1w);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1y);
     const {
       systemProps,
       otherProps
@@ -12836,7 +12836,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   _interopRequireDefault(require$$6);
   var _createTheme = _interopRequireDefault(require$$7);
   var _styleFunctionSx = _interopRequireDefault(require$$8);
-  const _excluded$1v = ["ownerState"], _excluded2$c = ["variants"], _excluded3$4 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
+  const _excluded$1x = ["ownerState"], _excluded2$c = ["variants"], _excluded3$4 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
   function _getRequireWildcardCache$1(e2) {
     if ("function" != typeof WeakMap)
       return null;
@@ -12882,10 +12882,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   };
   function resolveTheme({
     defaultTheme: defaultTheme2,
-    theme,
+    theme: theme2,
     themeId
   }) {
-    return isEmpty$2(theme) ? defaultTheme2 : theme[themeId] || theme;
+    return isEmpty$2(theme2) ? defaultTheme2 : theme2[themeId] || theme2;
   }
   function defaultOverridesResolver(slot) {
     if (!slot) {
@@ -12896,7 +12896,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   function processStyleArg(callableStyle, _ref) {
     let {
       ownerState
-    } = _ref, props = (0, _objectWithoutPropertiesLoose2.default)(_ref, _excluded$1v);
+    } = _ref, props = (0, _objectWithoutPropertiesLoose2.default)(_ref, _excluded$1x);
     const resolvedStylesArg = typeof callableStyle === "function" ? callableStyle((0, _extends2.default)({
       ownerState
     }, props)) : callableStyle;
@@ -12999,18 +12999,18 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         const expressionsWithDefaultTheme = expressions ? expressions.map(transformStyleArg) : [];
         if (componentName && overridesResolver2) {
           expressionsWithDefaultTheme.push((props) => {
-            const theme = resolveTheme((0, _extends2.default)({}, props, {
+            const theme2 = resolveTheme((0, _extends2.default)({}, props, {
               defaultTheme: defaultTheme2,
               themeId
             }));
-            if (!theme.components || !theme.components[componentName] || !theme.components[componentName].styleOverrides) {
+            if (!theme2.components || !theme2.components[componentName] || !theme2.components[componentName].styleOverrides) {
               return null;
             }
-            const styleOverrides = theme.components[componentName].styleOverrides;
+            const styleOverrides = theme2.components[componentName].styleOverrides;
             const resolvedStyleOverrides = {};
             Object.entries(styleOverrides).forEach(([slotKey, slotStyle]) => {
               resolvedStyleOverrides[slotKey] = processStyleArg(slotStyle, (0, _extends2.default)({}, props, {
-                theme
+                theme: theme2
               }));
             });
             return overridesResolver2(props, resolvedStyleOverrides);
@@ -13019,15 +13019,15 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         if (componentName && !skipVariantsResolver) {
           expressionsWithDefaultTheme.push((props) => {
             var _theme$components;
-            const theme = resolveTheme((0, _extends2.default)({}, props, {
+            const theme2 = resolveTheme((0, _extends2.default)({}, props, {
               defaultTheme: defaultTheme2,
               themeId
             }));
-            const themeVariants = theme == null || (_theme$components = theme.components) == null || (_theme$components = _theme$components[componentName]) == null ? void 0 : _theme$components.variants;
+            const themeVariants = theme2 == null || (_theme$components = theme2.components) == null || (_theme$components = _theme$components[componentName]) == null ? void 0 : _theme$components.variants;
             return processStyleArg({
               variants: themeVariants
             }, (0, _extends2.default)({}, props, {
-              theme
+              theme: theme2
             }));
           });
         }
@@ -13217,7 +13217,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     A400: "#00e676",
     A700: "#00c853"
   };
-  const _excluded$1u = ["mode", "contrastThreshold", "tonalOffset"];
+  const _excluded$1w = ["mode", "contrastThreshold", "tonalOffset"];
   const light = {
     // The colors used to style the text.
     text: {
@@ -13385,7 +13385,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       mode = "light",
       contrastThreshold = 3,
       tonalOffset = 0.2
-    } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$1u);
+    } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$1w);
     const primary = palette.primary || getDefaultPrimary(mode);
     const secondary = palette.secondary || getDefaultSecondary(mode);
     const error = palette.error || getDefaultError(mode);
@@ -13479,7 +13479,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }, modes[mode]), other);
     return paletteOutput;
   }
-  const _excluded$1t = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
+  const _excluded$1v = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
   function round$2(value) {
     return Math.round(value * 1e5) / 1e5;
   }
@@ -13503,7 +13503,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       // Apply the CSS properties to all the variants.
       allVariants,
       pxToRem: pxToRem2
-    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$1t);
+    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$1v);
     const coef = fontSize / 14;
     const pxToRem = pxToRem2 || ((size) => `${size / htmlFontSize * coef}rem`);
     const buildVariant = (fontWeight, size, lineHeight, letterSpacing, casing) => _extends$1({
@@ -13559,7 +13559,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return [`${px[0]}px ${px[1]}px ${px[2]}px ${px[3]}px rgba(0,0,0,${shadowKeyUmbraOpacity})`, `${px[4]}px ${px[5]}px ${px[6]}px ${px[7]}px rgba(0,0,0,${shadowKeyPenumbraOpacity})`, `${px[8]}px ${px[9]}px ${px[10]}px ${px[11]}px rgba(0,0,0,${shadowAmbientShadowOpacity})`].join(",");
   }
   const shadows = ["none", createShadow(0, 2, 1, -1, 0, 1, 1, 0, 0, 1, 3, 0), createShadow(0, 3, 1, -2, 0, 2, 2, 0, 0, 1, 5, 0), createShadow(0, 3, 3, -2, 0, 3, 4, 0, 0, 1, 8, 0), createShadow(0, 2, 4, -1, 0, 4, 5, 0, 0, 1, 10, 0), createShadow(0, 3, 5, -1, 0, 5, 8, 0, 0, 1, 14, 0), createShadow(0, 3, 5, -1, 0, 6, 10, 0, 0, 1, 18, 0), createShadow(0, 4, 5, -2, 0, 7, 10, 1, 0, 2, 16, 1), createShadow(0, 5, 5, -3, 0, 8, 10, 1, 0, 3, 14, 2), createShadow(0, 5, 6, -3, 0, 9, 12, 1, 0, 3, 16, 2), createShadow(0, 6, 6, -3, 0, 10, 14, 1, 0, 4, 18, 3), createShadow(0, 6, 7, -4, 0, 11, 15, 1, 0, 4, 20, 3), createShadow(0, 7, 8, -4, 0, 12, 17, 2, 0, 5, 22, 4), createShadow(0, 7, 8, -4, 0, 13, 19, 2, 0, 5, 24, 4), createShadow(0, 7, 9, -4, 0, 14, 21, 2, 0, 5, 26, 4), createShadow(0, 8, 9, -5, 0, 15, 22, 2, 0, 6, 28, 5), createShadow(0, 8, 10, -5, 0, 16, 24, 2, 0, 6, 30, 5), createShadow(0, 8, 11, -5, 0, 17, 26, 2, 0, 6, 32, 5), createShadow(0, 9, 11, -5, 0, 18, 28, 2, 0, 7, 34, 6), createShadow(0, 9, 12, -6, 0, 19, 29, 2, 0, 7, 36, 6), createShadow(0, 10, 13, -6, 0, 20, 31, 3, 0, 8, 38, 7), createShadow(0, 10, 13, -6, 0, 21, 33, 3, 0, 8, 40, 7), createShadow(0, 10, 14, -6, 0, 22, 35, 3, 0, 8, 42, 7), createShadow(0, 11, 14, -7, 0, 23, 36, 3, 0, 9, 44, 8), createShadow(0, 11, 15, -7, 0, 24, 38, 3, 0, 9, 46, 8)];
-  const _excluded$1s = ["duration", "easing", "delay"];
+  const _excluded$1u = ["duration", "easing", "delay"];
   const easing = {
     // This is the most common easing curve.
     easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
@@ -13603,7 +13603,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         easing: easingOption = mergedEasing.easeInOut,
         delay = 0
       } = options2;
-      _objectWithoutPropertiesLoose(options2, _excluded$1s);
+      _objectWithoutPropertiesLoose(options2, _excluded$1u);
       return (Array.isArray(props) ? props : [props]).map((animatedProp) => `${animatedProp} ${typeof durationOption === "string" ? durationOption : formatMs(durationOption)} ${easingOption} ${typeof delay === "string" ? delay : formatMs(delay)}`).join(",");
     };
     return _extends$1({
@@ -13624,14 +13624,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     snackbar: 1400,
     tooltip: 1500
   };
-  const _excluded$1r = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
+  const _excluded$1t = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
   function createTheme(options2 = {}, ...args) {
     const {
       mixins: mixinsInput = {},
       palette: paletteInput = {},
       transitions: transitionsInput = {},
       typography: typographyInput = {}
-    } = options2, other = _objectWithoutPropertiesLoose(options2, _excluded$1r);
+    } = options2, other = _objectWithoutPropertiesLoose(options2, _excluded$1t);
     if (options2.vars) {
       throw new Error(formatMuiErrorMessage$1(18));
     }
@@ -13716,16 +13716,25 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return output;
   }
   const PropsContext = /* @__PURE__ */ reactExports.createContext(void 0);
+  function DefaultPropsProvider({
+    value,
+    children
+  }) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(PropsContext.Provider, {
+      value,
+      children
+    });
+  }
   function getThemeProps$1(params) {
     const {
-      theme,
+      theme: theme2,
       name,
       props
     } = params;
-    if (!theme || !theme.components || !theme.components[name]) {
+    if (!theme2 || !theme2.components || !theme2.components[name]) {
       return props;
     }
-    const config2 = theme.components[name];
+    const config2 = theme2.components[name];
     if (config2.defaultProps) {
       return resolveProps(config2.defaultProps, props);
     }
@@ -14540,20 +14549,20 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   function isObjectEmpty$1(obj) {
     return Object.keys(obj).length === 0;
   }
-  function useTheme$3(defaultTheme2 = null) {
-    const contextTheme = reactExports.useContext(ThemeContext);
+  function useTheme$4(defaultTheme2 = null) {
+    const contextTheme = reactExports.useContext(ThemeContext$1);
     return !contextTheme || isObjectEmpty$1(contextTheme) ? defaultTheme2 : contextTheme;
   }
   const systemDefaultTheme = createTheme$2();
-  function useTheme$2(defaultTheme2 = systemDefaultTheme) {
-    return useTheme$3(defaultTheme2);
+  function useTheme$3(defaultTheme2 = systemDefaultTheme) {
+    return useTheme$4(defaultTheme2);
   }
   function GlobalStyles$1({
     styles: styles2,
     themeId,
     defaultTheme: defaultTheme2 = {}
   }) {
-    const upperTheme = useTheme$2(defaultTheme2);
+    const upperTheme = useTheme$3(defaultTheme2);
     const globalStyles = typeof styles2 === "function" ? styles2(themeId ? upperTheme[themeId] || upperTheme : upperTheme) : styles2;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(GlobalStyles$2, {
       styles: globalStyles
@@ -14572,14 +14581,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   createTheme$2();
   function getThemeProps(params) {
     const {
-      theme,
+      theme: theme2,
       name,
       props
     } = params;
-    if (!theme || !theme.components || !theme.components[name] || !theme.components[name].defaultProps) {
+    if (!theme2 || !theme2.components || !theme2.components[name] || !theme2.components[name].defaultProps) {
       return props;
     }
-    return resolveProps(theme.components[name].defaultProps, props);
+    return resolveProps(theme2.components[name].defaultProps, props);
   }
   function useThemeProps$1({
     props,
@@ -14587,12 +14596,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     defaultTheme: defaultTheme2,
     themeId
   }) {
-    let theme = useTheme$2(defaultTheme2);
+    let theme2 = useTheme$3(defaultTheme2);
     if (themeId) {
-      theme = theme[themeId] || theme;
+      theme2 = theme2[themeId] || theme2;
     }
     const mergedProps = getThemeProps({
-      theme,
+      theme: theme2,
       name,
       props
     });
@@ -14660,7 +14669,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return match2;
   }
   function useMediaQuery(queryInput, options2 = {}) {
-    const theme = useTheme$3();
+    const theme2 = useTheme$4();
     const supportMatchMedia = typeof window !== "undefined" && typeof window.matchMedia !== "undefined";
     const {
       defaultMatches = false,
@@ -14670,9 +14679,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     } = getThemeProps({
       name: "MuiUseMediaQuery",
       props: options2,
-      theme
+      theme: theme2
     });
-    let query = typeof queryInput === "function" ? queryInput(theme) : queryInput;
+    let query = typeof queryInput === "function" ? queryInput(theme2) : queryInput;
     query = query.replace(/^@media( ?)/m, "");
     const useMediaQueryImplementation = maybeReactUseSyncExternalStore !== void 0 ? useMediaQueryNew : useMediaQueryOld;
     const match2 = useMediaQueryImplementation(query, defaultMatches, matchMedia, ssrMatchMedia, noSsr);
@@ -14959,7 +14968,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }
     return componentProps;
   }
-  const _excluded$1q = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
+  const _excluded$1s = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
   function useSlotProps(parameters) {
     var _parameters$additiona;
     const {
@@ -14967,7 +14976,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       externalSlotProps,
       ownerState,
       skipResolvingSlotProps = false
-    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$1q);
+    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$1s);
     const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
     const {
       props: mergedProps,
@@ -14981,11 +14990,96 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }), ownerState);
     return props;
   }
+  const ThemeContext = /* @__PURE__ */ reactExports.createContext(null);
+  function useTheme$2() {
+    const theme2 = reactExports.useContext(ThemeContext);
+    return theme2;
+  }
+  const hasSymbol = typeof Symbol === "function" && Symbol.for;
+  const nested = hasSymbol ? Symbol.for("mui.nested") : "__THEME_NESTED__";
+  function mergeOuterLocalTheme(outerTheme, localTheme) {
+    if (typeof localTheme === "function") {
+      const mergedTheme = localTheme(outerTheme);
+      return mergedTheme;
+    }
+    return _extends$1({}, outerTheme, localTheme);
+  }
+  function ThemeProvider$2(props) {
+    const {
+      children,
+      theme: localTheme
+    } = props;
+    const outerTheme = useTheme$2();
+    const theme2 = reactExports.useMemo(() => {
+      const output = outerTheme === null ? localTheme : mergeOuterLocalTheme(outerTheme, localTheme);
+      if (output != null) {
+        output[nested] = outerTheme !== null;
+      }
+      return output;
+    }, [localTheme, outerTheme]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeContext.Provider, {
+      value: theme2,
+      children
+    });
+  }
+  const _excluded$1r = ["value"];
   const RtlContext = /* @__PURE__ */ reactExports.createContext();
+  function RtlProvider(_ref) {
+    let {
+      value
+    } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$1r);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(RtlContext.Provider, _extends$1({
+      value: value != null ? value : true
+    }, props));
+  }
   const useRtl = () => {
     const value = reactExports.useContext(RtlContext);
     return value != null ? value : false;
   };
+  const EMPTY_THEME = {};
+  function useThemeScoping(themeId, upperTheme, localTheme, isPrivate = false) {
+    return reactExports.useMemo(() => {
+      const resolvedTheme = themeId ? upperTheme[themeId] || upperTheme : upperTheme;
+      if (typeof localTheme === "function") {
+        const mergedTheme = localTheme(resolvedTheme);
+        const result = themeId ? _extends$1({}, upperTheme, {
+          [themeId]: mergedTheme
+        }) : mergedTheme;
+        if (isPrivate) {
+          return () => result;
+        }
+        return result;
+      }
+      return themeId ? _extends$1({}, upperTheme, {
+        [themeId]: localTheme
+      }) : _extends$1({}, upperTheme, localTheme);
+    }, [themeId, upperTheme, localTheme, isPrivate]);
+  }
+  function ThemeProvider$1(props) {
+    const {
+      children,
+      theme: localTheme,
+      themeId
+    } = props;
+    const upperTheme = useTheme$4(EMPTY_THEME);
+    const upperPrivateTheme = useTheme$2() || EMPTY_THEME;
+    const engineTheme = useThemeScoping(themeId, upperTheme, localTheme);
+    const privateTheme = useThemeScoping(themeId, upperPrivateTheme, localTheme, true);
+    const rtlValue = engineTheme.direction === "rtl";
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider$2, {
+      theme: privateTheme,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeContext$1.Provider, {
+        value: engineTheme,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(RtlProvider, {
+          value: rtlValue,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(DefaultPropsProvider, {
+            value: engineTheme == null ? void 0 : engineTheme.components,
+            children
+          })
+        })
+      })
+    });
+  }
   function Ripple(props) {
     const {
       className,
@@ -15028,7 +15122,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     });
   }
   const touchRippleClasses = generateUtilityClasses("MuiTouchRipple", ["root", "ripple", "rippleVisible", "ripplePulsate", "child", "childLeaving", "childPulsate"]);
-  const _excluded$1p = ["center", "classes", "className"];
+  const _excluded$1q = ["center", "classes", "className"];
   let _ = (t2) => t2, _t, _t2, _t3, _t4;
   const DURATION = 550;
   const DELAY_RIPPLE = 80;
@@ -15126,14 +15220,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     animation-delay: 200ms;
   }
 `), touchRippleClasses.rippleVisible, enterKeyframe, DURATION, ({
-    theme
-  }) => theme.transitions.easing.easeInOut, touchRippleClasses.ripplePulsate, ({
-    theme
-  }) => theme.transitions.duration.shorter, touchRippleClasses.child, touchRippleClasses.childLeaving, exitKeyframe, DURATION, ({
-    theme
-  }) => theme.transitions.easing.easeInOut, touchRippleClasses.childPulsate, pulsateKeyframe, ({
-    theme
-  }) => theme.transitions.easing.easeInOut);
+    theme: theme2
+  }) => theme2.transitions.easing.easeInOut, touchRippleClasses.ripplePulsate, ({
+    theme: theme2
+  }) => theme2.transitions.duration.shorter, touchRippleClasses.child, touchRippleClasses.childLeaving, exitKeyframe, DURATION, ({
+    theme: theme2
+  }) => theme2.transitions.easing.easeInOut, touchRippleClasses.childPulsate, pulsateKeyframe, ({
+    theme: theme2
+  }) => theme2.transitions.easing.easeInOut);
   const TouchRipple = /* @__PURE__ */ reactExports.forwardRef(function TouchRipple2(inProps, ref) {
     const props = useDefaultProps({
       props: inProps,
@@ -15143,7 +15237,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       center: centerProp = false,
       classes = {},
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1p);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1q);
     const [ripples, setRipples] = reactExports.useState([]);
     const nextKey = reactExports.useRef(0);
     const rippleCallback = reactExports.useRef(null);
@@ -15301,7 +15395,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiButtonBase", slot);
   }
   const buttonBaseClasses = generateUtilityClasses("MuiButtonBase", ["root", "disabled", "focusVisible"]);
-  const _excluded$1o = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
+  const _excluded$1p = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
   const useUtilityClasses$16 = (ownerState) => {
     const {
       disabled,
@@ -15396,7 +15490,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       TouchRippleProps,
       touchRippleRef,
       type
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1o);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1p);
     const buttonRef = reactExports.useRef(null);
     const rippleRef = reactExports.useRef(null);
     const handleRippleRef = useForkRef(rippleRef, touchRippleRef);
@@ -15578,7 +15672,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("PrivateSwitchBase", slot);
   }
   generateUtilityClasses("PrivateSwitchBase", ["root", "checked", "disabled", "input", "edgeStart", "edgeEnd"]);
-  const _excluded$1n = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
+  const _excluded$1o = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
   const useUtilityClasses$15 = (ownerState) => {
     const {
       classes,
@@ -15639,7 +15733,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       tabIndex,
       type,
       value
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1n);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1o);
     const [checked, setCheckedState] = useControlled({
       controlled: checkedProp,
       default: Boolean(defaultChecked),
@@ -15735,7 +15829,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiSwitch", slot);
   }
   const switchClasses = generateUtilityClasses("MuiSwitch", ["root", "edgeStart", "edgeEnd", "switchBase", "colorPrimary", "colorSecondary", "sizeSmall", "sizeMedium", "checked", "disabled", "input", "thumb", "track"]);
-  const _excluded$1m = ["className", "color", "edge", "size", "sx"];
+  const _excluded$1n = ["className", "color", "edge", "size", "sx"];
   const useUtilityClasses$14 = (ownerState) => {
     const {
       classes,
@@ -15827,62 +15921,62 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }, ownerState.color !== "default" && styles2[`color${capitalize$1(ownerState.color)}`]];
     }
   })(({
-    theme
+    theme: theme2
   }) => ({
     position: "absolute",
     top: 0,
     left: 0,
     zIndex: 1,
     // Render above the focus ripple.
-    color: theme.vars ? theme.vars.palette.Switch.defaultColor : `${theme.palette.mode === "light" ? theme.palette.common.white : theme.palette.grey[300]}`,
-    transition: theme.transitions.create(["left", "transform"], {
-      duration: theme.transitions.duration.shortest
+    color: theme2.vars ? theme2.vars.palette.Switch.defaultColor : `${theme2.palette.mode === "light" ? theme2.palette.common.white : theme2.palette.grey[300]}`,
+    transition: theme2.transitions.create(["left", "transform"], {
+      duration: theme2.transitions.duration.shortest
     }),
     [`&.${switchClasses.checked}`]: {
       transform: "translateX(20px)"
     },
     [`&.${switchClasses.disabled}`]: {
-      color: theme.vars ? theme.vars.palette.Switch.defaultDisabledColor : `${theme.palette.mode === "light" ? theme.palette.grey[100] : theme.palette.grey[600]}`
+      color: theme2.vars ? theme2.vars.palette.Switch.defaultDisabledColor : `${theme2.palette.mode === "light" ? theme2.palette.grey[100] : theme2.palette.grey[600]}`
     },
     [`&.${switchClasses.checked} + .${switchClasses.track}`]: {
       opacity: 0.5
     },
     [`&.${switchClasses.disabled} + .${switchClasses.track}`]: {
-      opacity: theme.vars ? theme.vars.opacity.switchTrackDisabled : `${theme.palette.mode === "light" ? 0.12 : 0.2}`
+      opacity: theme2.vars ? theme2.vars.opacity.switchTrackDisabled : `${theme2.palette.mode === "light" ? 0.12 : 0.2}`
     },
     [`& .${switchClasses.input}`]: {
       left: "-100%",
       width: "300%"
     }
   }), ({
-    theme
+    theme: theme2
   }) => ({
     "&:hover": {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.action.activeChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha_1(theme.palette.action.active, theme.palette.action.hoverOpacity),
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.activeChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha_1(theme2.palette.action.active, theme2.palette.action.hoverOpacity),
       // Reset on touch devices, it doesn't add specificity
       "@media (hover: none)": {
         backgroundColor: "transparent"
       }
     },
-    variants: [...Object.entries(theme.palette).filter(([, value]) => value.main && value.light).map(([color2]) => ({
+    variants: [...Object.entries(theme2.palette).filter(([, value]) => value.main && value.light).map(([color2]) => ({
       props: {
         color: color2
       },
       style: {
         [`&.${switchClasses.checked}`]: {
-          color: (theme.vars || theme).palette[color2].main,
+          color: (theme2.vars || theme2).palette[color2].main,
           "&:hover": {
-            backgroundColor: theme.vars ? `rgba(${theme.vars.palette[color2].mainChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha_1(theme.palette[color2].main, theme.palette.action.hoverOpacity),
+            backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[color2].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha_1(theme2.palette[color2].main, theme2.palette.action.hoverOpacity),
             "@media (hover: none)": {
               backgroundColor: "transparent"
             }
           },
           [`&.${switchClasses.disabled}`]: {
-            color: theme.vars ? theme.vars.palette.Switch[`${color2}DisabledColor`] : `${theme.palette.mode === "light" ? lighten_1(theme.palette[color2].main, 0.62) : darken_1(theme.palette[color2].main, 0.55)}`
+            color: theme2.vars ? theme2.vars.palette.Switch[`${color2}DisabledColor`] : `${theme2.palette.mode === "light" ? lighten_1(theme2.palette[color2].main, 0.62) : darken_1(theme2.palette[color2].main, 0.55)}`
           }
         },
         [`&.${switchClasses.checked} + .${switchClasses.track}`]: {
-          backgroundColor: (theme.vars || theme).palette[color2].main
+          backgroundColor: (theme2.vars || theme2).palette[color2].main
         }
       }
     }))]
@@ -15892,26 +15986,26 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Track",
     overridesResolver: (props, styles2) => styles2.track
   })(({
-    theme
+    theme: theme2
   }) => ({
     height: "100%",
     width: "100%",
     borderRadius: 14 / 2,
     zIndex: -1,
-    transition: theme.transitions.create(["opacity", "background-color"], {
-      duration: theme.transitions.duration.shortest
+    transition: theme2.transitions.create(["opacity", "background-color"], {
+      duration: theme2.transitions.duration.shortest
     }),
-    backgroundColor: theme.vars ? theme.vars.palette.common.onBackground : `${theme.palette.mode === "light" ? theme.palette.common.black : theme.palette.common.white}`,
-    opacity: theme.vars ? theme.vars.opacity.switchTrack : `${theme.palette.mode === "light" ? 0.38 : 0.3}`
+    backgroundColor: theme2.vars ? theme2.vars.palette.common.onBackground : `${theme2.palette.mode === "light" ? theme2.palette.common.black : theme2.palette.common.white}`,
+    opacity: theme2.vars ? theme2.vars.opacity.switchTrack : `${theme2.palette.mode === "light" ? 0.38 : 0.3}`
   }));
   const SwitchThumb = styled("span", {
     name: "MuiSwitch",
     slot: "Thumb",
     overridesResolver: (props, styles2) => styles2.thumb
   })(({
-    theme
+    theme: theme2
   }) => ({
-    boxShadow: (theme.vars || theme).shadows[1],
+    boxShadow: (theme2.vars || theme2).shadows[1],
     backgroundColor: "currentColor",
     width: 20,
     height: 20,
@@ -15928,7 +16022,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       edge = false,
       size = "medium",
       sx
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1m);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1n);
     const ownerState = _extends$1({}, props, {
       color: color2,
       edge,
@@ -15960,8 +16054,19 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     });
   });
   function useTheme$1() {
-    const theme = useTheme$2(defaultTheme);
-    return theme[THEME_ID] || theme;
+    const theme2 = useTheme$3(defaultTheme);
+    return theme2[THEME_ID] || theme2;
+  }
+  const _excluded$1m = ["theme"];
+  function ThemeProvider(_ref) {
+    let {
+      theme: themeInput
+    } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$1m);
+    const scopedTheme = themeInput[THEME_ID];
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider$1, _extends$1({}, props, {
+      themeId: scopedTheme ? THEME_ID : void 0,
+      theme: scopedTheme || themeInput
+    }));
   }
   const getOverlayAlpha = (elevation) => {
     let alphaValue;
@@ -16004,7 +16109,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return [styles2.root, ownerState.absolute && styles2.absolute, styles2[ownerState.variant], ownerState.light && styles2.light, ownerState.orientation === "vertical" && styles2.vertical, ownerState.flexItem && styles2.flexItem, ownerState.children && styles2.withChildren, ownerState.children && ownerState.orientation === "vertical" && styles2.withChildrenVertical, ownerState.textAlign === "right" && ownerState.orientation !== "vertical" && styles2.textAlignRight, ownerState.textAlign === "left" && ownerState.orientation !== "vertical" && styles2.textAlignLeft];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
     margin: 0,
@@ -16012,7 +16117,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     flexShrink: 0,
     borderWidth: 0,
     borderStyle: "solid",
-    borderColor: (theme.vars || theme).palette.divider,
+    borderColor: (theme2.vars || theme2).palette.divider,
     borderBottomWidth: "thin"
   }, ownerState.absolute && {
     position: "absolute",
@@ -16020,15 +16125,15 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     left: 0,
     width: "100%"
   }, ownerState.light && {
-    borderColor: theme.vars ? `rgba(${theme.vars.palette.dividerChannel} / 0.08)` : alpha_1(theme.palette.divider, 0.08)
+    borderColor: theme2.vars ? `rgba(${theme2.vars.palette.dividerChannel} / 0.08)` : alpha_1(theme2.palette.divider, 0.08)
   }, ownerState.variant === "inset" && {
     marginLeft: 72
   }, ownerState.variant === "middle" && ownerState.orientation === "horizontal" && {
-    marginLeft: theme.spacing(2),
-    marginRight: theme.spacing(2)
+    marginLeft: theme2.spacing(2),
+    marginRight: theme2.spacing(2)
   }, ownerState.variant === "middle" && ownerState.orientation === "vertical" && {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1)
+    marginTop: theme2.spacing(1),
+    marginBottom: theme2.spacing(1)
   }, ownerState.orientation === "vertical" && {
     height: "100%",
     borderBottomWidth: 0,
@@ -16050,22 +16155,22 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       alignSelf: "center"
     }
   }), ({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({}, ownerState.children && ownerState.orientation !== "vertical" && {
     "&::before, &::after": {
       width: "100%",
-      borderTop: `thin solid ${(theme.vars || theme).palette.divider}`,
+      borderTop: `thin solid ${(theme2.vars || theme2).palette.divider}`,
       borderTopStyle: "inherit"
     }
   }), ({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({}, ownerState.children && ownerState.orientation === "vertical" && {
     flexDirection: "column",
     "&::before, &::after": {
       height: "100%",
-      borderLeft: `thin solid ${(theme.vars || theme).palette.divider}`,
+      borderLeft: `thin solid ${(theme2.vars || theme2).palette.divider}`,
       borderLeftStyle: "inherit"
     }
   }), ({
@@ -16095,15 +16200,15 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return [styles2.wrapper, ownerState.orientation === "vertical" && styles2.wrapperVertical];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
     display: "inline-block",
-    paddingLeft: `calc(${theme.spacing(1)} * 1.2)`,
-    paddingRight: `calc(${theme.spacing(1)} * 1.2)`
+    paddingLeft: `calc(${theme2.spacing(1)} * 1.2)`,
+    paddingRight: `calc(${theme2.spacing(1)} * 1.2)`
   }, ownerState.orientation === "vertical" && {
-    paddingTop: `calc(${theme.spacing(1)} * 1.2)`,
-    paddingBottom: `calc(${theme.spacing(1)} * 1.2)`
+    paddingTop: `calc(${theme2.spacing(1)} * 1.2)`,
+    paddingBottom: `calc(${theme2.spacing(1)} * 1.2)`
   }));
   const Divider = /* @__PURE__ */ reactExports.forwardRef(function Divider2(inProps, ref) {
     const props = useDefaultProps({
@@ -17209,10 +17314,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: rootOverridesResolver
   })(({
-    theme,
+    theme: theme2,
     ownerState
-  }) => _extends$1({}, theme.typography.body1, {
-    color: (theme.vars || theme).palette.text.primary,
+  }) => _extends$1({}, theme2.typography.body1, {
+    color: (theme2.vars || theme2).palette.text.primary,
     lineHeight: "1.4375em",
     // 23px
     boxSizing: "border-box",
@@ -17222,7 +17327,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     display: "inline-flex",
     alignItems: "center",
     [`&.${inputBaseClasses.disabled}`]: {
-      color: (theme.vars || theme).palette.text.disabled,
+      color: (theme2.vars || theme2).palette.text.disabled,
       cursor: "default"
     }
   }, ownerState.multiline && _extends$1({
@@ -17237,26 +17342,26 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Input",
     overridesResolver: inputOverridesResolver
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => {
-    const light2 = theme.palette.mode === "light";
+    const light2 = theme2.palette.mode === "light";
     const placeholder = _extends$1({
       color: "currentColor"
-    }, theme.vars ? {
-      opacity: theme.vars.opacity.inputPlaceholder
+    }, theme2.vars ? {
+      opacity: theme2.vars.opacity.inputPlaceholder
     } : {
       opacity: light2 ? 0.42 : 0.5
     }, {
-      transition: theme.transitions.create("opacity", {
-        duration: theme.transitions.duration.shorter
+      transition: theme2.transitions.create("opacity", {
+        duration: theme2.transitions.duration.shorter
       })
     });
     const placeholderHidden = {
       opacity: "0 !important"
     };
-    const placeholderVisible = theme.vars ? {
-      opacity: theme.vars.opacity.inputPlaceholder
+    const placeholderVisible = theme2.vars ? {
+      opacity: theme2.vars.opacity.inputPlaceholder
     } : {
       opacity: light2 ? 0.42 : 0.5
     };
@@ -17318,7 +17423,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       [`&.${inputBaseClasses.disabled}`]: {
         opacity: 1,
         // Reset iOS opacity
-        WebkitTextFillColor: (theme.vars || theme).palette.text.disabled
+        WebkitTextFillColor: (theme2.vars || theme2).palette.text.disabled
         // Fix opacity Safari bug
       },
       "&:-webkit-autofill": {
@@ -17614,13 +17719,13 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return [...rootOverridesResolver(props, styles2), !ownerState.disableUnderline && styles2.underline];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => {
-    const light2 = theme.palette.mode === "light";
+    const light2 = theme2.palette.mode === "light";
     let bottomLineColor = light2 ? "rgba(0, 0, 0, 0.42)" : "rgba(255, 255, 255, 0.7)";
-    if (theme.vars) {
-      bottomLineColor = `rgba(${theme.vars.palette.common.onBackgroundChannel} / ${theme.vars.opacity.inputUnderline})`;
+    if (theme2.vars) {
+      bottomLineColor = `rgba(${theme2.vars.palette.common.onBackgroundChannel} / ${theme2.vars.opacity.inputUnderline})`;
     }
     return _extends$1({
       position: "relative"
@@ -17630,7 +17735,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }
     }, !ownerState.disableUnderline && {
       "&::after": {
-        borderBottom: `2px solid ${(theme.vars || theme).palette[ownerState.color].main}`,
+        borderBottom: `2px solid ${(theme2.vars || theme2).palette[ownerState.color].main}`,
         left: 0,
         bottom: 0,
         // Doing the other way around crash on IE11 "''" https://github.com/cssinjs/jss/issues/242
@@ -17638,9 +17743,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         position: "absolute",
         right: 0,
         transform: "scaleX(0)",
-        transition: theme.transitions.create("transform", {
-          duration: theme.transitions.duration.shorter,
-          easing: theme.transitions.easing.easeOut
+        transition: theme2.transitions.create("transform", {
+          duration: theme2.transitions.duration.shorter,
+          easing: theme2.transitions.easing.easeOut
         }),
         pointerEvents: "none"
         // Transparent to the hover style.
@@ -17652,7 +17757,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       },
       [`&.${inputClasses.error}`]: {
         "&::before, &::after": {
-          borderBottomColor: (theme.vars || theme).palette.error.main
+          borderBottomColor: (theme2.vars || theme2).palette.error.main
         }
       },
       "&::before": {
@@ -17663,14 +17768,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         content: '"\\00a0"',
         position: "absolute",
         right: 0,
-        transition: theme.transitions.create("border-bottom-color", {
-          duration: theme.transitions.duration.shorter
+        transition: theme2.transitions.create("border-bottom-color", {
+          duration: theme2.transitions.duration.shorter
         }),
         pointerEvents: "none"
         // Transparent to the hover style.
       },
       [`&:hover:not(.${inputClasses.disabled}, .${inputClasses.error}):before`]: {
-        borderBottom: `2px solid ${(theme.vars || theme).palette.text.primary}`,
+        borderBottom: `2px solid ${(theme2.vars || theme2).palette.text.primary}`,
         // Reset on touch devices, it doesn't add specificity
         "@media (hover: none)": {
           borderBottom: `1px solid ${bottomLineColor}`
@@ -17759,40 +17864,40 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return [...rootOverridesResolver(props, styles2), !ownerState.disableUnderline && styles2.underline];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => {
     var _palette;
-    const light2 = theme.palette.mode === "light";
+    const light2 = theme2.palette.mode === "light";
     const bottomLineColor = light2 ? "rgba(0, 0, 0, 0.42)" : "rgba(255, 255, 255, 0.7)";
     const backgroundColor2 = light2 ? "rgba(0, 0, 0, 0.06)" : "rgba(255, 255, 255, 0.09)";
     const hoverBackground = light2 ? "rgba(0, 0, 0, 0.09)" : "rgba(255, 255, 255, 0.13)";
     const disabledBackground = light2 ? "rgba(0, 0, 0, 0.12)" : "rgba(255, 255, 255, 0.12)";
     return _extends$1({
       position: "relative",
-      backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor2,
-      borderTopLeftRadius: (theme.vars || theme).shape.borderRadius,
-      borderTopRightRadius: (theme.vars || theme).shape.borderRadius,
-      transition: theme.transitions.create("background-color", {
-        duration: theme.transitions.duration.shorter,
-        easing: theme.transitions.easing.easeOut
+      backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.bg : backgroundColor2,
+      borderTopLeftRadius: (theme2.vars || theme2).shape.borderRadius,
+      borderTopRightRadius: (theme2.vars || theme2).shape.borderRadius,
+      transition: theme2.transitions.create("background-color", {
+        duration: theme2.transitions.duration.shorter,
+        easing: theme2.transitions.easing.easeOut
       }),
       "&:hover": {
-        backgroundColor: theme.vars ? theme.vars.palette.FilledInput.hoverBg : hoverBackground,
+        backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.hoverBg : hoverBackground,
         // Reset on touch devices, it doesn't add specificity
         "@media (hover: none)": {
-          backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor2
+          backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.bg : backgroundColor2
         }
       },
       [`&.${filledInputClasses.focused}`]: {
-        backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor2
+        backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.bg : backgroundColor2
       },
       [`&.${filledInputClasses.disabled}`]: {
-        backgroundColor: theme.vars ? theme.vars.palette.FilledInput.disabledBg : disabledBackground
+        backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.disabledBg : disabledBackground
       }
     }, !ownerState.disableUnderline && {
       "&::after": {
-        borderBottom: `2px solid ${(_palette = (theme.vars || theme).palette[ownerState.color || "primary"]) == null ? void 0 : _palette.main}`,
+        borderBottom: `2px solid ${(_palette = (theme2.vars || theme2).palette[ownerState.color || "primary"]) == null ? void 0 : _palette.main}`,
         left: 0,
         bottom: 0,
         // Doing the other way around crash on IE11 "''" https://github.com/cssinjs/jss/issues/242
@@ -17800,9 +17905,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         position: "absolute",
         right: 0,
         transform: "scaleX(0)",
-        transition: theme.transitions.create("transform", {
-          duration: theme.transitions.duration.shorter,
-          easing: theme.transitions.easing.easeOut
+        transition: theme2.transitions.create("transform", {
+          duration: theme2.transitions.duration.shorter,
+          easing: theme2.transitions.easing.easeOut
         }),
         pointerEvents: "none"
         // Transparent to the hover style.
@@ -17814,25 +17919,25 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       },
       [`&.${filledInputClasses.error}`]: {
         "&::before, &::after": {
-          borderBottomColor: (theme.vars || theme).palette.error.main
+          borderBottomColor: (theme2.vars || theme2).palette.error.main
         }
       },
       "&::before": {
-        borderBottom: `1px solid ${theme.vars ? `rgba(${theme.vars.palette.common.onBackgroundChannel} / ${theme.vars.opacity.inputUnderline})` : bottomLineColor}`,
+        borderBottom: `1px solid ${theme2.vars ? `rgba(${theme2.vars.palette.common.onBackgroundChannel} / ${theme2.vars.opacity.inputUnderline})` : bottomLineColor}`,
         left: 0,
         bottom: 0,
         // Doing the other way around crash on IE11 "''" https://github.com/cssinjs/jss/issues/242
         content: '"\\00a0"',
         position: "absolute",
         right: 0,
-        transition: theme.transitions.create("border-bottom-color", {
-          duration: theme.transitions.duration.shorter
+        transition: theme2.transitions.create("border-bottom-color", {
+          duration: theme2.transitions.duration.shorter
         }),
         pointerEvents: "none"
         // Transparent to the hover style.
       },
       [`&:hover:not(.${filledInputClasses.disabled}, .${filledInputClasses.error}):before`]: {
-        borderBottom: `1px solid ${(theme.vars || theme).palette.text.primary}`
+        borderBottom: `1px solid ${(theme2.vars || theme2).palette.text.primary}`
       },
       [`&.${filledInputClasses.disabled}:before`]: {
         borderBottomStyle: "dotted"
@@ -17859,27 +17964,27 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Input",
     overridesResolver: inputOverridesResolver
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
     paddingTop: 25,
     paddingRight: 12,
     paddingBottom: 8,
     paddingLeft: 12
-  }, !theme.vars && {
+  }, !theme2.vars && {
     "&:-webkit-autofill": {
-      WebkitBoxShadow: theme.palette.mode === "light" ? null : "0 0 0 100px #266798 inset",
-      WebkitTextFillColor: theme.palette.mode === "light" ? null : "#fff",
-      caretColor: theme.palette.mode === "light" ? null : "#fff",
+      WebkitBoxShadow: theme2.palette.mode === "light" ? null : "0 0 0 100px #266798 inset",
+      WebkitTextFillColor: theme2.palette.mode === "light" ? null : "#fff",
+      caretColor: theme2.palette.mode === "light" ? null : "#fff",
       borderTopLeftRadius: "inherit",
       borderTopRightRadius: "inherit"
     }
-  }, theme.vars && {
+  }, theme2.vars && {
     "&:-webkit-autofill": {
       borderTopLeftRadius: "inherit",
       borderTopRightRadius: "inherit"
     },
-    [theme.getColorSchemeSelector("dark")]: {
+    [theme2.getColorSchemeSelector("dark")]: {
       "&:-webkit-autofill": {
         WebkitBoxShadow: "0 0 0 100px #266798 inset",
         WebkitTextFillColor: "#fff",
@@ -17980,7 +18085,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     shouldForwardProp: rootShouldForwardProp
   })(({
     ownerState,
-    theme
+    theme: theme2
   }) => _extends$1({
     float: "unset",
     // Fix conflict with bootstrap
@@ -17991,9 +18096,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     padding: 0,
     lineHeight: "11px",
     // sync with `height` in `legend` styles
-    transition: theme.transitions.create("width", {
+    transition: theme2.transitions.create("width", {
       duration: 150,
-      easing: theme.transitions.easing.easeOut
+      easing: theme2.transitions.easing.easeOut
     })
   }, ownerState.withLabel && _extends$1({
     display: "block",
@@ -18004,9 +18109,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     fontSize: "0.75em",
     visibility: "hidden",
     maxWidth: 0.01,
-    transition: theme.transitions.create("max-width", {
+    transition: theme2.transitions.create("max-width", {
       duration: 50,
-      easing: theme.transitions.easing.easeOut
+      easing: theme2.transitions.easing.easeOut
     }),
     whiteSpace: "nowrap",
     "& > span": {
@@ -18018,9 +18123,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }
   }, ownerState.notched && {
     maxWidth: "100%",
-    transition: theme.transitions.create("max-width", {
+    transition: theme2.transitions.create("max-width", {
       duration: 100,
-      easing: theme.transitions.easing.easeOut,
+      easing: theme2.transitions.easing.easeOut,
       delay: 50
     })
   })));
@@ -18077,31 +18182,31 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: rootOverridesResolver
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => {
-    const borderColor2 = theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.23)" : "rgba(255, 255, 255, 0.23)";
+    const borderColor2 = theme2.palette.mode === "light" ? "rgba(0, 0, 0, 0.23)" : "rgba(255, 255, 255, 0.23)";
     return _extends$1({
       position: "relative",
-      borderRadius: (theme.vars || theme).shape.borderRadius,
+      borderRadius: (theme2.vars || theme2).shape.borderRadius,
       [`&:hover .${outlinedInputClasses.notchedOutline}`]: {
-        borderColor: (theme.vars || theme).palette.text.primary
+        borderColor: (theme2.vars || theme2).palette.text.primary
       },
       // Reset on touch devices, it doesn't add specificity
       "@media (hover: none)": {
         [`&:hover .${outlinedInputClasses.notchedOutline}`]: {
-          borderColor: theme.vars ? `rgba(${theme.vars.palette.common.onBackgroundChannel} / 0.23)` : borderColor2
+          borderColor: theme2.vars ? `rgba(${theme2.vars.palette.common.onBackgroundChannel} / 0.23)` : borderColor2
         }
       },
       [`&.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-        borderColor: (theme.vars || theme).palette[ownerState.color].main,
+        borderColor: (theme2.vars || theme2).palette[ownerState.color].main,
         borderWidth: 2
       },
       [`&.${outlinedInputClasses.error} .${outlinedInputClasses.notchedOutline}`]: {
-        borderColor: (theme.vars || theme).palette.error.main
+        borderColor: (theme2.vars || theme2).palette.error.main
       },
       [`&.${outlinedInputClasses.disabled} .${outlinedInputClasses.notchedOutline}`]: {
-        borderColor: (theme.vars || theme).palette.action.disabled
+        borderColor: (theme2.vars || theme2).palette.action.disabled
       }
     }, ownerState.startAdornment && {
       paddingLeft: 14
@@ -18118,11 +18223,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "NotchedOutline",
     overridesResolver: (props, styles2) => styles2.notchedOutline
   })(({
-    theme
+    theme: theme2
   }) => {
-    const borderColor2 = theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.23)" : "rgba(255, 255, 255, 0.23)";
+    const borderColor2 = theme2.palette.mode === "light" ? "rgba(0, 0, 0, 0.23)" : "rgba(255, 255, 255, 0.23)";
     return {
-      borderColor: theme.vars ? `rgba(${theme.vars.palette.common.onBackgroundChannel} / 0.23)` : borderColor2
+      borderColor: theme2.vars ? `rgba(${theme2.vars.palette.common.onBackgroundChannel} / 0.23)` : borderColor2
     };
   });
   const OutlinedInputInput = styled(InputBaseComponent, {
@@ -18130,22 +18235,22 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Input",
     overridesResolver: inputOverridesResolver
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
     padding: "16.5px 14px"
-  }, !theme.vars && {
+  }, !theme2.vars && {
     "&:-webkit-autofill": {
-      WebkitBoxShadow: theme.palette.mode === "light" ? null : "0 0 0 100px #266798 inset",
-      WebkitTextFillColor: theme.palette.mode === "light" ? null : "#fff",
-      caretColor: theme.palette.mode === "light" ? null : "#fff",
+      WebkitBoxShadow: theme2.palette.mode === "light" ? null : "0 0 0 100px #266798 inset",
+      WebkitTextFillColor: theme2.palette.mode === "light" ? null : "#fff",
+      caretColor: theme2.palette.mode === "light" ? null : "#fff",
       borderRadius: "inherit"
     }
-  }, theme.vars && {
+  }, theme2.vars && {
     "&:-webkit-autofill": {
       borderRadius: "inherit"
     },
-    [theme.getColorSchemeSelector("dark")]: {
+    [theme2.getColorSchemeSelector("dark")]: {
       "&:-webkit-autofill": {
         WebkitBoxShadow: "0 0 0 100px #266798 inset",
         WebkitTextFillColor: "#fff",
@@ -18253,22 +18358,22 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return _extends$1({}, styles2.root, ownerState.color === "secondary" && styles2.colorSecondary, ownerState.filled && styles2.filled);
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
-    color: (theme.vars || theme).palette.text.secondary
-  }, theme.typography.body1, {
+    color: (theme2.vars || theme2).palette.text.secondary
+  }, theme2.typography.body1, {
     lineHeight: "1.4375em",
     padding: 0,
     position: "relative",
     [`&.${formLabelClasses.focused}`]: {
-      color: (theme.vars || theme).palette[ownerState.color].main
+      color: (theme2.vars || theme2).palette[ownerState.color].main
     },
     [`&.${formLabelClasses.disabled}`]: {
-      color: (theme.vars || theme).palette.text.disabled
+      color: (theme2.vars || theme2).palette.text.disabled
     },
     [`&.${formLabelClasses.error}`]: {
-      color: (theme.vars || theme).palette.error.main
+      color: (theme2.vars || theme2).palette.error.main
     }
   }));
   const AsteriskComponent = styled("span", {
@@ -18276,10 +18381,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Asterisk",
     overridesResolver: (props, styles2) => styles2.asterisk
   })(({
-    theme
+    theme: theme2
   }) => ({
     [`&.${formLabelClasses.error}`]: {
-      color: (theme.vars || theme).palette.error.main
+      color: (theme2.vars || theme2).palette.error.main
     }
   }));
   const FormLabel = /* @__PURE__ */ reactExports.forwardRef(function FormLabel2(inProps, ref) {
@@ -18357,7 +18462,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }, styles2.root, ownerState.formControl && styles2.formControl, ownerState.size === "small" && styles2.sizeSmall, ownerState.shrink && styles2.shrink, !ownerState.disableAnimation && styles2.animated, ownerState.focused && styles2.focused, styles2[ownerState.variant]];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
     display: "block",
@@ -18380,9 +18485,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     transformOrigin: "top left",
     maxWidth: "133%"
   }, !ownerState.disableAnimation && {
-    transition: theme.transitions.create(["color", "transform", "max-width"], {
-      duration: theme.transitions.duration.shorter,
-      easing: theme.transitions.easing.easeOut
+    transition: theme2.transitions.create(["color", "transform", "max-width"], {
+      duration: theme2.transitions.duration.shorter,
+      easing: theme2.transitions.easing.easeOut
     })
   }, ownerState.variant === "filled" && _extends$1({
     // Chrome's autofill feature gives the input field a yellow background.
@@ -18643,21 +18748,21 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return [styles2.root, ownerState.size && styles2[`size${capitalize$1(ownerState.size)}`], ownerState.contained && styles2.contained, ownerState.filled && styles2.filled];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
-    color: (theme.vars || theme).palette.text.secondary
-  }, theme.typography.caption, {
+    color: (theme2.vars || theme2).palette.text.secondary
+  }, theme2.typography.caption, {
     textAlign: "left",
     marginTop: 3,
     marginRight: 0,
     marginBottom: 0,
     marginLeft: 0,
     [`&.${formHelperTextClasses.disabled}`]: {
-      color: (theme.vars || theme).palette.text.disabled
+      color: (theme2.vars || theme2).palette.text.disabled
     },
     [`&.${formHelperTextClasses.error}`]: {
-      color: (theme.vars || theme).palette.error.main
+      color: (theme2.vars || theme2).palette.error.main
     }
   }, ownerState.size === "small" && {
     marginTop: 4
@@ -19017,7 +19122,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     } = props, other = _objectWithoutPropertiesLoose(props, _excluded$17);
     const timer = useTimeout();
     const autoTimeout = reactExports.useRef();
-    const theme = useTheme$1();
+    const theme2 = useTheme$1();
     const nodeRef = reactExports.useRef(null);
     const handleRef = useForkRef(nodeRef, children.ref, ref);
     const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
@@ -19046,15 +19151,15 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       });
       let duration2;
       if (timeout === "auto") {
-        duration2 = theme.transitions.getAutoHeightDuration(node2.clientHeight);
+        duration2 = theme2.transitions.getAutoHeightDuration(node2.clientHeight);
         autoTimeout.current = duration2;
       } else {
         duration2 = transitionDuration;
       }
-      node2.style.transition = [theme.transitions.create("opacity", {
+      node2.style.transition = [theme2.transitions.create("opacity", {
         duration: duration2,
         delay
-      }), theme.transitions.create("transform", {
+      }), theme2.transitions.create("transform", {
         duration: isWebKit154 ? duration2 : duration2 * 0.666,
         delay,
         easing: transitionTimingFunction
@@ -19079,15 +19184,15 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       });
       let duration2;
       if (timeout === "auto") {
-        duration2 = theme.transitions.getAutoHeightDuration(node2.clientHeight);
+        duration2 = theme2.transitions.getAutoHeightDuration(node2.clientHeight);
         autoTimeout.current = duration2;
       } else {
         duration2 = transitionDuration;
       }
-      node2.style.transition = [theme.transitions.create("opacity", {
+      node2.style.transition = [theme2.transitions.create("opacity", {
         duration: duration2,
         delay
-      }), theme.transitions.create("transform", {
+      }), theme2.transitions.create("transform", {
         duration: isWebKit154 ? duration2 : duration2 * 0.666,
         delay: isWebKit154 ? delay : delay || duration2 * 0.333,
         easing: transitionTimingFunction
@@ -19574,10 +19679,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }
   };
   const Fade = /* @__PURE__ */ reactExports.forwardRef(function Fade2(props, ref) {
-    const theme = useTheme$1();
+    const theme2 = useTheme$1();
     const defaultTimeout = {
-      enter: theme.transitions.duration.enteringScreen,
-      exit: theme.transitions.duration.leavingScreen
+      enter: theme2.transitions.duration.enteringScreen,
+      exit: theme2.transitions.duration.leavingScreen
     };
     const {
       addEndListener,
@@ -19618,8 +19723,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }, {
         mode: "enter"
       });
-      node2.style.webkitTransition = theme.transitions.create("opacity", transitionProps);
-      node2.style.transition = theme.transitions.create("opacity", transitionProps);
+      node2.style.webkitTransition = theme2.transitions.create("opacity", transitionProps);
+      node2.style.transition = theme2.transitions.create("opacity", transitionProps);
       if (onEnter) {
         onEnter(node2, isAppearing);
       }
@@ -19634,8 +19739,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }, {
         mode: "exit"
       });
-      node2.style.webkitTransition = theme.transitions.create("opacity", transitionProps);
-      node2.style.transition = theme.transitions.create("opacity", transitionProps);
+      node2.style.webkitTransition = theme2.transitions.create("opacity", transitionProps);
+      node2.style.transition = theme2.transitions.create("opacity", transitionProps);
       if (onExit) {
         onExit(node2);
       }
@@ -19935,11 +20040,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return [styles2.root, !ownerState.open && ownerState.exited && styles2.hidden];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
     position: "fixed",
-    zIndex: (theme.vars || theme).zIndex.modal,
+    zIndex: (theme2.vars || theme2).zIndex.modal,
     right: 0,
     bottom: 0,
     top: 0,
@@ -20105,24 +20210,24 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return [styles2.root, styles2[ownerState.variant], !ownerState.square && styles2.rounded, ownerState.variant === "elevation" && styles2[`elevation${ownerState.elevation}`]];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => {
     var _theme$vars$overlays;
     return _extends$1({
-      backgroundColor: (theme.vars || theme).palette.background.paper,
-      color: (theme.vars || theme).palette.text.primary,
-      transition: theme.transitions.create("box-shadow")
+      backgroundColor: (theme2.vars || theme2).palette.background.paper,
+      color: (theme2.vars || theme2).palette.text.primary,
+      transition: theme2.transitions.create("box-shadow")
     }, !ownerState.square && {
-      borderRadius: theme.shape.borderRadius
+      borderRadius: theme2.shape.borderRadius
     }, ownerState.variant === "outlined" && {
-      border: `1px solid ${(theme.vars || theme).palette.divider}`
+      border: `1px solid ${(theme2.vars || theme2).palette.divider}`
     }, ownerState.variant === "elevation" && _extends$1({
-      boxShadow: (theme.vars || theme).shadows[ownerState.elevation]
-    }, !theme.vars && theme.palette.mode === "dark" && {
+      boxShadow: (theme2.vars || theme2).shadows[ownerState.elevation]
+    }, !theme2.vars && theme2.palette.mode === "dark" && {
       backgroundImage: `linear-gradient(${alpha_1("#fff", getOverlayAlpha(ownerState.elevation))}, ${alpha_1("#fff", getOverlayAlpha(ownerState.elevation))})`
-    }, theme.vars && {
-      backgroundImage: (_theme$vars$overlays = theme.vars.overlays) == null ? void 0 : _theme$vars$overlays[ownerState.elevation]
+    }, theme2.vars && {
+      backgroundImage: (_theme$vars$overlays = theme2.vars.overlays) == null ? void 0 : _theme$vars$overlays[ownerState.elevation]
     }));
   });
   const Paper = /* @__PURE__ */ reactExports.forwardRef(function Paper2(inProps, ref) {
@@ -20632,7 +20737,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   };
   const nativeSelectSelectStyles = ({
     ownerState,
-    theme
+    theme: theme2
   }) => _extends$1({
     MozAppearance: "none",
     // Reset
@@ -20644,10 +20749,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     borderRadius: 0,
     // Reset
     cursor: "pointer",
-    "&:focus": _extends$1({}, theme.vars ? {
-      backgroundColor: `rgba(${theme.vars.palette.common.onBackgroundChannel} / 0.05)`
+    "&:focus": _extends$1({}, theme2.vars ? {
+      backgroundColor: `rgba(${theme2.vars.palette.common.onBackgroundChannel} / 0.05)`
     } : {
-      backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.05)"
+      backgroundColor: theme2.palette.mode === "light" ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.05)"
     }, {
       borderRadius: 0
       // Reset Chrome style
@@ -20663,7 +20768,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       height: "auto"
     },
     "&:not([multiple]) option, &:not([multiple]) optgroup": {
-      backgroundColor: (theme.vars || theme).palette.background.paper
+      backgroundColor: (theme2.vars || theme2).palette.background.paper
     },
     // Bump specificity to allow extending custom inputs
     "&&&": {
@@ -20676,9 +20781,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       paddingRight: 32
     }
   }, ownerState.variant === "outlined" && {
-    borderRadius: (theme.vars || theme).shape.borderRadius,
+    borderRadius: (theme2.vars || theme2).shape.borderRadius,
     "&:focus": {
-      borderRadius: (theme.vars || theme).shape.borderRadius
+      borderRadius: (theme2.vars || theme2).shape.borderRadius
       // Reset the reset for Chrome style
     },
     "&&&": {
@@ -20700,7 +20805,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   })(nativeSelectSelectStyles);
   const nativeSelectIconStyles = ({
     ownerState,
-    theme
+    theme: theme2
   }) => _extends$1({
     // We use a position absolute over a flexbox in order to forward the pointer events
     // to the input and to support wrapping tags..
@@ -20710,9 +20815,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     // Center vertically, height is 1em
     pointerEvents: "none",
     // Don't block pointer events on the select under the icon.
-    color: (theme.vars || theme).palette.action.active,
+    color: (theme2.vars || theme2).palette.action.active,
     [`&.${nativeSelectClasses.disabled}`]: {
-      color: (theme.vars || theme).palette.action.disabled
+      color: (theme2.vars || theme2).palette.action.disabled
     }
   }, ownerState.open && {
     transform: "rotate(180deg)"
@@ -21235,7 +21340,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return [styles2.root, ownerState.color !== "inherit" && styles2[`color${capitalize$1(ownerState.color)}`], styles2[`fontSize${capitalize$1(ownerState.fontSize)}`]];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => {
     var _theme$transitions, _theme$transitions$cr, _theme$transitions2, _theme$typography, _theme$typography$pxT, _theme$typography2, _theme$typography2$px, _theme$typography3, _theme$typography3$px, _palette$ownerState$c, _palette, _palette2, _palette3;
@@ -21248,19 +21353,19 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       // for example heroicons uses fill="none" and stroke="currentColor"
       fill: ownerState.hasSvgAsChild ? void 0 : "currentColor",
       flexShrink: 0,
-      transition: (_theme$transitions = theme.transitions) == null || (_theme$transitions$cr = _theme$transitions.create) == null ? void 0 : _theme$transitions$cr.call(_theme$transitions, "fill", {
-        duration: (_theme$transitions2 = theme.transitions) == null || (_theme$transitions2 = _theme$transitions2.duration) == null ? void 0 : _theme$transitions2.shorter
+      transition: (_theme$transitions = theme2.transitions) == null || (_theme$transitions$cr = _theme$transitions.create) == null ? void 0 : _theme$transitions$cr.call(_theme$transitions, "fill", {
+        duration: (_theme$transitions2 = theme2.transitions) == null || (_theme$transitions2 = _theme$transitions2.duration) == null ? void 0 : _theme$transitions2.shorter
       }),
       fontSize: {
         inherit: "inherit",
-        small: ((_theme$typography = theme.typography) == null || (_theme$typography$pxT = _theme$typography.pxToRem) == null ? void 0 : _theme$typography$pxT.call(_theme$typography, 20)) || "1.25rem",
-        medium: ((_theme$typography2 = theme.typography) == null || (_theme$typography2$px = _theme$typography2.pxToRem) == null ? void 0 : _theme$typography2$px.call(_theme$typography2, 24)) || "1.5rem",
-        large: ((_theme$typography3 = theme.typography) == null || (_theme$typography3$px = _theme$typography3.pxToRem) == null ? void 0 : _theme$typography3$px.call(_theme$typography3, 35)) || "2.1875rem"
+        small: ((_theme$typography = theme2.typography) == null || (_theme$typography$pxT = _theme$typography.pxToRem) == null ? void 0 : _theme$typography$pxT.call(_theme$typography, 20)) || "1.25rem",
+        medium: ((_theme$typography2 = theme2.typography) == null || (_theme$typography2$px = _theme$typography2.pxToRem) == null ? void 0 : _theme$typography2$px.call(_theme$typography2, 24)) || "1.5rem",
+        large: ((_theme$typography3 = theme2.typography) == null || (_theme$typography3$px = _theme$typography3.pxToRem) == null ? void 0 : _theme$typography3$px.call(_theme$typography3, 35)) || "2.1875rem"
       }[ownerState.fontSize],
       // TODO v5 deprecate, v6 remove for sx
-      color: (_palette$ownerState$c = (_palette = (theme.vars || theme).palette) == null || (_palette = _palette[ownerState.color]) == null ? void 0 : _palette.main) != null ? _palette$ownerState$c : {
-        action: (_palette2 = (theme.vars || theme).palette) == null || (_palette2 = _palette2.action) == null ? void 0 : _palette2.active,
-        disabled: (_palette3 = (theme.vars || theme).palette) == null || (_palette3 = _palette3.action) == null ? void 0 : _palette3.disabled,
+      color: (_palette$ownerState$c = (_palette = (theme2.vars || theme2).palette) == null || (_palette = _palette[ownerState.color]) == null ? void 0 : _palette.main) != null ? _palette$ownerState$c : {
+        action: (_palette2 = (theme2.vars || theme2).palette) == null || (_palette2 = _palette2.action) == null ? void 0 : _palette2.active,
+        disabled: (_palette3 = (theme2.vars || theme2).palette) == null || (_palette3 = _palette3.action) == null ? void 0 : _palette3.disabled,
         inherit: void 0
       }[ownerState.color]
     };
@@ -23578,23 +23683,23 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return [styles2.root, ownerState.color !== "default" && styles2[`color${capitalize$1(ownerState.color)}`], ownerState.edge && styles2[`edge${capitalize$1(ownerState.edge)}`], styles2[`size${capitalize$1(ownerState.size)}`]];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
     textAlign: "center",
     flex: "0 0 auto",
-    fontSize: theme.typography.pxToRem(24),
+    fontSize: theme2.typography.pxToRem(24),
     padding: 8,
     borderRadius: "50%",
     overflow: "visible",
     // Explicitly set the default value to solve a bug on IE11.
-    color: (theme.vars || theme).palette.action.active,
-    transition: theme.transitions.create("background-color", {
-      duration: theme.transitions.duration.shortest
+    color: (theme2.vars || theme2).palette.action.active,
+    transition: theme2.transitions.create("background-color", {
+      duration: theme2.transitions.duration.shortest
     })
   }, !ownerState.disableRipple && {
     "&:hover": {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.action.activeChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha_1(theme.palette.action.active, theme.palette.action.hoverOpacity),
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.activeChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha_1(theme2.palette.action.active, theme2.palette.action.hoverOpacity),
       // Reset on touch devices, it doesn't add specificity
       "@media (hover: none)": {
         backgroundColor: "transparent"
@@ -23605,18 +23710,18 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   }, ownerState.edge === "end" && {
     marginRight: ownerState.size === "small" ? -3 : -12
   }), ({
-    theme,
+    theme: theme2,
     ownerState
   }) => {
     var _palette;
-    const palette = (_palette = (theme.vars || theme).palette) == null ? void 0 : _palette[ownerState.color];
+    const palette = (_palette = (theme2.vars || theme2).palette) == null ? void 0 : _palette[ownerState.color];
     return _extends$1({}, ownerState.color === "inherit" && {
       color: "inherit"
     }, ownerState.color !== "inherit" && ownerState.color !== "default" && _extends$1({
       color: palette == null ? void 0 : palette.main
     }, !ownerState.disableRipple && {
       "&:hover": _extends$1({}, palette && {
-        backgroundColor: theme.vars ? `rgba(${palette.mainChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha_1(palette.main, theme.palette.action.hoverOpacity)
+        backgroundColor: theme2.vars ? `rgba(${palette.mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha_1(palette.main, theme2.palette.action.hoverOpacity)
       }, {
         // Reset on touch devices, it doesn't add specificity
         "@media (hover: none)": {
@@ -23625,14 +23730,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       })
     }), ownerState.size === "small" && {
       padding: 5,
-      fontSize: theme.typography.pxToRem(18)
+      fontSize: theme2.typography.pxToRem(18)
     }, ownerState.size === "large" && {
       padding: 12,
-      fontSize: theme.typography.pxToRem(28)
+      fontSize: theme2.typography.pxToRem(28)
     }, {
       [`&.${iconButtonClasses.disabled}`]: {
         backgroundColor: "transparent",
-        color: (theme.vars || theme).palette.action.disabled
+        color: (theme2.vars || theme2).palette.action.disabled
       }
     });
   });
@@ -23698,14 +23803,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return [styles2.root, ownerState.variant && styles2[ownerState.variant], ownerState.align !== "inherit" && styles2[`align${capitalize$1(ownerState.align)}`], ownerState.noWrap && styles2.noWrap, ownerState.gutterBottom && styles2.gutterBottom, ownerState.paragraph && styles2.paragraph];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
     margin: 0
   }, ownerState.variant === "inherit" && {
     // Some elements, like <button> on Chrome have default font that doesn't inherit, reset this.
     font: "inherit"
-  }, ownerState.variant !== "inherit" && theme.typography[ownerState.variant], ownerState.align !== "inherit" && {
+  }, ownerState.variant !== "inherit" && theme2.typography[ownerState.variant], ownerState.align !== "inherit" && {
     textAlign: ownerState.align
   }, ownerState.noWrap && {
     overflow: "hidden",
@@ -23809,7 +23914,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: overridesResolver$3
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
     display: "flex",
@@ -23818,7 +23923,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     maxHeight: "2em",
     alignItems: "center",
     whiteSpace: "nowrap",
-    color: (theme.vars || theme).palette.action.active
+    color: (theme2.vars || theme2).palette.action.active
   }, ownerState.variant === "filled" && {
     // Styles applied to the root element if `variant="filled"`.
     [`&.${inputAdornmentClasses.positionStart}&:not(.${inputAdornmentClasses.hiddenLabel})`]: {
@@ -24160,9 +24265,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: (props, styles2) => styles2.root
   })(({
-    theme
-  }) => _extends$1({}, theme.typography.body1, {
-    color: (theme.vars || theme).palette.text.primary,
+    theme: theme2
+  }) => _extends$1({}, theme2.typography.body1, {
+    color: (theme2.vars || theme2).palette.text.primary,
     cursor: "text",
     padding: 0,
     display: "flex",
@@ -24186,10 +24291,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "SectionsContainer",
     overridesResolver: (props, styles2) => styles2.sectionsContainer
   })(({
-    theme
+    theme: theme2
   }) => ({
     padding: "4px 0 5px",
-    fontFamily: theme.typography.fontFamily,
+    fontFamily: theme2.typography.fontFamily,
     fontSize: "inherit",
     lineHeight: "1.4375em",
     // 23px
@@ -24233,10 +24338,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         filled,
         label
       }) => !adornedStart && !focused && !filled && label == null,
-      style: theme.vars ? {
-        opacity: theme.vars.opacity.inputPlaceholder
+      style: theme2.vars ? {
+        opacity: theme2.vars.opacity.inputPlaceholder
       } : {
-        opacity: theme.palette.mode === "light" ? 0.42 : 0.5
+        opacity: theme2.palette.mode === "light" ? 0.42 : 0.5
       }
     }]
   }));
@@ -24245,9 +24350,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Section",
     overridesResolver: (props, styles2) => styles2.section
   })(({
-    theme
+    theme: theme2
   }) => ({
-    fontFamily: theme.typography.fontFamily,
+    fontFamily: theme2.typography.fontFamily,
     fontSize: "inherit",
     letterSpacing: "inherit",
     lineHeight: "1.4375em",
@@ -24259,9 +24364,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "SectionContent",
     overridesResolver: (props, styles2) => styles2.content
   })(({
-    theme
+    theme: theme2
   }) => ({
-    fontFamily: theme.typography.fontFamily,
+    fontFamily: theme2.typography.fontFamily,
     lineHeight: "1.4375em",
     // 23px
     letterSpacing: "inherit",
@@ -24437,9 +24542,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "NotchedOutline",
     overridesResolver: (props, styles2) => styles2.notchedOutline
   })(({
-    theme
+    theme: theme2
   }) => {
-    const borderColor2 = theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.23)" : "rgba(255, 255, 255, 0.23)";
+    const borderColor2 = theme2.palette.mode === "light" ? "rgba(0, 0, 0, 0.23)" : "rgba(255, 255, 255, 0.23)";
     return {
       textAlign: "left",
       position: "absolute",
@@ -24455,17 +24560,17 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       borderWidth: 1,
       overflow: "hidden",
       minWidth: "0%",
-      borderColor: theme.vars ? `rgba(${theme.vars.palette.common.onBackgroundChannel} / 0.23)` : borderColor2
+      borderColor: theme2.vars ? `rgba(${theme2.vars.palette.common.onBackgroundChannel} / 0.23)` : borderColor2
     };
   });
   const OutlineLabel = styled("span")(({
-    theme
+    theme: theme2
   }) => ({
-    fontFamily: theme.typography.fontFamily,
+    fontFamily: theme2.typography.fontFamily,
     fontSize: "inherit"
   }));
   const OutlineLegend = styled("legend")(({
-    theme
+    theme: theme2
   }) => ({
     float: "unset",
     // Fix conflict with bootstrap
@@ -24481,9 +24586,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         padding: 0,
         lineHeight: "11px",
         // sync with `height` in `legend` styles
-        transition: theme.transitions.create("width", {
+        transition: theme2.transitions.create("width", {
           duration: 150,
-          easing: theme.transitions.easing.easeOut
+          easing: theme2.transitions.easing.easeOut
         })
       }
     }, {
@@ -24499,9 +24604,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         fontSize: "0.75em",
         visibility: "hidden",
         maxWidth: 0.01,
-        transition: theme.transitions.create("max-width", {
+        transition: theme2.transitions.create("max-width", {
           duration: 50,
-          easing: theme.transitions.easing.easeOut
+          easing: theme2.transitions.easing.easeOut
         }),
         whiteSpace: "nowrap",
         "& > span": {
@@ -24519,9 +24624,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       },
       style: {
         maxWidth: "100%",
-        transition: theme.transitions.create("max-width", {
+        transition: theme2.transitions.create("max-width", {
           duration: 100,
-          easing: theme.transitions.easing.easeOut,
+          easing: theme2.transitions.easing.easeOut,
           delay: 50
         })
       }
@@ -24561,19 +24666,19 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: (props, styles2) => styles2.root
   })(({
-    theme
+    theme: theme2
   }) => {
-    const borderColor2 = theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.23)" : "rgba(255, 255, 255, 0.23)";
+    const borderColor2 = theme2.palette.mode === "light" ? "rgba(0, 0, 0, 0.23)" : "rgba(255, 255, 255, 0.23)";
     return {
       padding: "0 14px",
-      borderRadius: (theme.vars || theme).shape.borderRadius,
+      borderRadius: (theme2.vars || theme2).shape.borderRadius,
       [`&:hover .${pickersOutlinedInputClasses.notchedOutline}`]: {
-        borderColor: (theme.vars || theme).palette.text.primary
+        borderColor: (theme2.vars || theme2).palette.text.primary
       },
       // Reset on touch devices, it doesn't add specificity
       "@media (hover: none)": {
         [`&:hover .${pickersOutlinedInputClasses.notchedOutline}`]: {
-          borderColor: theme.vars ? `rgba(${theme.vars.palette.common.onBackgroundChannel} / 0.23)` : borderColor2
+          borderColor: theme2.vars ? `rgba(${theme2.vars.palette.common.onBackgroundChannel} / 0.23)` : borderColor2
         }
       },
       [`&.${pickersOutlinedInputClasses.focused} .${pickersOutlinedInputClasses.notchedOutline}`]: {
@@ -24582,18 +24687,18 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       },
       [`&.${pickersOutlinedInputClasses.disabled}`]: {
         [`& .${pickersOutlinedInputClasses.notchedOutline}`]: {
-          borderColor: (theme.vars || theme).palette.action.disabled
+          borderColor: (theme2.vars || theme2).palette.action.disabled
         },
         "*": {
-          color: (theme.vars || theme).palette.action.disabled
+          color: (theme2.vars || theme2).palette.action.disabled
         }
       },
       [`&.${pickersOutlinedInputClasses.error} .${pickersOutlinedInputClasses.notchedOutline}`]: {
-        borderColor: (theme.vars || theme).palette.error.main
+        borderColor: (theme2.vars || theme2).palette.error.main
       },
-      variants: Object.keys((theme.vars ?? theme).palette).filter((key) => {
+      variants: Object.keys((theme2.vars ?? theme2).palette).filter((key) => {
         var _a;
-        return ((_a = (theme.vars ?? theme).palette[key]) == null ? void 0 : _a.main) ?? false;
+        return ((_a = (theme2.vars ?? theme2).palette[key]) == null ? void 0 : _a.main) ?? false;
       }).map((color2) => ({
         props: {
           color: color2
@@ -24601,7 +24706,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         style: {
           [`&.${pickersOutlinedInputClasses.focused}:not(.${pickersOutlinedInputClasses.error}) .${pickersOutlinedInputClasses.notchedOutline}`]: {
             // @ts-ignore
-            borderColor: (theme.vars || theme).palette[color2].main
+            borderColor: (theme2.vars || theme2).palette[color2].main
           }
         }
       }))
@@ -24681,35 +24786,35 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     overridesResolver: (props, styles2) => styles2.root,
     shouldForwardProp: (prop) => shouldForwardProp(prop) && prop !== "disableUnderline"
   })(({
-    theme
+    theme: theme2
   }) => {
-    const light2 = theme.palette.mode === "light";
+    const light2 = theme2.palette.mode === "light";
     const bottomLineColor = light2 ? "rgba(0, 0, 0, 0.42)" : "rgba(255, 255, 255, 0.7)";
     const backgroundColor2 = light2 ? "rgba(0, 0, 0, 0.06)" : "rgba(255, 255, 255, 0.09)";
     const hoverBackground = light2 ? "rgba(0, 0, 0, 0.09)" : "rgba(255, 255, 255, 0.13)";
     const disabledBackground = light2 ? "rgba(0, 0, 0, 0.12)" : "rgba(255, 255, 255, 0.12)";
     return {
-      backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor2,
-      borderTopLeftRadius: (theme.vars || theme).shape.borderRadius,
-      borderTopRightRadius: (theme.vars || theme).shape.borderRadius,
-      transition: theme.transitions.create("background-color", {
-        duration: theme.transitions.duration.shorter,
-        easing: theme.transitions.easing.easeOut
+      backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.bg : backgroundColor2,
+      borderTopLeftRadius: (theme2.vars || theme2).shape.borderRadius,
+      borderTopRightRadius: (theme2.vars || theme2).shape.borderRadius,
+      transition: theme2.transitions.create("background-color", {
+        duration: theme2.transitions.duration.shorter,
+        easing: theme2.transitions.easing.easeOut
       }),
       "&:hover": {
-        backgroundColor: theme.vars ? theme.vars.palette.FilledInput.hoverBg : hoverBackground,
+        backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.hoverBg : hoverBackground,
         // Reset on touch devices, it doesn't add specificity
         "@media (hover: none)": {
-          backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor2
+          backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.bg : backgroundColor2
         }
       },
       [`&.${pickersFilledInputClasses.focused}`]: {
-        backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor2
+        backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.bg : backgroundColor2
       },
       [`&.${pickersFilledInputClasses.disabled}`]: {
-        backgroundColor: theme.vars ? theme.vars.palette.FilledInput.disabledBg : disabledBackground
+        backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.disabledBg : disabledBackground
       },
-      variants: [...Object.keys((theme.vars ?? theme).palette).filter((key) => (theme.vars ?? theme).palette[key].main).map((color2) => {
+      variants: [...Object.keys((theme2.vars ?? theme2).palette).filter((key) => (theme2.vars ?? theme2).palette[key].main).map((color2) => {
         var _a;
         return {
           props: {
@@ -24719,7 +24824,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
           style: {
             "&::after": {
               // @ts-ignore
-              borderBottom: `2px solid ${(_a = (theme.vars || theme).palette[color2]) == null ? void 0 : _a.main}`
+              borderBottom: `2px solid ${(_a = (theme2.vars || theme2).palette[color2]) == null ? void 0 : _a.main}`
             }
           }
         };
@@ -24736,9 +24841,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             position: "absolute",
             right: 0,
             transform: "scaleX(0)",
-            transition: theme.transitions.create("transform", {
-              duration: theme.transitions.duration.shorter,
-              easing: theme.transitions.easing.easeOut
+            transition: theme2.transitions.create("transform", {
+              duration: theme2.transitions.duration.shorter,
+              easing: theme2.transitions.easing.easeOut
             }),
             pointerEvents: "none"
             // Transparent to the hover style.
@@ -24750,25 +24855,25 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
           },
           [`&.${pickersFilledInputClasses.error}`]: {
             "&:before, &:after": {
-              borderBottomColor: (theme.vars || theme).palette.error.main
+              borderBottomColor: (theme2.vars || theme2).palette.error.main
             }
           },
           "&::before": {
-            borderBottom: `1px solid ${theme.vars ? `rgba(${theme.vars.palette.common.onBackgroundChannel} / ${theme.vars.opacity.inputUnderline})` : bottomLineColor}`,
+            borderBottom: `1px solid ${theme2.vars ? `rgba(${theme2.vars.palette.common.onBackgroundChannel} / ${theme2.vars.opacity.inputUnderline})` : bottomLineColor}`,
             left: 0,
             bottom: 0,
             // Doing the other way around crash on IE11 "''" https://github.com/cssinjs/jss/issues/242
             content: '"\\00a0"',
             position: "absolute",
             right: 0,
-            transition: theme.transitions.create("border-bottom-color", {
-              duration: theme.transitions.duration.shorter
+            transition: theme2.transitions.create("border-bottom-color", {
+              duration: theme2.transitions.duration.shorter
             }),
             pointerEvents: "none"
             // Transparent to the hover style.
           },
           [`&:hover:not(.${pickersFilledInputClasses.disabled}, .${pickersFilledInputClasses.error}):before`]: {
-            borderBottom: `1px solid ${(theme.vars || theme).palette.text.primary}`
+            borderBottom: `1px solid ${(theme2.vars || theme2).palette.text.primary}`
           },
           [`&.${pickersFilledInputClasses.disabled}:before`]: {
             borderBottomStyle: "dotted"
@@ -24895,25 +25000,25 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: (props, styles2) => styles2.root
   })(({
-    theme
+    theme: theme2
   }) => {
-    const light2 = theme.palette.mode === "light";
+    const light2 = theme2.palette.mode === "light";
     let bottomLineColor = light2 ? "rgba(0, 0, 0, 0.42)" : "rgba(255, 255, 255, 0.7)";
-    if (theme.vars) {
-      bottomLineColor = `rgba(${theme.vars.palette.common.onBackgroundChannel} / ${theme.vars.opacity.inputUnderline})`;
+    if (theme2.vars) {
+      bottomLineColor = `rgba(${theme2.vars.palette.common.onBackgroundChannel} / ${theme2.vars.opacity.inputUnderline})`;
     }
     return {
       "label + &": {
         marginTop: 16
       },
-      variants: [...Object.keys((theme.vars ?? theme).palette).filter((key) => (theme.vars ?? theme).palette[key].main).map((color2) => ({
+      variants: [...Object.keys((theme2.vars ?? theme2).palette).filter((key) => (theme2.vars ?? theme2).palette[key].main).map((color2) => ({
         props: {
           color: color2
         },
         style: {
           "&::after": {
             // @ts-ignore
-            borderBottom: `2px solid ${(theme.vars || theme).palette[color2].main}`
+            borderBottom: `2px solid ${(theme2.vars || theme2).palette[color2].main}`
           }
         }
       })), {
@@ -24930,9 +25035,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             position: "absolute",
             right: 0,
             transform: "scaleX(0)",
-            transition: theme.transitions.create("transform", {
-              duration: theme.transitions.duration.shorter,
-              easing: theme.transitions.easing.easeOut
+            transition: theme2.transitions.create("transform", {
+              duration: theme2.transitions.duration.shorter,
+              easing: theme2.transitions.easing.easeOut
             }),
             pointerEvents: "none"
             // Transparent to the hover style.
@@ -24944,7 +25049,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
           },
           [`&.${pickersInputClasses.error}`]: {
             "&:before, &:after": {
-              borderBottomColor: (theme.vars || theme).palette.error.main
+              borderBottomColor: (theme2.vars || theme2).palette.error.main
             }
           },
           "&::before": {
@@ -24955,14 +25060,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             content: '"\\00a0"',
             position: "absolute",
             right: 0,
-            transition: theme.transitions.create("border-bottom-color", {
-              duration: theme.transitions.duration.shorter
+            transition: theme2.transitions.create("border-bottom-color", {
+              duration: theme2.transitions.duration.shorter
             }),
             pointerEvents: "none"
             // Transparent to the hover style.
           },
           [`&:hover:not(.${pickersInputClasses.disabled}, .${pickersInputClasses.error}):before`]: {
-            borderBottom: `2px solid ${(theme.vars || theme).palette.text.primary}`,
+            borderBottom: `2px solid ${(theme2.vars || theme2).palette.text.primary}`,
             // Reset on touch devices, it doesn't add specificity
             "@media (hover: none)": {
               borderBottom: `1px solid ${bottomLineColor}`
@@ -25249,9 +25354,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
-  }) => _extends$1({}, theme.typography.button, {
+  }) => _extends$1({}, theme2.typography.button, {
     maxWidth: 360,
     minWidth: 90,
     position: "relative",
@@ -25274,9 +25379,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }, ownerState.iconPosition === "bottom" && {
       marginTop: 6
     }, ownerState.iconPosition === "start" && {
-      marginRight: theme.spacing(1)
+      marginRight: theme2.spacing(1)
     }, ownerState.iconPosition === "end" && {
-      marginLeft: theme.spacing(1)
+      marginLeft: theme2.spacing(1)
     })
   }, ownerState.textColor === "inherit" && {
     color: "inherit",
@@ -25286,23 +25391,23 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       opacity: 1
     },
     [`&.${tabClasses.disabled}`]: {
-      opacity: (theme.vars || theme).palette.action.disabledOpacity
+      opacity: (theme2.vars || theme2).palette.action.disabledOpacity
     }
   }, ownerState.textColor === "primary" && {
-    color: (theme.vars || theme).palette.text.secondary,
+    color: (theme2.vars || theme2).palette.text.secondary,
     [`&.${tabClasses.selected}`]: {
-      color: (theme.vars || theme).palette.primary.main
+      color: (theme2.vars || theme2).palette.primary.main
     },
     [`&.${tabClasses.disabled}`]: {
-      color: (theme.vars || theme).palette.text.disabled
+      color: (theme2.vars || theme2).palette.text.disabled
     }
   }, ownerState.textColor === "secondary" && {
-    color: (theme.vars || theme).palette.text.secondary,
+    color: (theme2.vars || theme2).palette.text.secondary,
     [`&.${tabClasses.selected}`]: {
-      color: (theme.vars || theme).palette.secondary.main
+      color: (theme2.vars || theme2).palette.secondary.main
     },
     [`&.${tabClasses.disabled}`]: {
-      color: (theme.vars || theme).palette.text.disabled
+      color: (theme2.vars || theme2).palette.text.disabled
     }
   }, ownerState.fullWidth && {
     flexShrink: 1,
@@ -25310,7 +25415,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     flexBasis: 0,
     maxWidth: "none"
   }, ownerState.wrapped && {
-    fontSize: theme.typography.pxToRem(12)
+    fontSize: theme2.typography.pxToRem(12)
   }));
   const Tab = /* @__PURE__ */ reactExports.forwardRef(function Tab2(inProps, ref) {
     const props = useDefaultProps({
@@ -25644,7 +25749,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }
   })(({
     ownerState,
-    theme
+    theme: theme2
   }) => _extends$1({
     overflow: "hidden",
     minHeight: 48,
@@ -25655,7 +25760,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     flexDirection: "column"
   }, ownerState.scrollButtonsHideMobile && {
     [`& .${tabsClasses.scrollButtons}`]: {
-      [theme.breakpoints.down("sm")]: {
+      [theme2.breakpoints.down("sm")]: {
         display: "none"
       }
     }
@@ -25718,17 +25823,17 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     overridesResolver: (props, styles2) => styles2.indicator
   })(({
     ownerState,
-    theme
+    theme: theme2
   }) => _extends$1({
     position: "absolute",
     height: 2,
     bottom: 0,
     width: "100%",
-    transition: theme.transitions.create()
+    transition: theme2.transitions.create()
   }, ownerState.indicatorColor === "primary" && {
-    backgroundColor: (theme.vars || theme).palette.primary.main
+    backgroundColor: (theme2.vars || theme2).palette.primary.main
   }, ownerState.indicatorColor === "secondary" && {
-    backgroundColor: (theme.vars || theme).palette.secondary.main
+    backgroundColor: (theme2.vars || theme2).palette.secondary.main
   }, ownerState.vertical && {
     height: "100%",
     width: 2,
@@ -25751,7 +25856,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       props: inProps,
       name: "MuiTabs"
     });
-    const theme = useTheme$1();
+    const theme2 = useTheme$1();
     const isRtl = useRtl();
     const {
       "aria-label": ariaLabel,
@@ -25893,7 +25998,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     } = {}) => {
       if (animation) {
         animate(scrollStart, tabsRef.current, scrollValue, {
-          duration: theme.transitions.duration.standard
+          duration: theme2.transitions.duration.standard
         });
       } else {
         tabsRef.current[scrollStart] = scrollValue;
@@ -26201,11 +26306,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: (_2, styles2) => styles2.root
   })(({
-    theme
+    theme: theme2
   }) => ({
-    boxShadow: `0 -1px 0 0 inset ${(theme.vars || theme).palette.divider}`,
+    boxShadow: `0 -1px 0 0 inset ${(theme2.vars || theme2).palette.divider}`,
     "&:last-child": {
-      boxShadow: `0 1px 0 0 inset ${(theme.vars || theme).palette.divider}`,
+      boxShadow: `0 1px 0 0 inset ${(theme2.vars || theme2).palette.divider}`,
       [`& .${tabsClasses.indicator}`]: {
         bottom: "auto",
         top: 0
@@ -26278,12 +26383,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       [`&.${pickersToolbarTextClasses.selected}`]: styles2.selected
     }]
   })(({
-    theme
+    theme: theme2
   }) => ({
-    transition: theme.transitions.create("color"),
-    color: (theme.vars || theme).palette.text.secondary,
+    transition: theme2.transitions.create("color"),
+    color: (theme2.vars || theme2).palette.text.secondary,
     [`&.${pickersToolbarTextClasses.selected}`]: {
-      color: (theme.vars || theme).palette.text.primary
+      color: (theme2.vars || theme2).palette.text.primary
     }
   }));
   const PickersToolbarText = /* @__PURE__ */ reactExports.forwardRef(function PickersToolbarText2(inProps, ref) {
@@ -26326,13 +26431,13 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: (props, styles2) => styles2.root
   })(({
-    theme
+    theme: theme2
   }) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    padding: theme.spacing(2, 3),
+    padding: theme2.spacing(2, 3),
     variants: [{
       props: {
         isLandscape: true
@@ -26460,110 +26565,110 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return [styles2.root, styles2[ownerState.variant], styles2[`${ownerState.variant}${capitalize$1(ownerState.color)}`], styles2[`size${capitalize$1(ownerState.size)}`], styles2[`${ownerState.variant}Size${capitalize$1(ownerState.size)}`], ownerState.color === "inherit" && styles2.colorInherit, ownerState.disableElevation && styles2.disableElevation, ownerState.fullWidth && styles2.fullWidth];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => {
     var _theme$palette$getCon, _theme$palette;
-    const inheritContainedBackgroundColor = theme.palette.mode === "light" ? theme.palette.grey[300] : theme.palette.grey[800];
-    const inheritContainedHoverBackgroundColor = theme.palette.mode === "light" ? theme.palette.grey.A100 : theme.palette.grey[700];
-    return _extends$1({}, theme.typography.button, {
+    const inheritContainedBackgroundColor = theme2.palette.mode === "light" ? theme2.palette.grey[300] : theme2.palette.grey[800];
+    const inheritContainedHoverBackgroundColor = theme2.palette.mode === "light" ? theme2.palette.grey.A100 : theme2.palette.grey[700];
+    return _extends$1({}, theme2.typography.button, {
       minWidth: 64,
       padding: "6px 16px",
-      borderRadius: (theme.vars || theme).shape.borderRadius,
-      transition: theme.transitions.create(["background-color", "box-shadow", "border-color", "color"], {
-        duration: theme.transitions.duration.short
+      borderRadius: (theme2.vars || theme2).shape.borderRadius,
+      transition: theme2.transitions.create(["background-color", "box-shadow", "border-color", "color"], {
+        duration: theme2.transitions.duration.short
       }),
       "&:hover": _extends$1({
         textDecoration: "none",
-        backgroundColor: theme.vars ? `rgba(${theme.vars.palette.text.primaryChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha_1(theme.palette.text.primary, theme.palette.action.hoverOpacity),
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.text.primaryChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha_1(theme2.palette.text.primary, theme2.palette.action.hoverOpacity),
         // Reset on touch devices, it doesn't add specificity
         "@media (hover: none)": {
           backgroundColor: "transparent"
         }
       }, ownerState.variant === "text" && ownerState.color !== "inherit" && {
-        backgroundColor: theme.vars ? `rgba(${theme.vars.palette[ownerState.color].mainChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha_1(theme.palette[ownerState.color].main, theme.palette.action.hoverOpacity),
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha_1(theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity),
         // Reset on touch devices, it doesn't add specificity
         "@media (hover: none)": {
           backgroundColor: "transparent"
         }
       }, ownerState.variant === "outlined" && ownerState.color !== "inherit" && {
-        border: `1px solid ${(theme.vars || theme).palette[ownerState.color].main}`,
-        backgroundColor: theme.vars ? `rgba(${theme.vars.palette[ownerState.color].mainChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha_1(theme.palette[ownerState.color].main, theme.palette.action.hoverOpacity),
+        border: `1px solid ${(theme2.vars || theme2).palette[ownerState.color].main}`,
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha_1(theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity),
         // Reset on touch devices, it doesn't add specificity
         "@media (hover: none)": {
           backgroundColor: "transparent"
         }
       }, ownerState.variant === "contained" && {
-        backgroundColor: theme.vars ? theme.vars.palette.Button.inheritContainedHoverBg : inheritContainedHoverBackgroundColor,
-        boxShadow: (theme.vars || theme).shadows[4],
+        backgroundColor: theme2.vars ? theme2.vars.palette.Button.inheritContainedHoverBg : inheritContainedHoverBackgroundColor,
+        boxShadow: (theme2.vars || theme2).shadows[4],
         // Reset on touch devices, it doesn't add specificity
         "@media (hover: none)": {
-          boxShadow: (theme.vars || theme).shadows[2],
-          backgroundColor: (theme.vars || theme).palette.grey[300]
+          boxShadow: (theme2.vars || theme2).shadows[2],
+          backgroundColor: (theme2.vars || theme2).palette.grey[300]
         }
       }, ownerState.variant === "contained" && ownerState.color !== "inherit" && {
-        backgroundColor: (theme.vars || theme).palette[ownerState.color].dark,
+        backgroundColor: (theme2.vars || theme2).palette[ownerState.color].dark,
         // Reset on touch devices, it doesn't add specificity
         "@media (hover: none)": {
-          backgroundColor: (theme.vars || theme).palette[ownerState.color].main
+          backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main
         }
       }),
       "&:active": _extends$1({}, ownerState.variant === "contained" && {
-        boxShadow: (theme.vars || theme).shadows[8]
+        boxShadow: (theme2.vars || theme2).shadows[8]
       }),
       [`&.${buttonClasses.focusVisible}`]: _extends$1({}, ownerState.variant === "contained" && {
-        boxShadow: (theme.vars || theme).shadows[6]
+        boxShadow: (theme2.vars || theme2).shadows[6]
       }),
       [`&.${buttonClasses.disabled}`]: _extends$1({
-        color: (theme.vars || theme).palette.action.disabled
+        color: (theme2.vars || theme2).palette.action.disabled
       }, ownerState.variant === "outlined" && {
-        border: `1px solid ${(theme.vars || theme).palette.action.disabledBackground}`
+        border: `1px solid ${(theme2.vars || theme2).palette.action.disabledBackground}`
       }, ownerState.variant === "contained" && {
-        color: (theme.vars || theme).palette.action.disabled,
-        boxShadow: (theme.vars || theme).shadows[0],
-        backgroundColor: (theme.vars || theme).palette.action.disabledBackground
+        color: (theme2.vars || theme2).palette.action.disabled,
+        boxShadow: (theme2.vars || theme2).shadows[0],
+        backgroundColor: (theme2.vars || theme2).palette.action.disabledBackground
       })
     }, ownerState.variant === "text" && {
       padding: "6px 8px"
     }, ownerState.variant === "text" && ownerState.color !== "inherit" && {
-      color: (theme.vars || theme).palette[ownerState.color].main
+      color: (theme2.vars || theme2).palette[ownerState.color].main
     }, ownerState.variant === "outlined" && {
       padding: "5px 15px",
       border: "1px solid currentColor"
     }, ownerState.variant === "outlined" && ownerState.color !== "inherit" && {
-      color: (theme.vars || theme).palette[ownerState.color].main,
-      border: theme.vars ? `1px solid rgba(${theme.vars.palette[ownerState.color].mainChannel} / 0.5)` : `1px solid ${alpha_1(theme.palette[ownerState.color].main, 0.5)}`
+      color: (theme2.vars || theme2).palette[ownerState.color].main,
+      border: theme2.vars ? `1px solid rgba(${theme2.vars.palette[ownerState.color].mainChannel} / 0.5)` : `1px solid ${alpha_1(theme2.palette[ownerState.color].main, 0.5)}`
     }, ownerState.variant === "contained" && {
-      color: theme.vars ? (
+      color: theme2.vars ? (
         // this is safe because grey does not change between default light/dark mode
-        theme.vars.palette.text.primary
-      ) : (_theme$palette$getCon = (_theme$palette = theme.palette).getContrastText) == null ? void 0 : _theme$palette$getCon.call(_theme$palette, theme.palette.grey[300]),
-      backgroundColor: theme.vars ? theme.vars.palette.Button.inheritContainedBg : inheritContainedBackgroundColor,
-      boxShadow: (theme.vars || theme).shadows[2]
+        theme2.vars.palette.text.primary
+      ) : (_theme$palette$getCon = (_theme$palette = theme2.palette).getContrastText) == null ? void 0 : _theme$palette$getCon.call(_theme$palette, theme2.palette.grey[300]),
+      backgroundColor: theme2.vars ? theme2.vars.palette.Button.inheritContainedBg : inheritContainedBackgroundColor,
+      boxShadow: (theme2.vars || theme2).shadows[2]
     }, ownerState.variant === "contained" && ownerState.color !== "inherit" && {
-      color: (theme.vars || theme).palette[ownerState.color].contrastText,
-      backgroundColor: (theme.vars || theme).palette[ownerState.color].main
+      color: (theme2.vars || theme2).palette[ownerState.color].contrastText,
+      backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main
     }, ownerState.color === "inherit" && {
       color: "inherit",
       borderColor: "currentColor"
     }, ownerState.size === "small" && ownerState.variant === "text" && {
       padding: "4px 5px",
-      fontSize: theme.typography.pxToRem(13)
+      fontSize: theme2.typography.pxToRem(13)
     }, ownerState.size === "large" && ownerState.variant === "text" && {
       padding: "8px 11px",
-      fontSize: theme.typography.pxToRem(15)
+      fontSize: theme2.typography.pxToRem(15)
     }, ownerState.size === "small" && ownerState.variant === "outlined" && {
       padding: "3px 9px",
-      fontSize: theme.typography.pxToRem(13)
+      fontSize: theme2.typography.pxToRem(13)
     }, ownerState.size === "large" && ownerState.variant === "outlined" && {
       padding: "7px 21px",
-      fontSize: theme.typography.pxToRem(15)
+      fontSize: theme2.typography.pxToRem(15)
     }, ownerState.size === "small" && ownerState.variant === "contained" && {
       padding: "4px 10px",
-      fontSize: theme.typography.pxToRem(13)
+      fontSize: theme2.typography.pxToRem(13)
     }, ownerState.size === "large" && ownerState.variant === "contained" && {
       padding: "8px 22px",
-      fontSize: theme.typography.pxToRem(15)
+      fontSize: theme2.typography.pxToRem(15)
     }, ownerState.fullWidth && {
       width: "100%"
     });
@@ -26803,7 +26908,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: (props, styles2) => styles2.root
   })(({
-    theme
+    theme: theme2
   }) => ({
     paddingLeft: 16,
     paddingRight: 16,
@@ -26814,10 +26919,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         toolbarVariant: "desktop"
       },
       style: {
-        borderBottom: `1px solid ${(theme.vars || theme).palette.divider}`,
+        borderBottom: `1px solid ${(theme2.vars || theme2).palette.divider}`,
         [`& .${pickersToolbarClasses.content} .${pickersToolbarTextClasses.selected}`]: {
-          color: (theme.vars || theme).palette.primary.main,
-          fontWeight: theme.typography.fontWeightBold
+          color: (theme2.vars || theme2).palette.primary.main,
+          fontWeight: theme2.typography.fontWeightBold
         }
       }
     }, {
@@ -26826,7 +26931,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         isLandscape: true
       },
       style: {
-        borderRight: `1px solid ${(theme.vars || theme).palette.divider}`
+        borderRight: `1px solid ${(theme2.vars || theme2).palette.divider}`
       }
     }, {
       props: {
@@ -27311,7 +27416,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       transKey
     } = props;
     const classes = useUtilityClasses$t(props);
-    const theme = useTheme$1();
+    const theme2 = useTheme$1();
     if (reduceAnimations) {
       return children;
     }
@@ -27322,8 +27427,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         mountOnEnter: true,
         unmountOnExit: true,
         timeout: {
-          appear: theme.transitions.duration.enteringScreen,
-          enter: theme.transitions.duration.enteringScreen,
+          appear: theme2.transitions.duration.enteringScreen,
+          enter: theme2.transitions.duration.enteringScreen,
           exit: 0
         },
         children
@@ -27354,41 +27459,41 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return composeClasses(slots, getPickersDayUtilityClass, classes);
   };
   const styleArg = ({
-    theme
-  }) => _extends$1({}, theme.typography.caption, {
+    theme: theme2
+  }) => _extends$1({}, theme2.typography.caption, {
     width: DAY_SIZE,
     height: DAY_SIZE,
     borderRadius: "50%",
     padding: 0,
     // explicitly setting to `transparent` to avoid potentially getting impacted by change from the overridden component
     backgroundColor: "transparent",
-    transition: theme.transitions.create("background-color", {
-      duration: theme.transitions.duration.short
+    transition: theme2.transitions.create("background-color", {
+      duration: theme2.transitions.duration.short
     }),
-    color: (theme.vars || theme).palette.text.primary,
+    color: (theme2.vars || theme2).palette.text.primary,
     "@media (pointer: fine)": {
       "&:hover": {
-        backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha(theme.palette.primary.main, theme.palette.action.hoverOpacity)
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette.primary.main, theme2.palette.action.hoverOpacity)
       }
     },
     "&:focus": {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.focusOpacity})` : alpha(theme.palette.primary.main, theme.palette.action.focusOpacity),
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.focusOpacity})` : alpha(theme2.palette.primary.main, theme2.palette.action.focusOpacity),
       [`&.${pickersDayClasses.selected}`]: {
         willChange: "background-color",
-        backgroundColor: (theme.vars || theme).palette.primary.dark
+        backgroundColor: (theme2.vars || theme2).palette.primary.dark
       }
     },
     [`&.${pickersDayClasses.selected}`]: {
-      color: (theme.vars || theme).palette.primary.contrastText,
-      backgroundColor: (theme.vars || theme).palette.primary.main,
-      fontWeight: theme.typography.fontWeightMedium,
+      color: (theme2.vars || theme2).palette.primary.contrastText,
+      backgroundColor: (theme2.vars || theme2).palette.primary.main,
+      fontWeight: theme2.typography.fontWeightMedium,
       "&:hover": {
         willChange: "background-color",
-        backgroundColor: (theme.vars || theme).palette.primary.dark
+        backgroundColor: (theme2.vars || theme2).palette.primary.dark
       }
     },
     [`&.${pickersDayClasses.disabled}:not(.${pickersDayClasses.selected})`]: {
-      color: (theme.vars || theme).palette.text.disabled
+      color: (theme2.vars || theme2).palette.text.disabled
     },
     [`&.${pickersDayClasses.disabled}&.${pickersDayClasses.selected}`]: {
       opacity: 0.6
@@ -27406,7 +27511,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         showDaysOutsideCurrentMonth: true
       },
       style: {
-        color: (theme.vars || theme).palette.text.secondary
+        color: (theme2.vars || theme2).palette.text.secondary
       }
     }, {
       props: {
@@ -27415,7 +27520,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       },
       style: {
         [`&:not(.${pickersDayClasses.selected})`]: {
-          border: `1px solid ${(theme.vars || theme).palette.text.secondary}`
+          border: `1px solid ${(theme2.vars || theme2).palette.text.secondary}`
         }
       }
     }]
@@ -27436,9 +27541,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: overridesResolver$2
   })(({
-    theme
+    theme: theme2
   }) => _extends$1({}, styleArg({
-    theme
+    theme: theme2
   }), {
     // visibility: 'hidden' does not work here as it hides the element from screen readers as well
     opacity: 0,
@@ -27566,10 +27671,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       [`.${pickersSlideTransitionClasses["slideExitActiveLeft-right"]}`]: styles2["slideExitActiveLeft-right"]
     }]
   })(({
-    theme
+    theme: theme2
   }) => {
-    const slideTransition = theme.transitions.create("transform", {
-      duration: theme.transitions.duration.complex,
+    const slideTransition = theme2.transitions.create("transform", {
+      duration: theme2.transitions.duration.complex,
       easing: "cubic-bezier(0.35, 0.8, 0.4, 1)"
     });
     return {
@@ -27626,7 +27731,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       // extracting `classes` from `other`
     } = props, other = _objectWithoutPropertiesLoose(props, _excluded$z);
     const classes = useUtilityClasses$r(props);
-    const theme = useTheme$1();
+    const theme2 = useTheme$1();
     if (reduceAnimations) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
         className: clsx(classes.root, className),
@@ -27648,7 +27753,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       children: /* @__PURE__ */ jsxRuntimeExports.jsx(CSSTransition, _extends$1({
         mountOnEnter: true,
         unmountOnExit: true,
-        timeout: theme.transitions.duration.complex,
+        timeout: theme2.transitions.duration.complex,
         classNames: transitionClasses
       }, other, {
         children
@@ -27695,7 +27800,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "WeekDayLabel",
     overridesResolver: (_2, styles2) => styles2.weekDayLabel
   })(({
-    theme
+    theme: theme2
   }) => ({
     width: 36,
     height: 40,
@@ -27704,14 +27809,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    color: (theme.vars || theme).palette.text.secondary
+    color: (theme2.vars || theme2).palette.text.secondary
   }));
   const PickersCalendarWeekNumberLabel = styled(Typography, {
     name: "MuiDayCalendar",
     slot: "WeekNumberLabel",
     overridesResolver: (_2, styles2) => styles2.weekNumberLabel
   })(({
-    theme
+    theme: theme2
   }) => ({
     width: 36,
     height: 40,
@@ -27720,20 +27825,20 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    color: theme.palette.text.disabled
+    color: theme2.palette.text.disabled
   }));
   const PickersCalendarWeekNumber = styled(Typography, {
     name: "MuiDayCalendar",
     slot: "WeekNumber",
     overridesResolver: (_2, styles2) => styles2.weekNumber
   })(({
-    theme
-  }) => _extends$1({}, theme.typography.caption, {
+    theme: theme2
+  }) => _extends$1({}, theme2.typography.caption, {
     width: DAY_SIZE,
     height: DAY_SIZE,
     padding: 0,
     margin: `0 ${DAY_MARGIN}px`,
-    color: theme.palette.text.disabled,
+    color: theme2.palette.text.disabled,
     fontSize: "0.75rem",
     alignItems: "center",
     justifyContent: "center",
@@ -28126,36 +28231,36 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       [`&.${pickersMonthClasses.selected}`]: styles2.selected
     }]
   })(({
-    theme
+    theme: theme2
   }) => _extends$1({
     color: "unset",
     backgroundColor: "transparent",
     border: 0,
     outline: 0
-  }, theme.typography.subtitle1, {
+  }, theme2.typography.subtitle1, {
     margin: "8px 0",
     height: 36,
     width: 72,
     borderRadius: 18,
     cursor: "pointer",
     "&:focus": {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.action.activeChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha(theme.palette.action.active, theme.palette.action.hoverOpacity)
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.activeChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette.action.active, theme2.palette.action.hoverOpacity)
     },
     "&:hover": {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.action.activeChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha(theme.palette.action.active, theme.palette.action.hoverOpacity)
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.activeChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette.action.active, theme2.palette.action.hoverOpacity)
     },
     "&:disabled": {
       cursor: "auto",
       pointerEvents: "none"
     },
     [`&.${pickersMonthClasses.disabled}`]: {
-      color: (theme.vars || theme).palette.text.secondary
+      color: (theme2.vars || theme2).palette.text.secondary
     },
     [`&.${pickersMonthClasses.selected}`]: {
-      color: (theme.vars || theme).palette.primary.contrastText,
-      backgroundColor: (theme.vars || theme).palette.primary.main,
+      color: (theme2.vars || theme2).palette.primary.contrastText,
+      backgroundColor: (theme2.vars || theme2).palette.primary.main,
       "&:focus, &:hover": {
-        backgroundColor: (theme.vars || theme).palette.primary.dark
+        backgroundColor: (theme2.vars || theme2).palette.primary.dark
       }
     }
   }));
@@ -28475,36 +28580,36 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       [`&.${pickersYearClasses.selected}`]: styles2.selected
     }]
   })(({
-    theme
+    theme: theme2
   }) => _extends$1({
     color: "unset",
     backgroundColor: "transparent",
     border: 0,
     outline: 0
-  }, theme.typography.subtitle1, {
+  }, theme2.typography.subtitle1, {
     margin: "6px 0",
     height: 36,
     width: 72,
     borderRadius: 18,
     cursor: "pointer",
     "&:focus": {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.action.activeChannel} / ${theme.vars.palette.action.focusOpacity})` : alpha(theme.palette.action.active, theme.palette.action.focusOpacity)
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.activeChannel} / ${theme2.vars.palette.action.focusOpacity})` : alpha(theme2.palette.action.active, theme2.palette.action.focusOpacity)
     },
     "&:hover": {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.action.activeChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha(theme.palette.action.active, theme.palette.action.hoverOpacity)
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.activeChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette.action.active, theme2.palette.action.hoverOpacity)
     },
     "&:disabled": {
       cursor: "auto",
       pointerEvents: "none"
     },
     [`&.${pickersYearClasses.disabled}`]: {
-      color: (theme.vars || theme).palette.text.secondary
+      color: (theme2.vars || theme2).palette.text.secondary
     },
     [`&.${pickersYearClasses.selected}`]: {
-      color: (theme.vars || theme).palette.primary.contrastText,
-      backgroundColor: (theme.vars || theme).palette.primary.main,
+      color: (theme2.vars || theme2).palette.primary.contrastText,
+      backgroundColor: (theme2.vars || theme2).palette.primary.main,
       "&:focus, &:hover": {
-        backgroundColor: (theme.vars || theme).palette.primary.dark
+        backgroundColor: (theme2.vars || theme2).palette.primary.dark
       }
     }
   }));
@@ -28912,9 +29017,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Spacer",
     overridesResolver: (props, styles2) => styles2.spacer
   })(({
-    theme
+    theme: theme2
   }) => ({
-    width: theme.spacing(3)
+    width: theme2.spacing(3)
   }));
   const PickersArrowSwitcherButton = styled(IconButton, {
     name: "MuiPickersArrowSwitcher",
@@ -29088,15 +29193,15 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "LabelContainer",
     overridesResolver: (_2, styles2) => styles2.labelContainer
   })(({
-    theme
+    theme: theme2
   }) => _extends$1({
     display: "flex",
     overflow: "hidden",
     alignItems: "center",
     cursor: "pointer",
     marginRight: "auto"
-  }, theme.typography.body1, {
-    fontWeight: theme.typography.fontWeightMedium
+  }, theme2.typography.body1, {
+    fontWeight: theme2.typography.fontWeightMedium
   }));
   const PickersCalendarHeaderLabel = styled("div", {
     name: "MuiPickersCalendarHeader",
@@ -29127,10 +29232,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "SwitchViewIcon",
     overridesResolver: (_2, styles2) => styles2.switchViewIcon
   })(({
-    theme
+    theme: theme2
   }) => ({
     willChange: "transform",
-    transition: theme.transitions.create("transform"),
+    transition: theme2.transitions.create("transform"),
     transform: "rotate(0deg)"
   }));
   const PickersCalendarHeader = /* @__PURE__ */ reactExports.forwardRef(function PickersCalendarHeader2(inProps, ref) {
@@ -31254,7 +31359,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   })({});
   const Popper = /* @__PURE__ */ reactExports.forwardRef(function Popper2(inProps, ref) {
     var _slots$root;
-    const theme = default_1();
+    const theme2 = default_1();
     const props = useDefaultProps({
       props: inProps,
       name: "MuiPopper"
@@ -31291,7 +31396,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }, other);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(PopperRoot, _extends$1({
       as: component,
-      direction: theme == null ? void 0 : theme.direction,
+      direction: theme2 == null ? void 0 : theme2.direction,
       slots: {
         root: RootComponent
       },
@@ -31320,9 +31425,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: (_2, styles2) => styles2.root
   })(({
-    theme
+    theme: theme2
   }) => ({
-    zIndex: theme.zIndex.modal
+    zIndex: theme2.zIndex.modal
   }));
   const PickersPopperPaper = styled(Paper, {
     name: "MuiPickersPopper",
@@ -32309,7 +32414,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: overridesResolver$1
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
     display: "flex",
@@ -32339,39 +32444,39 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }
   }, {
     [`&.${listItemClasses.focusVisible}`]: {
-      backgroundColor: (theme.vars || theme).palette.action.focus
+      backgroundColor: (theme2.vars || theme2).palette.action.focus
     },
     [`&.${listItemClasses.selected}`]: {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.selectedOpacity})` : alpha_1(theme.palette.primary.main, theme.palette.action.selectedOpacity),
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.selectedOpacity})` : alpha_1(theme2.palette.primary.main, theme2.palette.action.selectedOpacity),
       [`&.${listItemClasses.focusVisible}`]: {
-        backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.focusOpacity}))` : alpha_1(theme.palette.primary.main, theme.palette.action.selectedOpacity + theme.palette.action.focusOpacity)
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.focusOpacity}))` : alpha_1(theme2.palette.primary.main, theme2.palette.action.selectedOpacity + theme2.palette.action.focusOpacity)
       }
     },
     [`&.${listItemClasses.disabled}`]: {
-      opacity: (theme.vars || theme).palette.action.disabledOpacity
+      opacity: (theme2.vars || theme2).palette.action.disabledOpacity
     }
   }, ownerState.alignItems === "flex-start" && {
     alignItems: "flex-start"
   }, ownerState.divider && {
-    borderBottom: `1px solid ${(theme.vars || theme).palette.divider}`,
+    borderBottom: `1px solid ${(theme2.vars || theme2).palette.divider}`,
     backgroundClip: "padding-box"
   }, ownerState.button && {
-    transition: theme.transitions.create("background-color", {
-      duration: theme.transitions.duration.shortest
+    transition: theme2.transitions.create("background-color", {
+      duration: theme2.transitions.duration.shortest
     }),
     "&:hover": {
       textDecoration: "none",
-      backgroundColor: (theme.vars || theme).palette.action.hover,
+      backgroundColor: (theme2.vars || theme2).palette.action.hover,
       // Reset on touch devices, it doesn't add specificity
       "@media (hover: none)": {
         backgroundColor: "transparent"
       }
     },
     [`&.${listItemClasses.selected}:hover`]: {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.hoverOpacity}))` : alpha_1(theme.palette.primary.main, theme.palette.action.selectedOpacity + theme.palette.action.hoverOpacity),
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.hoverOpacity}))` : alpha_1(theme2.palette.primary.main, theme2.palette.action.selectedOpacity + theme2.palette.action.hoverOpacity),
       // Reset on touch devices, it doesn't add specificity
       "@media (hover: none)": {
-        backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.selectedOpacity})` : alpha_1(theme.palette.primary.main, theme.palette.action.selectedOpacity)
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.selectedOpacity})` : alpha_1(theme2.palette.primary.main, theme2.palette.action.selectedOpacity)
       }
     }
   }, ownerState.hasSecondaryAction && {
@@ -32563,23 +32668,23 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }, styles2.root, styles2[`size${capitalize$1(size)}`], styles2[`color${capitalize$1(color2)}`], clickable && styles2.clickable, clickable && color2 !== "default" && styles2[`clickableColor${capitalize$1(color2)})`], onDelete && styles2.deletable, onDelete && color2 !== "default" && styles2[`deletableColor${capitalize$1(color2)}`], styles2[variant], styles2[`${variant}${capitalize$1(color2)}`]];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => {
-    const textColor = theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[300];
+    const textColor = theme2.palette.mode === "light" ? theme2.palette.grey[700] : theme2.palette.grey[300];
     return _extends$1({
       maxWidth: "100%",
-      fontFamily: theme.typography.fontFamily,
-      fontSize: theme.typography.pxToRem(13),
+      fontFamily: theme2.typography.fontFamily,
+      fontSize: theme2.typography.pxToRem(13),
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",
       height: 32,
-      color: (theme.vars || theme).palette.text.primary,
-      backgroundColor: (theme.vars || theme).palette.action.selected,
+      color: (theme2.vars || theme2).palette.text.primary,
+      backgroundColor: (theme2.vars || theme2).palette.action.selected,
       borderRadius: 32 / 2,
       whiteSpace: "nowrap",
-      transition: theme.transitions.create(["background-color", "box-shadow"]),
+      transition: theme2.transitions.create(["background-color", "box-shadow"]),
       // reset cursor explicitly in case ButtonBase is used
       cursor: "unset",
       // We disable the focus ring for mouse, touch and keyboard users.
@@ -32592,7 +32697,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       verticalAlign: "middle",
       boxSizing: "border-box",
       [`&.${chipClasses.disabled}`]: {
-        opacity: (theme.vars || theme).palette.action.disabledOpacity,
+        opacity: (theme2.vars || theme2).palette.action.disabledOpacity,
         pointerEvents: "none"
       },
       [`& .${chipClasses.avatar}`]: {
@@ -32600,23 +32705,23 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         marginRight: -6,
         width: 24,
         height: 24,
-        color: theme.vars ? theme.vars.palette.Chip.defaultAvatarColor : textColor,
-        fontSize: theme.typography.pxToRem(12)
+        color: theme2.vars ? theme2.vars.palette.Chip.defaultAvatarColor : textColor,
+        fontSize: theme2.typography.pxToRem(12)
       },
       [`& .${chipClasses.avatarColorPrimary}`]: {
-        color: (theme.vars || theme).palette.primary.contrastText,
-        backgroundColor: (theme.vars || theme).palette.primary.dark
+        color: (theme2.vars || theme2).palette.primary.contrastText,
+        backgroundColor: (theme2.vars || theme2).palette.primary.dark
       },
       [`& .${chipClasses.avatarColorSecondary}`]: {
-        color: (theme.vars || theme).palette.secondary.contrastText,
-        backgroundColor: (theme.vars || theme).palette.secondary.dark
+        color: (theme2.vars || theme2).palette.secondary.contrastText,
+        backgroundColor: (theme2.vars || theme2).palette.secondary.dark
       },
       [`& .${chipClasses.avatarSmall}`]: {
         marginLeft: 4,
         marginRight: -4,
         width: 18,
         height: 18,
-        fontSize: theme.typography.pxToRem(10)
+        fontSize: theme2.typography.pxToRem(10)
       },
       [`& .${chipClasses.icon}`]: _extends$1({
         marginLeft: 5,
@@ -32626,74 +32731,74 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         marginLeft: 4,
         marginRight: -4
       }, ownerState.iconColor === ownerState.color && _extends$1({
-        color: theme.vars ? theme.vars.palette.Chip.defaultIconColor : textColor
+        color: theme2.vars ? theme2.vars.palette.Chip.defaultIconColor : textColor
       }, ownerState.color !== "default" && {
         color: "inherit"
       })),
       [`& .${chipClasses.deleteIcon}`]: _extends$1({
         WebkitTapHighlightColor: "transparent",
-        color: theme.vars ? `rgba(${theme.vars.palette.text.primaryChannel} / 0.26)` : alpha_1(theme.palette.text.primary, 0.26),
+        color: theme2.vars ? `rgba(${theme2.vars.palette.text.primaryChannel} / 0.26)` : alpha_1(theme2.palette.text.primary, 0.26),
         fontSize: 22,
         cursor: "pointer",
         margin: "0 5px 0 -6px",
         "&:hover": {
-          color: theme.vars ? `rgba(${theme.vars.palette.text.primaryChannel} / 0.4)` : alpha_1(theme.palette.text.primary, 0.4)
+          color: theme2.vars ? `rgba(${theme2.vars.palette.text.primaryChannel} / 0.4)` : alpha_1(theme2.palette.text.primary, 0.4)
         }
       }, ownerState.size === "small" && {
         fontSize: 16,
         marginRight: 4,
         marginLeft: -4
       }, ownerState.color !== "default" && {
-        color: theme.vars ? `rgba(${theme.vars.palette[ownerState.color].contrastTextChannel} / 0.7)` : alpha_1(theme.palette[ownerState.color].contrastText, 0.7),
+        color: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].contrastTextChannel} / 0.7)` : alpha_1(theme2.palette[ownerState.color].contrastText, 0.7),
         "&:hover, &:active": {
-          color: (theme.vars || theme).palette[ownerState.color].contrastText
+          color: (theme2.vars || theme2).palette[ownerState.color].contrastText
         }
       })
     }, ownerState.size === "small" && {
       height: 24
     }, ownerState.color !== "default" && {
-      backgroundColor: (theme.vars || theme).palette[ownerState.color].main,
-      color: (theme.vars || theme).palette[ownerState.color].contrastText
+      backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main,
+      color: (theme2.vars || theme2).palette[ownerState.color].contrastText
     }, ownerState.onDelete && {
       [`&.${chipClasses.focusVisible}`]: {
-        backgroundColor: theme.vars ? `rgba(${theme.vars.palette.action.selectedChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.focusOpacity}))` : alpha_1(theme.palette.action.selected, theme.palette.action.selectedOpacity + theme.palette.action.focusOpacity)
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.selectedChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.focusOpacity}))` : alpha_1(theme2.palette.action.selected, theme2.palette.action.selectedOpacity + theme2.palette.action.focusOpacity)
       }
     }, ownerState.onDelete && ownerState.color !== "default" && {
       [`&.${chipClasses.focusVisible}`]: {
-        backgroundColor: (theme.vars || theme).palette[ownerState.color].dark
+        backgroundColor: (theme2.vars || theme2).palette[ownerState.color].dark
       }
     });
   }, ({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({}, ownerState.clickable && {
     userSelect: "none",
     WebkitTapHighlightColor: "transparent",
     cursor: "pointer",
     "&:hover": {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.action.selectedChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.hoverOpacity}))` : alpha_1(theme.palette.action.selected, theme.palette.action.selectedOpacity + theme.palette.action.hoverOpacity)
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.selectedChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.hoverOpacity}))` : alpha_1(theme2.palette.action.selected, theme2.palette.action.selectedOpacity + theme2.palette.action.hoverOpacity)
     },
     [`&.${chipClasses.focusVisible}`]: {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.action.selectedChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.focusOpacity}))` : alpha_1(theme.palette.action.selected, theme.palette.action.selectedOpacity + theme.palette.action.focusOpacity)
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.selectedChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.focusOpacity}))` : alpha_1(theme2.palette.action.selected, theme2.palette.action.selectedOpacity + theme2.palette.action.focusOpacity)
     },
     "&:active": {
-      boxShadow: (theme.vars || theme).shadows[1]
+      boxShadow: (theme2.vars || theme2).shadows[1]
     }
   }, ownerState.clickable && ownerState.color !== "default" && {
     [`&:hover, &.${chipClasses.focusVisible}`]: {
-      backgroundColor: (theme.vars || theme).palette[ownerState.color].dark
+      backgroundColor: (theme2.vars || theme2).palette[ownerState.color].dark
     }
   }), ({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({}, ownerState.variant === "outlined" && {
     backgroundColor: "transparent",
-    border: theme.vars ? `1px solid ${theme.vars.palette.Chip.defaultBorder}` : `1px solid ${theme.palette.mode === "light" ? theme.palette.grey[400] : theme.palette.grey[700]}`,
+    border: theme2.vars ? `1px solid ${theme2.vars.palette.Chip.defaultBorder}` : `1px solid ${theme2.palette.mode === "light" ? theme2.palette.grey[400] : theme2.palette.grey[700]}`,
     [`&.${chipClasses.clickable}:hover`]: {
-      backgroundColor: (theme.vars || theme).palette.action.hover
+      backgroundColor: (theme2.vars || theme2).palette.action.hover
     },
     [`&.${chipClasses.focusVisible}`]: {
-      backgroundColor: (theme.vars || theme).palette.action.focus
+      backgroundColor: (theme2.vars || theme2).palette.action.focus
     },
     [`& .${chipClasses.avatar}`]: {
       marginLeft: 4
@@ -32714,18 +32819,18 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       marginRight: 3
     }
   }, ownerState.variant === "outlined" && ownerState.color !== "default" && {
-    color: (theme.vars || theme).palette[ownerState.color].main,
-    border: `1px solid ${theme.vars ? `rgba(${theme.vars.palette[ownerState.color].mainChannel} / 0.7)` : alpha_1(theme.palette[ownerState.color].main, 0.7)}`,
+    color: (theme2.vars || theme2).palette[ownerState.color].main,
+    border: `1px solid ${theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / 0.7)` : alpha_1(theme2.palette[ownerState.color].main, 0.7)}`,
     [`&.${chipClasses.clickable}:hover`]: {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette[ownerState.color].mainChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha_1(theme.palette[ownerState.color].main, theme.palette.action.hoverOpacity)
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha_1(theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity)
     },
     [`&.${chipClasses.focusVisible}`]: {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette[ownerState.color].mainChannel} / ${theme.vars.palette.action.focusOpacity})` : alpha_1(theme.palette[ownerState.color].main, theme.palette.action.focusOpacity)
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.focusOpacity})` : alpha_1(theme2.palette[ownerState.color].main, theme2.palette.action.focusOpacity)
     },
     [`& .${chipClasses.deleteIcon}`]: {
-      color: theme.vars ? `rgba(${theme.vars.palette[ownerState.color].mainChannel} / 0.7)` : alpha_1(theme.palette[ownerState.color].main, 0.7),
+      color: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / 0.7)` : alpha_1(theme2.palette[ownerState.color].main, 0.7),
       "&:hover, &:active": {
-        color: (theme.vars || theme).palette[ownerState.color].main
+        color: (theme2.vars || theme2).palette[ownerState.color].main
       }
     }
   }));
@@ -33442,10 +33547,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: (_2, styles2) => styles2.root
   })(({
-    theme
+    theme: theme2
   }) => ({
     width: 2,
-    backgroundColor: (theme.vars || theme).palette.primary.main,
+    backgroundColor: (theme2.vars || theme2).palette.primary.main,
     position: "absolute",
     left: "calc(50% - 1px)",
     bottom: "50%",
@@ -33455,7 +33560,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         shouldAnimate: true
       },
       style: {
-        transition: theme.transitions.create(["transform", "height"])
+        transition: theme2.transitions.create(["transform", "height"])
       }
     }]
   }));
@@ -33464,23 +33569,23 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Thumb",
     overridesResolver: (_2, styles2) => styles2.thumb
   })(({
-    theme
+    theme: theme2
   }) => ({
     width: 4,
     height: 4,
-    backgroundColor: (theme.vars || theme).palette.primary.contrastText,
+    backgroundColor: (theme2.vars || theme2).palette.primary.contrastText,
     borderRadius: "50%",
     position: "absolute",
     top: -21,
     left: `calc(50% - ${CLOCK_HOUR_WIDTH / 2}px)`,
-    border: `${(CLOCK_HOUR_WIDTH - 4) / 2}px solid ${(theme.vars || theme).palette.primary.main}`,
+    border: `${(CLOCK_HOUR_WIDTH - 4) / 2}px solid ${(theme2.vars || theme2).palette.primary.main}`,
     boxSizing: "content-box",
     variants: [{
       props: {
         hasSelected: true
       },
       style: {
-        backgroundColor: (theme.vars || theme).palette.primary.main
+        backgroundColor: (theme2.vars || theme2).palette.primary.main
       }
     }]
   }));
@@ -33551,12 +33656,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: (_2, styles2) => styles2.root
   })(({
-    theme
+    theme: theme2
   }) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    margin: theme.spacing(2)
+    margin: theme2.spacing(2)
   }));
   const ClockClock = styled("div", {
     name: "MuiClock",
@@ -33613,18 +33718,18 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Pin",
     overridesResolver: (_2, styles2) => styles2.pin
   })(({
-    theme
+    theme: theme2
   }) => ({
     width: 6,
     height: 6,
     borderRadius: "50%",
-    backgroundColor: (theme.vars || theme).palette.primary.main,
+    backgroundColor: (theme2.vars || theme2).palette.primary.main,
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)"
   }));
-  const meridiemButtonCommonStyles = (theme, meridiemMode) => ({
+  const meridiemButtonCommonStyles = (theme2, meridiemMode) => ({
     zIndex: 1,
     bottom: 8,
     paddingLeft: 4,
@@ -33635,10 +33740,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         meridiemMode
       },
       style: {
-        backgroundColor: (theme.vars || theme).palette.primary.main,
-        color: (theme.vars || theme).palette.primary.contrastText,
+        backgroundColor: (theme2.vars || theme2).palette.primary.main,
+        color: (theme2.vars || theme2).palette.primary.contrastText,
         "&:hover": {
-          backgroundColor: (theme.vars || theme).palette.primary.light
+          backgroundColor: (theme2.vars || theme2).palette.primary.light
         }
       }
     }]
@@ -33648,8 +33753,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "AmButton",
     overridesResolver: (_2, styles2) => styles2.amButton
   })(({
-    theme
-  }) => _extends$1({}, meridiemButtonCommonStyles(theme, "am"), {
+    theme: theme2
+  }) => _extends$1({}, meridiemButtonCommonStyles(theme2, "am"), {
     // keeping it here to make TS happy
     position: "absolute",
     left: 8
@@ -33659,8 +33764,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "PmButton",
     overridesResolver: (_2, styles2) => styles2.pmButton
   })(({
-    theme
-  }) => _extends$1({}, meridiemButtonCommonStyles(theme, "pm"), {
+    theme: theme2
+  }) => _extends$1({}, meridiemButtonCommonStyles(theme2, "pm"), {
     // keeping it here to make TS happy
     position: "absolute",
     right: 8
@@ -33873,7 +33978,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       [`&.${clockNumberClasses.selected}`]: styles2.selected
     }]
   })(({
-    theme
+    theme: theme2
   }) => ({
     height: CLOCK_HOUR_WIDTH,
     width: CLOCK_HOUR_WIDTH,
@@ -33883,24 +33988,24 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     justifyContent: "center",
     alignItems: "center",
     borderRadius: "50%",
-    color: (theme.vars || theme).palette.text.primary,
-    fontFamily: theme.typography.fontFamily,
+    color: (theme2.vars || theme2).palette.text.primary,
+    fontFamily: theme2.typography.fontFamily,
     "&:focused": {
-      backgroundColor: (theme.vars || theme).palette.background.paper
+      backgroundColor: (theme2.vars || theme2).palette.background.paper
     },
     [`&.${clockNumberClasses.selected}`]: {
-      color: (theme.vars || theme).palette.primary.contrastText
+      color: (theme2.vars || theme2).palette.primary.contrastText
     },
     [`&.${clockNumberClasses.disabled}`]: {
       pointerEvents: "none",
-      color: (theme.vars || theme).palette.text.disabled
+      color: (theme2.vars || theme2).palette.text.disabled
     },
     variants: [{
       props: {
         inner: true
       },
-      style: _extends$1({}, theme.typography.body2, {
-        color: (theme.vars || theme).palette.text.secondary
+      style: _extends$1({}, theme2.typography.body2, {
+        color: (theme2.vars || theme2).palette.text.secondary
       })
     }]
   }));
@@ -34331,9 +34436,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver
   })(({
-    theme,
+    theme: theme2,
     ownerState
-  }) => _extends$1({}, theme.typography.body1, {
+  }) => _extends$1({}, theme2.typography.body1, {
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -34348,39 +34453,39 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     paddingLeft: 16,
     paddingRight: 16
   }, ownerState.divider && {
-    borderBottom: `1px solid ${(theme.vars || theme).palette.divider}`,
+    borderBottom: `1px solid ${(theme2.vars || theme2).palette.divider}`,
     backgroundClip: "padding-box"
   }, {
     "&:hover": {
       textDecoration: "none",
-      backgroundColor: (theme.vars || theme).palette.action.hover,
+      backgroundColor: (theme2.vars || theme2).palette.action.hover,
       // Reset on touch devices, it doesn't add specificity
       "@media (hover: none)": {
         backgroundColor: "transparent"
       }
     },
     [`&.${menuItemClasses.selected}`]: {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.selectedOpacity})` : alpha_1(theme.palette.primary.main, theme.palette.action.selectedOpacity),
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.selectedOpacity})` : alpha_1(theme2.palette.primary.main, theme2.palette.action.selectedOpacity),
       [`&.${menuItemClasses.focusVisible}`]: {
-        backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.focusOpacity}))` : alpha_1(theme.palette.primary.main, theme.palette.action.selectedOpacity + theme.palette.action.focusOpacity)
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.focusOpacity}))` : alpha_1(theme2.palette.primary.main, theme2.palette.action.selectedOpacity + theme2.palette.action.focusOpacity)
       }
     },
     [`&.${menuItemClasses.selected}:hover`]: {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.hoverOpacity}))` : alpha_1(theme.palette.primary.main, theme.palette.action.selectedOpacity + theme.palette.action.hoverOpacity),
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.hoverOpacity}))` : alpha_1(theme2.palette.primary.main, theme2.palette.action.selectedOpacity + theme2.palette.action.hoverOpacity),
       // Reset on touch devices, it doesn't add specificity
       "@media (hover: none)": {
-        backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.selectedOpacity})` : alpha_1(theme.palette.primary.main, theme.palette.action.selectedOpacity)
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.selectedOpacity})` : alpha_1(theme2.palette.primary.main, theme2.palette.action.selectedOpacity)
       }
     },
     [`&.${menuItemClasses.focusVisible}`]: {
-      backgroundColor: (theme.vars || theme).palette.action.focus
+      backgroundColor: (theme2.vars || theme2).palette.action.focus
     },
     [`&.${menuItemClasses.disabled}`]: {
-      opacity: (theme.vars || theme).palette.action.disabledOpacity
+      opacity: (theme2.vars || theme2).palette.action.disabledOpacity
     },
     [`& + .${dividerClasses.root}`]: {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1)
+      marginTop: theme2.spacing(1),
+      marginBottom: theme2.spacing(1)
     },
     [`& + .${dividerClasses.inset}`]: {
       marginLeft: 52
@@ -34396,7 +34501,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       minWidth: 36
     }
   }, !ownerState.dense && {
-    [theme.breakpoints.up("sm")]: {
+    [theme2.breakpoints.up("sm")]: {
       minHeight: "auto"
     }
   }, ownerState.dense && _extends$1({
@@ -34404,7 +34509,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     // https://m2.material.io/components/menus#specs > Dense
     paddingTop: 4,
     paddingBottom: 4
-  }, theme.typography.body2, {
+  }, theme2.typography.body2, {
     [`& .${listItemIconClasses.root} svg`]: {
       fontSize: "1.25rem"
     }
@@ -34514,7 +34619,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Item",
     overridesResolver: (props, styles2) => styles2.item
   })(({
-    theme
+    theme: theme2
   }) => ({
     padding: "8px 16px",
     margin: "2px 4px",
@@ -34522,17 +34627,17 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       marginTop: 4
     },
     "&:hover": {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha(theme.palette.primary.main, theme.palette.action.hoverOpacity)
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette.primary.main, theme2.palette.action.hoverOpacity)
     },
     "&.Mui-selected": {
-      backgroundColor: (theme.vars || theme).palette.primary.main,
-      color: (theme.vars || theme).palette.primary.contrastText,
+      backgroundColor: (theme2.vars || theme2).palette.primary.main,
+      color: (theme2.vars || theme2).palette.primary.contrastText,
       "&:focus-visible, &:hover": {
-        backgroundColor: (theme.vars || theme).palette.primary.dark
+        backgroundColor: (theme2.vars || theme2).palette.primary.dark
       }
     },
     "&.Mui-focusVisible": {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.focusOpacity})` : alpha(theme.palette.primary.main, theme.palette.action.focusOpacity)
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.focusOpacity})` : alpha(theme2.palette.primary.main, theme2.palette.action.focusOpacity)
     }
   }));
   const DigitalClock = /* @__PURE__ */ reactExports.forwardRef(function DigitalClock2(inProps, ref) {
@@ -34724,7 +34829,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: (_2, styles2) => styles2.root
   })(({
-    theme
+    theme: theme2
   }) => ({
     maxHeight: DIGITAL_CLOCK_VIEW_HEIGHT,
     width: 56,
@@ -34742,7 +34847,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       overflowY: "auto"
     },
     "&:not(:first-of-type)": {
-      borderLeft: `1px solid ${(theme.vars || theme).palette.divider}`
+      borderLeft: `1px solid ${(theme2.vars || theme2).palette.divider}`
     },
     "&::after": {
       display: "block",
@@ -34766,7 +34871,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Item",
     overridesResolver: (_2, styles2) => styles2.item
   })(({
-    theme
+    theme: theme2
   }) => ({
     padding: 8,
     margin: "2px 4px",
@@ -34776,17 +34881,17 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       marginTop: 4
     },
     "&:hover": {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.hoverOpacity})` : alpha(theme.palette.primary.main, theme.palette.action.hoverOpacity)
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette.primary.main, theme2.palette.action.hoverOpacity)
     },
     "&.Mui-selected": {
-      backgroundColor: (theme.vars || theme).palette.primary.main,
-      color: (theme.vars || theme).palette.primary.contrastText,
+      backgroundColor: (theme2.vars || theme2).palette.primary.main,
+      color: (theme2.vars || theme2).palette.primary.contrastText,
       "&:focus-visible, &:hover": {
-        backgroundColor: (theme.vars || theme).palette.primary.dark
+        backgroundColor: (theme2.vars || theme2).palette.primary.dark
       }
     },
     "&.Mui-focusVisible": {
-      backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.focusOpacity})` : alpha(theme.palette.primary.main, theme.palette.action.focusOpacity)
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.focusOpacity})` : alpha(theme2.palette.primary.main, theme2.palette.action.focusOpacity)
     }
   }));
   const MultiSectionDigitalClockSection = /* @__PURE__ */ reactExports.forwardRef(function MultiSectionDigitalClockSection2(inProps, ref) {
@@ -34954,12 +35059,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: (_2, styles2) => styles2.root
   })(({
-    theme
+    theme: theme2
   }) => ({
     display: "flex",
     flexDirection: "row",
     width: "100%",
-    borderBottom: `1px solid ${(theme.vars || theme).palette.divider}`
+    borderBottom: `1px solid ${(theme2.vars || theme2).palette.divider}`
   }));
   const MultiSectionDigitalClock = /* @__PURE__ */ reactExports.forwardRef(function MultiSectionDigitalClock2(inProps, ref) {
     const utils2 = useUtils();
@@ -35985,7 +36090,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return [styles2.root, ownerState.dividers && styles2.dividers];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
     flex: "1 1 auto",
@@ -35995,8 +36100,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     padding: "20px 24px"
   }, ownerState.dividers ? {
     padding: "16px 24px",
-    borderTop: `1px solid ${(theme.vars || theme).palette.divider}`,
-    borderBottom: `1px solid ${(theme.vars || theme).palette.divider}`
+    borderTop: `1px solid ${(theme2.vars || theme2).palette.divider}`,
+    borderBottom: `1px solid ${(theme2.vars || theme2).palette.divider}`
   } : {
     [`.${dialogTitleClasses.root} + &`]: {
       paddingTop: 0
@@ -36104,7 +36209,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return [styles2.paper, styles2[`scrollPaper${capitalize$1(ownerState.scroll)}`], styles2[`paperWidth${capitalize$1(String(ownerState.maxWidth))}`], ownerState.fullWidth && styles2.paperFullWidth, ownerState.fullScreen && styles2.paperFullScreen];
     }
   })(({
-    theme,
+    theme: theme2,
     ownerState
   }) => _extends$1({
     margin: 32,
@@ -36127,16 +36232,16 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   }, !ownerState.maxWidth && {
     maxWidth: "calc(100% - 64px)"
   }, ownerState.maxWidth === "xs" && {
-    maxWidth: theme.breakpoints.unit === "px" ? Math.max(theme.breakpoints.values.xs, 444) : `max(${theme.breakpoints.values.xs}${theme.breakpoints.unit}, 444px)`,
+    maxWidth: theme2.breakpoints.unit === "px" ? Math.max(theme2.breakpoints.values.xs, 444) : `max(${theme2.breakpoints.values.xs}${theme2.breakpoints.unit}, 444px)`,
     [`&.${dialogClasses.paperScrollBody}`]: {
-      [theme.breakpoints.down(Math.max(theme.breakpoints.values.xs, 444) + 32 * 2)]: {
+      [theme2.breakpoints.down(Math.max(theme2.breakpoints.values.xs, 444) + 32 * 2)]: {
         maxWidth: "calc(100% - 64px)"
       }
     }
   }, ownerState.maxWidth && ownerState.maxWidth !== "xs" && {
-    maxWidth: `${theme.breakpoints.values[ownerState.maxWidth]}${theme.breakpoints.unit}`,
+    maxWidth: `${theme2.breakpoints.values[ownerState.maxWidth]}${theme2.breakpoints.unit}`,
     [`&.${dialogClasses.paperScrollBody}`]: {
-      [theme.breakpoints.down(theme.breakpoints.values[ownerState.maxWidth] + 32 * 2)]: {
+      [theme2.breakpoints.down(theme2.breakpoints.values[ownerState.maxWidth] + 32 * 2)]: {
         maxWidth: "calc(100% - 64px)"
       }
     }
@@ -36159,10 +36264,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       props: inProps,
       name: "MuiDialog"
     });
-    const theme = useTheme$1();
+    const theme2 = useTheme$1();
     const defaultTransitionDuration = {
-      enter: theme.transitions.duration.enteringScreen,
-      exit: theme.transitions.duration.leavingScreen
+      enter: theme2.transitions.duration.enteringScreen,
+      exit: theme2.transitions.duration.leavingScreen
     };
     const {
       "aria-describedby": ariaDescribedby,
@@ -36841,6 +36946,22 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       ref
     }, other));
   });
+  const theme = createTheme({
+    components: {
+      MuiList: {
+        styleOverrides: {
+          root: {
+            "&.MuiMultiSectionDigitalClock-root": {
+              width: "100px",
+              ".MuiMenuItem-root": {
+                width: "80px"
+              }
+            }
+          }
+        }
+      }
+    }
+  });
   function MacroDialogContent() {
     const { isMacroEnabled, setMacroEnabled, macroTime, setMacroTime } = getAppContext();
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("span", null, "Enable macro:"), /* @__PURE__ */ React$1.createElement(
@@ -36849,7 +36970,18 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         checked: isMacroEnabled,
         onChange: (e2) => setMacroEnabled(e2.target.checked)
       }
-    )), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DateTimePicker, { value: macroTime, onChange: setMacroTime })));
+    )), /* @__PURE__ */ React$1.createElement("div", { style: { fontSize: "20px !improtant" } }, /* @__PURE__ */ React$1.createElement(ThemeProvider, { theme }, /* @__PURE__ */ React$1.createElement(
+      DateTimePicker,
+      {
+        slotProps: {
+          textField: { InputProps: { size: "medium" }, size: "medium" },
+          popper: { disablePortal: true },
+          dialog: { disablePortal: true }
+        },
+        value: macroTime,
+        onChange: setMacroTime
+      }
+    ))));
   }
   function bind(fn, thisArg) {
     return function wrap() {
@@ -41287,7 +41419,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
 ;
 (function(){
                     const el = document.createElement("style");
-                    el.innerText = "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\nbody {\n  margin: 0;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Roboto\", \"Oxygen\",\n    \"Ubuntu\", \"Cantarell\", \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\",\n    sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\ncode {\n  font-family: source-code-pro, Menlo, Monaco, Consolas, \"Courier New\",\n    monospace;\n}\n:root {\n  --black-a1: rgba(0, 0, 0, 0.05);\n  --black-a2: rgba(0, 0, 0, 0.1);\n  --black-a3: rgba(0, 0, 0, 0.15);\n  --black-a4: rgba(0, 0, 0, 0.2);\n  --black-a5: rgba(0, 0, 0, 0.3);\n  --black-a6: rgba(0, 0, 0, 0.4);\n  --black-a7: rgba(0, 0, 0, 0.5);\n  --black-a8: rgba(0, 0, 0, 0.6);\n  --black-a9: rgba(0, 0, 0, 0.7);\n  --black-a10: rgba(0, 0, 0, 0.8);\n  --black-a11: rgba(0, 0, 0, 0.9);\n  --black-a12: rgba(0, 0, 0, 0.95);\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root {\n      --black-a1: color(display-p3 0 0 0 / 0.05);\n      --black-a2: color(display-p3 0 0 0 / 0.1);\n      --black-a3: color(display-p3 0 0 0 / 0.15);\n      --black-a4: color(display-p3 0 0 0 / 0.2);\n      --black-a5: color(display-p3 0 0 0 / 0.3);\n      --black-a6: color(display-p3 0 0 0 / 0.4);\n      --black-a7: color(display-p3 0 0 0 / 0.5);\n      --black-a8: color(display-p3 0 0 0 / 0.6);\n      --black-a9: color(display-p3 0 0 0 / 0.7);\n      --black-a10: color(display-p3 0 0 0 / 0.8);\n      --black-a11: color(display-p3 0 0 0 / 0.9);\n      --black-a12: color(display-p3 0 0 0 / 0.95);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --green-1: #fbfefc;\n  --green-2: #f4fbf6;\n  --green-3: #e6f6eb;\n  --green-4: #d6f1df;\n  --green-5: #c4e8d1;\n  --green-6: #adddc0;\n  --green-7: #8eceaa;\n  --green-8: #5bb98b;\n  --green-9: #30a46c;\n  --green-10: #2b9a66;\n  --green-11: #218358;\n  --green-12: #193b2d;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --green-1: color(display-p3 0.986 0.996 0.989);\n      --green-2: color(display-p3 0.963 0.983 0.967);\n      --green-3: color(display-p3 0.913 0.964 0.925);\n      --green-4: color(display-p3 0.859 0.94 0.879);\n      --green-5: color(display-p3 0.796 0.907 0.826);\n      --green-6: color(display-p3 0.718 0.863 0.761);\n      --green-7: color(display-p3 0.61 0.801 0.675);\n      --green-8: color(display-p3 0.451 0.715 0.559);\n      --green-9: color(display-p3 0.332 0.634 0.442);\n      --green-10: color(display-p3 0.308 0.595 0.417);\n      --green-11: color(display-p3 0.19 0.5 0.32);\n      --green-12: color(display-p3 0.132 0.228 0.18);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --red-1: #fffcfc;\n  --red-2: #fff7f7;\n  --red-3: #feebec;\n  --red-4: #ffdbdc;\n  --red-5: #ffcdce;\n  --red-6: #fdbdbe;\n  --red-7: #f4a9aa;\n  --red-8: #eb8e90;\n  --red-9: #e5484d;\n  --red-10: #dc3e42;\n  --red-11: #ce2c31;\n  --red-12: #641723;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --red-1: color(display-p3 0.998 0.989 0.988);\n      --red-2: color(display-p3 0.995 0.971 0.971);\n      --red-3: color(display-p3 0.985 0.925 0.925);\n      --red-4: color(display-p3 0.999 0.866 0.866);\n      --red-5: color(display-p3 0.984 0.812 0.811);\n      --red-6: color(display-p3 0.955 0.751 0.749);\n      --red-7: color(display-p3 0.915 0.675 0.672);\n      --red-8: color(display-p3 0.872 0.575 0.572);\n      --red-9: color(display-p3 0.83 0.329 0.324);\n      --red-10: color(display-p3 0.798 0.294 0.285);\n      --red-11: color(display-p3 0.744 0.234 0.222);\n      --red-12: color(display-p3 0.36 0.115 0.143);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --mauve-1: #fdfcfd;\n  --mauve-2: #faf9fb;\n  --mauve-3: #f2eff3;\n  --mauve-4: #eae7ec;\n  --mauve-5: #e3dfe6;\n  --mauve-6: #dbd8e0;\n  --mauve-7: #d0cdd7;\n  --mauve-8: #bcbac7;\n  --mauve-9: #8e8c99;\n  --mauve-10: #84828e;\n  --mauve-11: #65636d;\n  --mauve-12: #211f26;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --mauve-1: color(display-p3 0.991 0.988 0.992);\n      --mauve-2: color(display-p3 0.98 0.976 0.984);\n      --mauve-3: color(display-p3 0.946 0.938 0.952);\n      --mauve-4: color(display-p3 0.915 0.906 0.925);\n      --mauve-5: color(display-p3 0.886 0.876 0.901);\n      --mauve-6: color(display-p3 0.856 0.846 0.875);\n      --mauve-7: color(display-p3 0.814 0.804 0.84);\n      --mauve-8: color(display-p3 0.735 0.728 0.777);\n      --mauve-9: color(display-p3 0.555 0.549 0.596);\n      --mauve-10: color(display-p3 0.514 0.508 0.552);\n      --mauve-11: color(display-p3 0.395 0.388 0.424);\n      --mauve-12: color(display-p3 0.128 0.122 0.147);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --violet-1: #fdfcfe;\n  --violet-2: #faf8ff;\n  --violet-3: #f4f0fe;\n  --violet-4: #ebe4ff;\n  --violet-5: #e1d9ff;\n  --violet-6: #d4cafe;\n  --violet-7: #c2b5f5;\n  --violet-8: #aa99ec;\n  --violet-9: #6e56cf;\n  --violet-10: #654dc4;\n  --violet-11: #6550b9;\n  --violet-12: #2f265f;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --violet-1: color(display-p3 0.991 0.988 0.995);\n      --violet-2: color(display-p3 0.978 0.974 0.998);\n      --violet-3: color(display-p3 0.953 0.943 0.993);\n      --violet-4: color(display-p3 0.916 0.897 1);\n      --violet-5: color(display-p3 0.876 0.851 1);\n      --violet-6: color(display-p3 0.825 0.793 0.981);\n      --violet-7: color(display-p3 0.752 0.712 0.943);\n      --violet-8: color(display-p3 0.654 0.602 0.902);\n      --violet-9: color(display-p3 0.417 0.341 0.784);\n      --violet-10: color(display-p3 0.381 0.306 0.741);\n      --violet-11: color(display-p3 0.383 0.317 0.702);\n      --violet-12: color(display-p3 0.179 0.15 0.359);\n    }\n  }\n}\n\n.App {}\n\n.IconButton {\n    position: fixed;\n    bottom: 15px;\n    right: 15px;\n    font-family: inherit;\n    border-radius: 100%;\n    height: 50px;\n    width: 50px;\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    color: var(--violet-11);\n    background-color: white;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);\n    cursor: pointer;\n}\n\n.App-logo {\n    height: 40vmin;\n}\n\n.App-header {\n    background-color: #282c34;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center;\n    font-size: calc(10px + 2vmin);\n    color: white;\n}\n\n.App-link {\n    text-decoration: underline;\n}\n\n.DialogOverlay {\n    background-color: var(--black-a9);\n    position: fixed;\n    inset: 0;\n    animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);\n}\n\n.DialogContent {\n    background-color: white;\n    border-radius: 6px;\n    box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;\n    position: fixed;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    width: 90vw;\n    max-width: 450px;\n    max-height: 85vh;\n    padding: 25px;\n    animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);\n}\n\n.DialogTitle {\n    margin: 0;\n    font-weight: 500;\n    color: var(--mauve-12);\n    font-size: 17px;\n}\n\n.DialogDescription {\n    margin: 10px 0 20px;\n    color: var(--mauve-11);\n    font-size: 15px;\n    line-height: 1.5;\n}\n\n.Button {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    border-radius: 4px;\n    padding: 0 15px;\n    font-size: 15px;\n    line-height: 1;\n    font-weight: 500;\n    height: 35px;\n    border: 0;\n}\n\n.Button.green {\n    background-color: var(--green-4);\n    color: var(--green-11);\n}:root {\n  --black-a1: rgba(0, 0, 0, 0.05);\n  --black-a2: rgba(0, 0, 0, 0.1);\n  --black-a3: rgba(0, 0, 0, 0.15);\n  --black-a4: rgba(0, 0, 0, 0.2);\n  --black-a5: rgba(0, 0, 0, 0.3);\n  --black-a6: rgba(0, 0, 0, 0.4);\n  --black-a7: rgba(0, 0, 0, 0.5);\n  --black-a8: rgba(0, 0, 0, 0.6);\n  --black-a9: rgba(0, 0, 0, 0.7);\n  --black-a10: rgba(0, 0, 0, 0.8);\n  --black-a11: rgba(0, 0, 0, 0.9);\n  --black-a12: rgba(0, 0, 0, 0.95);\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root {\n      --black-a1: color(display-p3 0 0 0 / 0.05);\n      --black-a2: color(display-p3 0 0 0 / 0.1);\n      --black-a3: color(display-p3 0 0 0 / 0.15);\n      --black-a4: color(display-p3 0 0 0 / 0.2);\n      --black-a5: color(display-p3 0 0 0 / 0.3);\n      --black-a6: color(display-p3 0 0 0 / 0.4);\n      --black-a7: color(display-p3 0 0 0 / 0.5);\n      --black-a8: color(display-p3 0 0 0 / 0.6);\n      --black-a9: color(display-p3 0 0 0 / 0.7);\n      --black-a10: color(display-p3 0 0 0 / 0.8);\n      --black-a11: color(display-p3 0 0 0 / 0.9);\n      --black-a12: color(display-p3 0 0 0 / 0.95);\n    }\n  }\n}\n\n.SwitchRoot {\r\n  width: 42px;\r\n  height: 25px;\r\n  background-color: var(--black-a9);\r\n  border-radius: 9999px;\r\n  position: relative;\r\n  box-shadow: 0 2px 10px var(--black-a7);\r\n  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\r\n}\n\n.SwitchRoot:focus {\r\n  box-shadow: 0 0 0 2px black;\r\n}\n\n.SwitchRoot[data-state='checked'] {\r\n  background-color: black;\r\n}\n\n.SwitchThumb {\r\n  display: block;\r\n  width: 21px;\r\n  height: 21px;\r\n  background-color: white;\r\n  border-radius: 9999px;\r\n  box-shadow: 0 2px 2px var(--black-a7);\r\n  transition: transform 100ms;\r\n  transform: translateX(2px);\r\n  will-change: transform;\r\n}\n\n.SwitchThumb[data-state='checked'] {\r\n  transform: translateX(19px);\r\n}";
+                    el.innerText = "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\nbody {\n  margin: 0;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Roboto\", \"Oxygen\",\n    \"Ubuntu\", \"Cantarell\", \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\",\n    sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\ncode {\n  font-family: source-code-pro, Menlo, Monaco, Consolas, \"Courier New\",\n    monospace;\n}\n:root {\n  --black-a1: rgba(0, 0, 0, 0.05);\n  --black-a2: rgba(0, 0, 0, 0.1);\n  --black-a3: rgba(0, 0, 0, 0.15);\n  --black-a4: rgba(0, 0, 0, 0.2);\n  --black-a5: rgba(0, 0, 0, 0.3);\n  --black-a6: rgba(0, 0, 0, 0.4);\n  --black-a7: rgba(0, 0, 0, 0.5);\n  --black-a8: rgba(0, 0, 0, 0.6);\n  --black-a9: rgba(0, 0, 0, 0.7);\n  --black-a10: rgba(0, 0, 0, 0.8);\n  --black-a11: rgba(0, 0, 0, 0.9);\n  --black-a12: rgba(0, 0, 0, 0.95);\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root {\n      --black-a1: color(display-p3 0 0 0 / 0.05);\n      --black-a2: color(display-p3 0 0 0 / 0.1);\n      --black-a3: color(display-p3 0 0 0 / 0.15);\n      --black-a4: color(display-p3 0 0 0 / 0.2);\n      --black-a5: color(display-p3 0 0 0 / 0.3);\n      --black-a6: color(display-p3 0 0 0 / 0.4);\n      --black-a7: color(display-p3 0 0 0 / 0.5);\n      --black-a8: color(display-p3 0 0 0 / 0.6);\n      --black-a9: color(display-p3 0 0 0 / 0.7);\n      --black-a10: color(display-p3 0 0 0 / 0.8);\n      --black-a11: color(display-p3 0 0 0 / 0.9);\n      --black-a12: color(display-p3 0 0 0 / 0.95);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --green-1: #fbfefc;\n  --green-2: #f4fbf6;\n  --green-3: #e6f6eb;\n  --green-4: #d6f1df;\n  --green-5: #c4e8d1;\n  --green-6: #adddc0;\n  --green-7: #8eceaa;\n  --green-8: #5bb98b;\n  --green-9: #30a46c;\n  --green-10: #2b9a66;\n  --green-11: #218358;\n  --green-12: #193b2d;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --green-1: color(display-p3 0.986 0.996 0.989);\n      --green-2: color(display-p3 0.963 0.983 0.967);\n      --green-3: color(display-p3 0.913 0.964 0.925);\n      --green-4: color(display-p3 0.859 0.94 0.879);\n      --green-5: color(display-p3 0.796 0.907 0.826);\n      --green-6: color(display-p3 0.718 0.863 0.761);\n      --green-7: color(display-p3 0.61 0.801 0.675);\n      --green-8: color(display-p3 0.451 0.715 0.559);\n      --green-9: color(display-p3 0.332 0.634 0.442);\n      --green-10: color(display-p3 0.308 0.595 0.417);\n      --green-11: color(display-p3 0.19 0.5 0.32);\n      --green-12: color(display-p3 0.132 0.228 0.18);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --red-1: #fffcfc;\n  --red-2: #fff7f7;\n  --red-3: #feebec;\n  --red-4: #ffdbdc;\n  --red-5: #ffcdce;\n  --red-6: #fdbdbe;\n  --red-7: #f4a9aa;\n  --red-8: #eb8e90;\n  --red-9: #e5484d;\n  --red-10: #dc3e42;\n  --red-11: #ce2c31;\n  --red-12: #641723;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --red-1: color(display-p3 0.998 0.989 0.988);\n      --red-2: color(display-p3 0.995 0.971 0.971);\n      --red-3: color(display-p3 0.985 0.925 0.925);\n      --red-4: color(display-p3 0.999 0.866 0.866);\n      --red-5: color(display-p3 0.984 0.812 0.811);\n      --red-6: color(display-p3 0.955 0.751 0.749);\n      --red-7: color(display-p3 0.915 0.675 0.672);\n      --red-8: color(display-p3 0.872 0.575 0.572);\n      --red-9: color(display-p3 0.83 0.329 0.324);\n      --red-10: color(display-p3 0.798 0.294 0.285);\n      --red-11: color(display-p3 0.744 0.234 0.222);\n      --red-12: color(display-p3 0.36 0.115 0.143);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --mauve-1: #fdfcfd;\n  --mauve-2: #faf9fb;\n  --mauve-3: #f2eff3;\n  --mauve-4: #eae7ec;\n  --mauve-5: #e3dfe6;\n  --mauve-6: #dbd8e0;\n  --mauve-7: #d0cdd7;\n  --mauve-8: #bcbac7;\n  --mauve-9: #8e8c99;\n  --mauve-10: #84828e;\n  --mauve-11: #65636d;\n  --mauve-12: #211f26;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --mauve-1: color(display-p3 0.991 0.988 0.992);\n      --mauve-2: color(display-p3 0.98 0.976 0.984);\n      --mauve-3: color(display-p3 0.946 0.938 0.952);\n      --mauve-4: color(display-p3 0.915 0.906 0.925);\n      --mauve-5: color(display-p3 0.886 0.876 0.901);\n      --mauve-6: color(display-p3 0.856 0.846 0.875);\n      --mauve-7: color(display-p3 0.814 0.804 0.84);\n      --mauve-8: color(display-p3 0.735 0.728 0.777);\n      --mauve-9: color(display-p3 0.555 0.549 0.596);\n      --mauve-10: color(display-p3 0.514 0.508 0.552);\n      --mauve-11: color(display-p3 0.395 0.388 0.424);\n      --mauve-12: color(display-p3 0.128 0.122 0.147);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --violet-1: #fdfcfe;\n  --violet-2: #faf8ff;\n  --violet-3: #f4f0fe;\n  --violet-4: #ebe4ff;\n  --violet-5: #e1d9ff;\n  --violet-6: #d4cafe;\n  --violet-7: #c2b5f5;\n  --violet-8: #aa99ec;\n  --violet-9: #6e56cf;\n  --violet-10: #654dc4;\n  --violet-11: #6550b9;\n  --violet-12: #2f265f;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --violet-1: color(display-p3 0.991 0.988 0.995);\n      --violet-2: color(display-p3 0.978 0.974 0.998);\n      --violet-3: color(display-p3 0.953 0.943 0.993);\n      --violet-4: color(display-p3 0.916 0.897 1);\n      --violet-5: color(display-p3 0.876 0.851 1);\n      --violet-6: color(display-p3 0.825 0.793 0.981);\n      --violet-7: color(display-p3 0.752 0.712 0.943);\n      --violet-8: color(display-p3 0.654 0.602 0.902);\n      --violet-9: color(display-p3 0.417 0.341 0.784);\n      --violet-10: color(display-p3 0.381 0.306 0.741);\n      --violet-11: color(display-p3 0.383 0.317 0.702);\n      --violet-12: color(display-p3 0.179 0.15 0.359);\n    }\n  }\n}\n\n.App {}\n\n.IconButton {\n    position: fixed;\n    bottom: 15px;\n    right: 15px;\n    font-family: inherit;\n    border-radius: 100%;\n    height: 50px;\n    width: 50px;\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    color: var(--violet-11);\n    background-color: white;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);\n    cursor: pointer;\n}\n\n.App-logo {\n    height: 40vmin;\n}\n\n.App-header {\n    background-color: #282c34;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center;\n    font-size: calc(10px + 2vmin);\n    color: white;\n}\n\n.App-link {\n    text-decoration: underline;\n}\n\n.DialogOverlay {\n    background-color: var(--black-a9);\n    position: fixed;\n    inset: 0;\n    animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);\n}\n\n.DialogContent {\n    background-color: white;\n    border-radius: 6px;\n    box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;\n    position: fixed;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    width: 90vw;\n    max-width: 450px;\n    max-height: 85vh;\n    padding: 25px;\n    animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);\n}\n\n.DialogTitle {\n    margin: 0;\n    font-weight: 500;\n    color: var(--mauve-12);\n    font-size: 17px;\n}\n\n.DialogDescription {\n    margin: 10px 0 20px;\n    color: var(--mauve-11);\n    font-size: 15px;\n    line-height: 1.5;\n}\n\n.Button {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    border-radius: 4px;\n    padding: 0 15px;\n    font-size: 15px;\n    line-height: 1;\n    font-weight: 500;\n    height: 35px;\n    border: 0;\n}\n\n.Button.green {\n    background-color: var(--green-4);\n    color: var(--green-11);\n}\n\n:root {\n    font-size: 100%;\n}:root {\n  --black-a1: rgba(0, 0, 0, 0.05);\n  --black-a2: rgba(0, 0, 0, 0.1);\n  --black-a3: rgba(0, 0, 0, 0.15);\n  --black-a4: rgba(0, 0, 0, 0.2);\n  --black-a5: rgba(0, 0, 0, 0.3);\n  --black-a6: rgba(0, 0, 0, 0.4);\n  --black-a7: rgba(0, 0, 0, 0.5);\n  --black-a8: rgba(0, 0, 0, 0.6);\n  --black-a9: rgba(0, 0, 0, 0.7);\n  --black-a10: rgba(0, 0, 0, 0.8);\n  --black-a11: rgba(0, 0, 0, 0.9);\n  --black-a12: rgba(0, 0, 0, 0.95);\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root {\n      --black-a1: color(display-p3 0 0 0 / 0.05);\n      --black-a2: color(display-p3 0 0 0 / 0.1);\n      --black-a3: color(display-p3 0 0 0 / 0.15);\n      --black-a4: color(display-p3 0 0 0 / 0.2);\n      --black-a5: color(display-p3 0 0 0 / 0.3);\n      --black-a6: color(display-p3 0 0 0 / 0.4);\n      --black-a7: color(display-p3 0 0 0 / 0.5);\n      --black-a8: color(display-p3 0 0 0 / 0.6);\n      --black-a9: color(display-p3 0 0 0 / 0.7);\n      --black-a10: color(display-p3 0 0 0 / 0.8);\n      --black-a11: color(display-p3 0 0 0 / 0.9);\n      --black-a12: color(display-p3 0 0 0 / 0.95);\n    }\n  }\n}\n\n.SwitchRoot {\r\n  width: 42px;\r\n  height: 25px;\r\n  background-color: var(--black-a9);\r\n  border-radius: 9999px;\r\n  position: relative;\r\n  box-shadow: 0 2px 10px var(--black-a7);\r\n  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\r\n}\n\n.SwitchRoot:focus {\r\n  box-shadow: 0 0 0 2px black;\r\n}\n\n.SwitchRoot[data-state='checked'] {\r\n  background-color: black;\r\n}\n\n.SwitchThumb {\r\n  display: block;\r\n  width: 21px;\r\n  height: 21px;\r\n  background-color: white;\r\n  border-radius: 9999px;\r\n  box-shadow: 0 2px 2px var(--black-a7);\r\n  transition: transform 100ms;\r\n  transform: translateX(2px);\r\n  will-change: transform;\r\n}\n\n.SwitchThumb[data-state='checked'] {\r\n  transform: translateX(19px);\r\n}";
                     el.type = "text/css";
                     document.head.appendChild(el);
                 })();

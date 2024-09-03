@@ -1,18 +1,27 @@
-import React, { useContext } from "react";
-import { useCallback } from "react";
-import axios from "axios";
+import React from "react";
 import Switch from "@mui/material/Switch";
 import "./MacroDialogContent.css";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { useState } from "react";
-import { useEffect } from "react";
 
-import { CronJob } from "cron";
-import { AppContext, getAppContext } from "./App";
+import { getAppContext } from "./App";
+import { createTheme, ThemeProvider } from "@mui/material";
+
+const theme = createTheme({
+  components: {
+    MuiList: {
+      styleOverrides: {
+        root: {
+          "&.MuiMultiSectionDigitalClock-root": {
+            width: "100px",
+            ".MuiMenuItem-root": {
+              width: "80px",
+            },
+          },
+        },
+      },
+    },
+  },
+});
 
 export default function MacroDialogContent() {
   const { isMacroEnabled, setMacroEnabled, macroTime, setMacroTime } =
@@ -27,8 +36,18 @@ export default function MacroDialogContent() {
           onChange={(e) => setMacroEnabled(e.target.checked)}
         />
       </div>
-      <div>
-        <DateTimePicker value={macroTime} onChange={setMacroTime} />
+      <div style={{ fontSize: "20px !improtant" }}>
+        <ThemeProvider theme={theme}>
+          <DateTimePicker
+            slotProps={{
+              textField: { InputProps: { size: "medium" }, size: "medium" },
+              popper: { disablePortal: true },
+              dialog: { disablePortal: true },
+            }}
+            value={macroTime}
+            onChange={setMacroTime}
+          />
+        </ThemeProvider>
       </div>
     </>
   );

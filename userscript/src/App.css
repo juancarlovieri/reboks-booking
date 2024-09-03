@@ -99,3 +99,8 @@
     background-color: var(--green-4);
     color: var(--green-11);
 }
+
+
+:root {
+    font-size: 100%;
+}
