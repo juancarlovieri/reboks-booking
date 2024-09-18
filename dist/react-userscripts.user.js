@@ -39273,6 +39273,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       if (macroTime) {
         console.log(macroTime.unix() - time);
         const id2 = setTimeout(() => {
+          setTimeout(book, 0);
+          setTimeout(book, 100);
           setTimeout(book, 300);
           setTimeout(book, 500);
           setTimeout(book, 700);

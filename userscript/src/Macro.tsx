@@ -53,9 +53,11 @@ export default function Macro() {
       console.log(macroTime.unix() - time);
       const id = setTimeout(() => {
         // -500ms offset on target
-        // Pushing on -200, 0, 200
+        // Pushing on -500, -400, -200, 0, 200
 
         // book();
+        setTimeout(book, 0);
+        setTimeout(book, 100);
         setTimeout(book, 300);
         setTimeout(book, 500);
         setTimeout(book, 700);
