@@ -4,7 +4,7 @@ import axios from "axios";
 
 export default function Macro() {
   const { isMacroEnabled, macroTime } = getAppContext();
-  const [time, setTime] = useState(-1);
+  // const [time, setTime] = useState(-1);
 
   const book = useCallback(async () => {
     const result = [...document.getElementsByClassName("selected")]
@@ -29,28 +29,28 @@ export default function Macro() {
     }
   }, [document, axios]);
 
-  const updateTime = useCallback(async () => {
-    const data = await axios.get(
-      "https://reboks.nus.edu.sg/nus_public_web/public/facilities/group_booking"
-    );
+  // const updateTime = useCallback(async () => {
+  //   const data = await axios.get(
+  //     "https://reboks.nus.edu.sg/nus_public_web/public/facilities/group_booking"
+  //   );
 
-    var el = document.createElement("html");
-    el.innerHTML = data.data;
+  //   var el = document.createElement("html");
+  //   el.innerHTML = data.data;
 
-    setTime(
-      parseInt(
-        el
-          .getElementsByClassName("system-clock-label")[0]
-          ?.children[0].getAttribute("data-time") ?? "-1"
-      )
-    );
-  }, [axios]);
+  //   setTime(
+  //     parseInt(
+  //       el
+  //         .getElementsByClassName("system-clock-label")[0]
+  //         ?.children[0].getAttribute("data-time") ?? "-1"
+  //     )
+  //   );
+  // }, [axios]);
 
   useEffect(() => {
-    console.log("Timing delta: " + (time - Date.now() / 1000));
+    // console.log("Timing delta: " + (time - Date.now() / 1000));
     if (!isMacroEnabled) return;
     if (macroTime) {
-      console.log(macroTime.unix() - time);
+      console.log(macroTime.valueOf() - Date.now());
       const id = setTimeout(() => {
         // -500ms offset on target
         // Pushing on -500, -400, -200, 0, 200
@@ -63,13 +63,9 @@ export default function Macro() {
         setTimeout(book, 700);
 
         console.log("Pushed updates");
-      }, (macroTime.unix() - time) * 1000 - 500);
+      }, macroTime.valueOf() - Date.now() - 500);
       return () => clearTimeout(id);
     }
-  }, [time]);
-
-  useEffect(() => {
-    updateTime();
   }, [isMacroEnabled, macroTime]);
 
   // useEffect(() => {
