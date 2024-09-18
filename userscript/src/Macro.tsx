@@ -3,7 +3,7 @@ import { getAppContext } from "./App";
 import axios from "axios";
 
 export default function Macro() {
-  const { isMacroEnabled, macroTime } = getAppContext();
+  const { isMacroEnabled, macroTime, setToasts } = getAppContext();
   // const [time, setTime] = useState(-1);
 
   const book = useCallback(async () => {
@@ -24,7 +24,15 @@ export default function Macro() {
         `https://reboks.nus.edu.sg/nus_public_web/public/facilities/group_booking?table_exclusive_length=10&add_cart=Add+to+shopping+cart&result=${result}&params=${params}`
       );
       console.log(data);
+      setToasts((toasts) => {
+        toasts.push("success");
+        return toasts.slice();
+      });
     } catch (error) {
+      setToasts((toasts) => {
+        toasts.push("fail");
+        return toasts.slice();
+      });
       console.error(error);
     }
   }, [document, axios]);

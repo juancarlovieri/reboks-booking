@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import * as Toast from "@radix-ui/react-toast";
 import "./App.css";
 import * as Dialog from "@radix-ui/react-dialog";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
@@ -18,6 +19,7 @@ interface AppContextProps {
   setMacroTime: (_: Dayjs | null) => void;
   isGodMode: boolean;
   setGodMode: (_: boolean) => void;
+  setToasts: (_: (_: ("success" | "fail")[]) => ("success" | "fail")[]) => void;
 }
 
 export const AppContext = React.createContext<AppContextProps | null>(null);
@@ -44,6 +46,7 @@ function App() {
   const [isMacroEnabled, setMacroEnabled] = useState(false);
   const [isGodMode, setGodMode] = useState(true);
   const [macroTime, setMacroTime] = useState<Dayjs | null>(changedTime);
+  const [toasts, setToasts] = useState<("success" | "fail")[]>([]);
 
   useEffect(() => {
     let el = document.getElementById("trigger")?.style;
@@ -56,6 +59,10 @@ function App() {
         el.backgroundColor = "white";
       }
     }
+    // setToasts((toasts) => {
+    //   toasts.push("success");
+    //   return toasts;
+    // });
   }, [isMacroEnabled]);
 
   return (
@@ -69,9 +76,22 @@ function App() {
             setMacroTime,
             isGodMode,
             setGodMode,
+            setToasts,
           }}
         >
-          <TimePicker value={macroTime} />
+          <Toast.Provider duration={600000}>
+            {toasts.map((status, i) => (
+              <Toast.Root key={i} className={`ToastRoot ${status}`}>
+                <Toast.Title className="ToastTitle">
+                  {status === "success" ? "Success" : "Fail"}
+                </Toast.Title>
+                {/* <Toast.Description>Teststestd</Toast.Description> */}
+                {/* <Toast.Close /> */}
+              </Toast.Root>
+            ))}
+
+            <Toast.Viewport className="ToastViewport" />
+          </Toast.Provider>
           <Macro />
           <GodFeatures />
           <Dialog.Root>
@@ -87,9 +107,6 @@ function App() {
                 <Dialog.Description className="DialogDescription">
                   <MacroDialogContent />
                 </Dialog.Description>
-                {/* <Dialog.Close asChild>
-              <button className="Button green">Save changes</button>
-            </Dialog.Close> */}
               </Dialog.Content>
             </Dialog.Portal>
           </Dialog.Root>

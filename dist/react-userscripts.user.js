@@ -7627,7 +7627,7 @@
   var jsxRuntimeExports = jsxRuntime.exports;
   function createContext2(rootComponentName, defaultContext) {
     const Context = reactExports.createContext(defaultContext);
-    function Provider(props) {
+    function Provider2(props) {
       const { children, ...context } = props;
       const value = reactExports.useMemo(() => context, Object.values(context));
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Context.Provider, { value, children });
@@ -7640,8 +7640,8 @@
         return defaultContext;
       throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
     }
-    Provider.displayName = rootComponentName + "Provider";
-    return [Provider, useContext2];
+    Provider2.displayName = rootComponentName + "Provider";
+    return [Provider2, useContext2];
   }
   function createContextScope(scopeName, createContextScopeDeps = []) {
     let defaultContexts = [];
@@ -7649,7 +7649,7 @@
       const BaseContext = reactExports.createContext(defaultContext);
       const index = defaultContexts.length;
       defaultContexts = [...defaultContexts, defaultContext];
-      function Provider(props) {
+      function Provider2(props) {
         const { scope, children, ...context } = props;
         const Context = (scope == null ? void 0 : scope[scopeName][index]) || BaseContext;
         const value = reactExports.useMemo(() => context, Object.values(context));
@@ -7664,8 +7664,8 @@
           return defaultContext;
         throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
       }
-      Provider.displayName = rootComponentName + "Provider";
-      return [Provider, useContext2];
+      Provider2.displayName = rootComponentName + "Provider";
+      return [Provider2, useContext2];
     }
     const createScope = () => {
       const scopeContexts = defaultContexts.map((defaultContext) => {
@@ -7702,69 +7702,6 @@
     };
     createScope.scopeName = baseScope.scopeName;
     return createScope;
-  }
-  var useLayoutEffect2 = Boolean(globalThis == null ? void 0 : globalThis.document) ? reactExports.useLayoutEffect : () => {
-  };
-  var useReactId = React$2["useId".toString()] || (() => void 0);
-  var count$1 = 0;
-  function useId$1(deterministicId) {
-    const [id2, setId] = reactExports.useState(useReactId());
-    useLayoutEffect2(() => {
-      if (!deterministicId)
-        setId((reactId) => reactId ?? String(count$1++));
-    }, [deterministicId]);
-    return deterministicId || (id2 ? `radix-${id2}` : "");
-  }
-  function useCallbackRef$1(callback) {
-    const callbackRef = reactExports.useRef(callback);
-    reactExports.useEffect(() => {
-      callbackRef.current = callback;
-    });
-    return reactExports.useMemo(() => (...args) => {
-      var _a;
-      return (_a = callbackRef.current) == null ? void 0 : _a.call(callbackRef, ...args);
-    }, []);
-  }
-  function useControllableState({
-    prop,
-    defaultProp,
-    onChange = () => {
-    }
-  }) {
-    const [uncontrolledProp, setUncontrolledProp] = useUncontrolledState({ defaultProp, onChange });
-    const isControlled = prop !== void 0;
-    const value = isControlled ? prop : uncontrolledProp;
-    const handleChange = useCallbackRef$1(onChange);
-    const setValue = reactExports.useCallback(
-      (nextValue) => {
-        if (isControlled) {
-          const setter = nextValue;
-          const value2 = typeof nextValue === "function" ? setter(prop) : nextValue;
-          if (value2 !== prop)
-            handleChange(value2);
-        } else {
-          setUncontrolledProp(nextValue);
-        }
-      },
-      [isControlled, prop, setUncontrolledProp, handleChange]
-    );
-    return [value, setValue];
-  }
-  function useUncontrolledState({
-    defaultProp,
-    onChange
-  }) {
-    const uncontrolledState = reactExports.useState(defaultProp);
-    const [value] = uncontrolledState;
-    const prevValueRef = reactExports.useRef(value);
-    const handleChange = useCallbackRef$1(onChange);
-    reactExports.useEffect(() => {
-      if (prevValueRef.current !== value) {
-        handleChange(value);
-        prevValueRef.current = value;
-      }
-    }, [value, prevValueRef, handleChange]);
-    return uncontrolledState;
   }
   var Slot = reactExports.forwardRef((props, forwardedRef) => {
     const { children, ...slotProps } = props;
@@ -7842,6 +7779,67 @@
     }
     return element.props.ref || element.ref;
   }
+  function createCollection(name) {
+    const PROVIDER_NAME2 = name + "CollectionProvider";
+    const [createCollectionContext, createCollectionScope2] = createContextScope(PROVIDER_NAME2);
+    const [CollectionProviderImpl, useCollectionContext] = createCollectionContext(
+      PROVIDER_NAME2,
+      { collectionRef: { current: null }, itemMap: /* @__PURE__ */ new Map() }
+    );
+    const CollectionProvider = (props) => {
+      const { scope, children } = props;
+      const ref = React$1.useRef(null);
+      const itemMap = React$1.useRef(/* @__PURE__ */ new Map()).current;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(CollectionProviderImpl, { scope, itemMap, collectionRef: ref, children });
+    };
+    CollectionProvider.displayName = PROVIDER_NAME2;
+    const COLLECTION_SLOT_NAME = name + "CollectionSlot";
+    const CollectionSlot = React$1.forwardRef(
+      (props, forwardedRef) => {
+        const { scope, children } = props;
+        const context = useCollectionContext(COLLECTION_SLOT_NAME, scope);
+        const composedRefs = useComposedRefs(forwardedRef, context.collectionRef);
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Slot, { ref: composedRefs, children });
+      }
+    );
+    CollectionSlot.displayName = COLLECTION_SLOT_NAME;
+    const ITEM_SLOT_NAME = name + "CollectionItemSlot";
+    const ITEM_DATA_ATTR = "data-radix-collection-item";
+    const CollectionItemSlot = React$1.forwardRef(
+      (props, forwardedRef) => {
+        const { scope, children, ...itemData } = props;
+        const ref = React$1.useRef(null);
+        const composedRefs = useComposedRefs(forwardedRef, ref);
+        const context = useCollectionContext(ITEM_SLOT_NAME, scope);
+        React$1.useEffect(() => {
+          context.itemMap.set(ref, { ref, ...itemData });
+          return () => void context.itemMap.delete(ref);
+        });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Slot, { ...{ [ITEM_DATA_ATTR]: "" }, ref: composedRefs, children });
+      }
+    );
+    CollectionItemSlot.displayName = ITEM_SLOT_NAME;
+    function useCollection2(scope) {
+      const context = useCollectionContext(name + "CollectionConsumer", scope);
+      const getItems = React$1.useCallback(() => {
+        const collectionNode = context.collectionRef.current;
+        if (!collectionNode)
+          return [];
+        const orderedNodes = Array.from(collectionNode.querySelectorAll(`[${ITEM_DATA_ATTR}]`));
+        const items = Array.from(context.itemMap.values());
+        const orderedItems = items.sort(
+          (a, b2) => orderedNodes.indexOf(a.ref.current) - orderedNodes.indexOf(b2.ref.current)
+        );
+        return orderedItems;
+      }, [context.collectionRef, context.itemMap]);
+      return getItems;
+    }
+    return [
+      { Provider: CollectionProvider, Slot: CollectionSlot, ItemSlot: CollectionItemSlot },
+      useCollection2,
+      createCollectionScope2
+    ];
+  }
   var NODES = [
     "a",
     "button",
@@ -7875,6 +7873,16 @@
   function dispatchDiscreteCustomEvent(target, event) {
     if (target)
       reactDomExports.flushSync(() => target.dispatchEvent(event));
+  }
+  function useCallbackRef$1(callback) {
+    const callbackRef = reactExports.useRef(callback);
+    reactExports.useEffect(() => {
+      callbackRef.current = callback;
+    });
+    return reactExports.useMemo(() => (...args) => {
+      var _a;
+      return (_a = callbackRef.current) == null ? void 0 : _a.call(callbackRef, ...args);
+    }, []);
   }
   function useEscapeKeydown(onEscapeKeyDownProp, ownerDocument2 = globalThis == null ? void 0 : globalThis.document) {
     const onEscapeKeyDown = useCallbackRef$1(onEscapeKeyDownProp);
@@ -8028,7 +8036,7 @@
       const handlePointerDown2 = (event) => {
         if (event.target && !isPointerInsideReactTreeRef.current) {
           let handleAndDispatchPointerDownOutsideEvent2 = function() {
-            handleAndDispatchCustomEvent(
+            handleAndDispatchCustomEvent$1(
               POINTER_DOWN_OUTSIDE,
               handlePointerDownOutside,
               eventDetail,
@@ -8069,7 +8077,7 @@
       const handleFocus = (event) => {
         if (event.target && !isFocusInsideReactTreeRef.current) {
           const eventDetail = { originalEvent: event };
-          handleAndDispatchCustomEvent(FOCUS_OUTSIDE, handleFocusOutside, eventDetail, {
+          handleAndDispatchCustomEvent$1(FOCUS_OUTSIDE, handleFocusOutside, eventDetail, {
             discrete: false
           });
         }
@@ -8086,7 +8094,7 @@
     const event = new CustomEvent(CONTEXT_UPDATE);
     document.dispatchEvent(event);
   }
-  function handleAndDispatchCustomEvent(name, handler, detail, { discrete }) {
+  function handleAndDispatchCustomEvent$1(name, handler, detail, { discrete }) {
     const target = detail.originalEvent.target;
     const event = new CustomEvent(name, { bubbles: false, cancelable: true, detail });
     if (handler)
@@ -8096,6 +8104,842 @@
     } else {
       target.dispatchEvent(event);
     }
+  }
+  var Root$1 = DismissableLayer;
+  var Branch = DismissableLayerBranch;
+  var useLayoutEffect2 = Boolean(globalThis == null ? void 0 : globalThis.document) ? reactExports.useLayoutEffect : () => {
+  };
+  var PORTAL_NAME$1 = "Portal";
+  var Portal$2 = reactExports.forwardRef((props, forwardedRef) => {
+    var _a;
+    const { container: containerProp, ...portalProps } = props;
+    const [mounted, setMounted] = reactExports.useState(false);
+    useLayoutEffect2(() => setMounted(true), []);
+    const container = containerProp || mounted && ((_a = globalThis == null ? void 0 : globalThis.document) == null ? void 0 : _a.body);
+    return container ? ReactDOM.createPortal(/* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { ...portalProps, ref: forwardedRef }), container) : null;
+  });
+  Portal$2.displayName = PORTAL_NAME$1;
+  function useStateMachine(initialState, machine) {
+    return reactExports.useReducer((state, event) => {
+      const nextState = machine[state][event];
+      return nextState ?? state;
+    }, initialState);
+  }
+  var Presence = (props) => {
+    const { present, children } = props;
+    const presence = usePresence(present);
+    const child = typeof children === "function" ? children({ present: presence.isPresent }) : reactExports.Children.only(children);
+    const ref = useComposedRefs(presence.ref, getElementRef(child));
+    const forceMount = typeof children === "function";
+    return forceMount || presence.isPresent ? reactExports.cloneElement(child, { ref }) : null;
+  };
+  Presence.displayName = "Presence";
+  function usePresence(present) {
+    const [node2, setNode] = reactExports.useState();
+    const stylesRef = reactExports.useRef({});
+    const prevPresentRef = reactExports.useRef(present);
+    const prevAnimationNameRef = reactExports.useRef("none");
+    const initialState = present ? "mounted" : "unmounted";
+    const [state, send] = useStateMachine(initialState, {
+      mounted: {
+        UNMOUNT: "unmounted",
+        ANIMATION_OUT: "unmountSuspended"
+      },
+      unmountSuspended: {
+        MOUNT: "mounted",
+        ANIMATION_END: "unmounted"
+      },
+      unmounted: {
+        MOUNT: "mounted"
+      }
+    });
+    reactExports.useEffect(() => {
+      const currentAnimationName = getAnimationName(stylesRef.current);
+      prevAnimationNameRef.current = state === "mounted" ? currentAnimationName : "none";
+    }, [state]);
+    useLayoutEffect2(() => {
+      const styles2 = stylesRef.current;
+      const wasPresent = prevPresentRef.current;
+      const hasPresentChanged = wasPresent !== present;
+      if (hasPresentChanged) {
+        const prevAnimationName = prevAnimationNameRef.current;
+        const currentAnimationName = getAnimationName(styles2);
+        if (present) {
+          send("MOUNT");
+        } else if (currentAnimationName === "none" || (styles2 == null ? void 0 : styles2.display) === "none") {
+          send("UNMOUNT");
+        } else {
+          const isAnimating = prevAnimationName !== currentAnimationName;
+          if (wasPresent && isAnimating) {
+            send("ANIMATION_OUT");
+          } else {
+            send("UNMOUNT");
+          }
+        }
+        prevPresentRef.current = present;
+      }
+    }, [present, send]);
+    useLayoutEffect2(() => {
+      if (node2) {
+        const handleAnimationEnd = (event) => {
+          const currentAnimationName = getAnimationName(stylesRef.current);
+          const isCurrentAnimation = currentAnimationName.includes(event.animationName);
+          if (event.target === node2 && isCurrentAnimation) {
+            reactDomExports.flushSync(() => send("ANIMATION_END"));
+          }
+        };
+        const handleAnimationStart = (event) => {
+          if (event.target === node2) {
+            prevAnimationNameRef.current = getAnimationName(stylesRef.current);
+          }
+        };
+        node2.addEventListener("animationstart", handleAnimationStart);
+        node2.addEventListener("animationcancel", handleAnimationEnd);
+        node2.addEventListener("animationend", handleAnimationEnd);
+        return () => {
+          node2.removeEventListener("animationstart", handleAnimationStart);
+          node2.removeEventListener("animationcancel", handleAnimationEnd);
+          node2.removeEventListener("animationend", handleAnimationEnd);
+        };
+      } else {
+        send("ANIMATION_END");
+      }
+    }, [node2, send]);
+    return {
+      isPresent: ["mounted", "unmountSuspended"].includes(state),
+      ref: reactExports.useCallback((node22) => {
+        if (node22)
+          stylesRef.current = getComputedStyle(node22);
+        setNode(node22);
+      }, [])
+    };
+  }
+  function getAnimationName(styles2) {
+    return (styles2 == null ? void 0 : styles2.animationName) || "none";
+  }
+  function getElementRef(element) {
+    var _a, _b;
+    let getter = (_a = Object.getOwnPropertyDescriptor(element.props, "ref")) == null ? void 0 : _a.get;
+    let mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
+    if (mayWarn) {
+      return element.ref;
+    }
+    getter = (_b = Object.getOwnPropertyDescriptor(element, "ref")) == null ? void 0 : _b.get;
+    mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
+    if (mayWarn) {
+      return element.props.ref;
+    }
+    return element.props.ref || element.ref;
+  }
+  function useControllableState({
+    prop,
+    defaultProp,
+    onChange = () => {
+    }
+  }) {
+    const [uncontrolledProp, setUncontrolledProp] = useUncontrolledState({ defaultProp, onChange });
+    const isControlled = prop !== void 0;
+    const value = isControlled ? prop : uncontrolledProp;
+    const handleChange = useCallbackRef$1(onChange);
+    const setValue = reactExports.useCallback(
+      (nextValue) => {
+        if (isControlled) {
+          const setter = nextValue;
+          const value2 = typeof nextValue === "function" ? setter(prop) : nextValue;
+          if (value2 !== prop)
+            handleChange(value2);
+        } else {
+          setUncontrolledProp(nextValue);
+        }
+      },
+      [isControlled, prop, setUncontrolledProp, handleChange]
+    );
+    return [value, setValue];
+  }
+  function useUncontrolledState({
+    defaultProp,
+    onChange
+  }) {
+    const uncontrolledState = reactExports.useState(defaultProp);
+    const [value] = uncontrolledState;
+    const prevValueRef = reactExports.useRef(value);
+    const handleChange = useCallbackRef$1(onChange);
+    reactExports.useEffect(() => {
+      if (prevValueRef.current !== value) {
+        handleChange(value);
+        prevValueRef.current = value;
+      }
+    }, [value, prevValueRef, handleChange]);
+    return uncontrolledState;
+  }
+  var NAME = "VisuallyHidden";
+  var VisuallyHidden = reactExports.forwardRef(
+    (props, forwardedRef) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Primitive.span,
+        {
+          ...props,
+          ref: forwardedRef,
+          style: {
+            // See: https://github.com/twbs/bootstrap/blob/master/scss/mixins/_screen-reader.scss
+            position: "absolute",
+            border: 0,
+            width: 1,
+            height: 1,
+            padding: 0,
+            margin: -1,
+            overflow: "hidden",
+            clip: "rect(0, 0, 0, 0)",
+            whiteSpace: "nowrap",
+            wordWrap: "normal",
+            ...props.style
+          }
+        }
+      );
+    }
+  );
+  VisuallyHidden.displayName = NAME;
+  var PROVIDER_NAME = "ToastProvider";
+  var [Collection, useCollection, createCollectionScope] = createCollection("Toast");
+  var [createToastContext, createToastScope] = createContextScope("Toast", [createCollectionScope]);
+  var [ToastProviderProvider, useToastProviderContext] = createToastContext(PROVIDER_NAME);
+  var ToastProvider = (props) => {
+    const {
+      __scopeToast,
+      label = "Notification",
+      duration: duration2 = 5e3,
+      swipeDirection = "right",
+      swipeThreshold = 50,
+      children
+    } = props;
+    const [viewport2, setViewport] = reactExports.useState(null);
+    const [toastCount, setToastCount] = reactExports.useState(0);
+    const isFocusedToastEscapeKeyDownRef = reactExports.useRef(false);
+    const isClosePausedRef = reactExports.useRef(false);
+    if (!label.trim()) {
+      console.error(
+        `Invalid prop \`label\` supplied to \`${PROVIDER_NAME}\`. Expected non-empty \`string\`.`
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Provider, { scope: __scopeToast, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ToastProviderProvider,
+      {
+        scope: __scopeToast,
+        label,
+        duration: duration2,
+        swipeDirection,
+        swipeThreshold,
+        toastCount,
+        viewport: viewport2,
+        onViewportChange: setViewport,
+        onToastAdd: reactExports.useCallback(() => setToastCount((prevCount) => prevCount + 1), []),
+        onToastRemove: reactExports.useCallback(() => setToastCount((prevCount) => prevCount - 1), []),
+        isFocusedToastEscapeKeyDownRef,
+        isClosePausedRef,
+        children
+      }
+    ) });
+  };
+  ToastProvider.displayName = PROVIDER_NAME;
+  var VIEWPORT_NAME = "ToastViewport";
+  var VIEWPORT_DEFAULT_HOTKEY = ["F8"];
+  var VIEWPORT_PAUSE = "toast.viewportPause";
+  var VIEWPORT_RESUME = "toast.viewportResume";
+  var ToastViewport = reactExports.forwardRef(
+    (props, forwardedRef) => {
+      const {
+        __scopeToast,
+        hotkey = VIEWPORT_DEFAULT_HOTKEY,
+        label = "Notifications ({hotkey})",
+        ...viewportProps
+      } = props;
+      const context = useToastProviderContext(VIEWPORT_NAME, __scopeToast);
+      const getItems = useCollection(__scopeToast);
+      const wrapperRef = reactExports.useRef(null);
+      const headFocusProxyRef = reactExports.useRef(null);
+      const tailFocusProxyRef = reactExports.useRef(null);
+      const ref = reactExports.useRef(null);
+      const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
+      const hotkeyLabel = hotkey.join("+").replace(/Key/g, "").replace(/Digit/g, "");
+      const hasToasts = context.toastCount > 0;
+      reactExports.useEffect(() => {
+        const handleKeyDown2 = (event) => {
+          var _a;
+          const isHotkeyPressed = hotkey.every((key) => event[key] || event.code === key);
+          if (isHotkeyPressed)
+            (_a = ref.current) == null ? void 0 : _a.focus();
+        };
+        document.addEventListener("keydown", handleKeyDown2);
+        return () => document.removeEventListener("keydown", handleKeyDown2);
+      }, [hotkey]);
+      reactExports.useEffect(() => {
+        const wrapper = wrapperRef.current;
+        const viewport2 = ref.current;
+        if (hasToasts && wrapper && viewport2) {
+          const handlePause = () => {
+            if (!context.isClosePausedRef.current) {
+              const pauseEvent = new CustomEvent(VIEWPORT_PAUSE);
+              viewport2.dispatchEvent(pauseEvent);
+              context.isClosePausedRef.current = true;
+            }
+          };
+          const handleResume = () => {
+            if (context.isClosePausedRef.current) {
+              const resumeEvent = new CustomEvent(VIEWPORT_RESUME);
+              viewport2.dispatchEvent(resumeEvent);
+              context.isClosePausedRef.current = false;
+            }
+          };
+          const handleFocusOutResume = (event) => {
+            const isFocusMovingOutside = !wrapper.contains(event.relatedTarget);
+            if (isFocusMovingOutside)
+              handleResume();
+          };
+          const handlePointerLeaveResume = () => {
+            const isFocusInside = wrapper.contains(document.activeElement);
+            if (!isFocusInside)
+              handleResume();
+          };
+          wrapper.addEventListener("focusin", handlePause);
+          wrapper.addEventListener("focusout", handleFocusOutResume);
+          wrapper.addEventListener("pointermove", handlePause);
+          wrapper.addEventListener("pointerleave", handlePointerLeaveResume);
+          window.addEventListener("blur", handlePause);
+          window.addEventListener("focus", handleResume);
+          return () => {
+            wrapper.removeEventListener("focusin", handlePause);
+            wrapper.removeEventListener("focusout", handleFocusOutResume);
+            wrapper.removeEventListener("pointermove", handlePause);
+            wrapper.removeEventListener("pointerleave", handlePointerLeaveResume);
+            window.removeEventListener("blur", handlePause);
+            window.removeEventListener("focus", handleResume);
+          };
+        }
+      }, [hasToasts, context.isClosePausedRef]);
+      const getSortedTabbableCandidates = reactExports.useCallback(
+        ({ tabbingDirection }) => {
+          const toastItems = getItems();
+          const tabbableCandidates = toastItems.map((toastItem) => {
+            const toastNode = toastItem.ref.current;
+            const toastTabbableCandidates = [toastNode, ...getTabbableCandidates$1(toastNode)];
+            return tabbingDirection === "forwards" ? toastTabbableCandidates : toastTabbableCandidates.reverse();
+          });
+          return (tabbingDirection === "forwards" ? tabbableCandidates.reverse() : tabbableCandidates).flat();
+        },
+        [getItems]
+      );
+      reactExports.useEffect(() => {
+        const viewport2 = ref.current;
+        if (viewport2) {
+          const handleKeyDown2 = (event) => {
+            var _a, _b, _c;
+            const isMetaKey = event.altKey || event.ctrlKey || event.metaKey;
+            const isTabKey = event.key === "Tab" && !isMetaKey;
+            if (isTabKey) {
+              const focusedElement = document.activeElement;
+              const isTabbingBackwards = event.shiftKey;
+              const targetIsViewport = event.target === viewport2;
+              if (targetIsViewport && isTabbingBackwards) {
+                (_a = headFocusProxyRef.current) == null ? void 0 : _a.focus();
+                return;
+              }
+              const tabbingDirection = isTabbingBackwards ? "backwards" : "forwards";
+              const sortedCandidates = getSortedTabbableCandidates({ tabbingDirection });
+              const index = sortedCandidates.findIndex((candidate) => candidate === focusedElement);
+              if (focusFirst$1(sortedCandidates.slice(index + 1))) {
+                event.preventDefault();
+              } else {
+                isTabbingBackwards ? (_b = headFocusProxyRef.current) == null ? void 0 : _b.focus() : (_c = tailFocusProxyRef.current) == null ? void 0 : _c.focus();
+              }
+            }
+          };
+          viewport2.addEventListener("keydown", handleKeyDown2);
+          return () => viewport2.removeEventListener("keydown", handleKeyDown2);
+        }
+      }, [getItems, getSortedTabbableCandidates]);
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        Branch,
+        {
+          ref: wrapperRef,
+          role: "region",
+          "aria-label": label.replace("{hotkey}", hotkeyLabel),
+          tabIndex: -1,
+          style: { pointerEvents: hasToasts ? void 0 : "none" },
+          children: [
+            hasToasts && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              FocusProxy,
+              {
+                ref: headFocusProxyRef,
+                onFocusFromOutsideViewport: () => {
+                  const tabbableCandidates = getSortedTabbableCandidates({
+                    tabbingDirection: "forwards"
+                  });
+                  focusFirst$1(tabbableCandidates);
+                }
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Slot, { scope: __scopeToast, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.ol, { tabIndex: -1, ...viewportProps, ref: composedRefs }) }),
+            hasToasts && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              FocusProxy,
+              {
+                ref: tailFocusProxyRef,
+                onFocusFromOutsideViewport: () => {
+                  const tabbableCandidates = getSortedTabbableCandidates({
+                    tabbingDirection: "backwards"
+                  });
+                  focusFirst$1(tabbableCandidates);
+                }
+              }
+            )
+          ]
+        }
+      );
+    }
+  );
+  ToastViewport.displayName = VIEWPORT_NAME;
+  var FOCUS_PROXY_NAME = "ToastFocusProxy";
+  var FocusProxy = reactExports.forwardRef(
+    (props, forwardedRef) => {
+      const { __scopeToast, onFocusFromOutsideViewport, ...proxyProps } = props;
+      const context = useToastProviderContext(FOCUS_PROXY_NAME, __scopeToast);
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        VisuallyHidden,
+        {
+          "aria-hidden": true,
+          tabIndex: 0,
+          ...proxyProps,
+          ref: forwardedRef,
+          style: { position: "fixed" },
+          onFocus: (event) => {
+            var _a;
+            const prevFocusedElement = event.relatedTarget;
+            const isFocusFromOutsideViewport = !((_a = context.viewport) == null ? void 0 : _a.contains(prevFocusedElement));
+            if (isFocusFromOutsideViewport)
+              onFocusFromOutsideViewport();
+          }
+        }
+      );
+    }
+  );
+  FocusProxy.displayName = FOCUS_PROXY_NAME;
+  var TOAST_NAME = "Toast";
+  var TOAST_SWIPE_START = "toast.swipeStart";
+  var TOAST_SWIPE_MOVE = "toast.swipeMove";
+  var TOAST_SWIPE_CANCEL = "toast.swipeCancel";
+  var TOAST_SWIPE_END = "toast.swipeEnd";
+  var Toast = reactExports.forwardRef(
+    (props, forwardedRef) => {
+      const { forceMount, open: openProp, defaultOpen, onOpenChange, ...toastProps } = props;
+      const [open = true, setOpen] = useControllableState({
+        prop: openProp,
+        defaultProp: defaultOpen,
+        onChange: onOpenChange
+      });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, { present: forceMount || open, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        ToastImpl,
+        {
+          open,
+          ...toastProps,
+          ref: forwardedRef,
+          onClose: () => setOpen(false),
+          onPause: useCallbackRef$1(props.onPause),
+          onResume: useCallbackRef$1(props.onResume),
+          onSwipeStart: composeEventHandlers(props.onSwipeStart, (event) => {
+            event.currentTarget.setAttribute("data-swipe", "start");
+          }),
+          onSwipeMove: composeEventHandlers(props.onSwipeMove, (event) => {
+            const { x: x2, y: y2 } = event.detail.delta;
+            event.currentTarget.setAttribute("data-swipe", "move");
+            event.currentTarget.style.setProperty("--radix-toast-swipe-move-x", `${x2}px`);
+            event.currentTarget.style.setProperty("--radix-toast-swipe-move-y", `${y2}px`);
+          }),
+          onSwipeCancel: composeEventHandlers(props.onSwipeCancel, (event) => {
+            event.currentTarget.setAttribute("data-swipe", "cancel");
+            event.currentTarget.style.removeProperty("--radix-toast-swipe-move-x");
+            event.currentTarget.style.removeProperty("--radix-toast-swipe-move-y");
+            event.currentTarget.style.removeProperty("--radix-toast-swipe-end-x");
+            event.currentTarget.style.removeProperty("--radix-toast-swipe-end-y");
+          }),
+          onSwipeEnd: composeEventHandlers(props.onSwipeEnd, (event) => {
+            const { x: x2, y: y2 } = event.detail.delta;
+            event.currentTarget.setAttribute("data-swipe", "end");
+            event.currentTarget.style.removeProperty("--radix-toast-swipe-move-x");
+            event.currentTarget.style.removeProperty("--radix-toast-swipe-move-y");
+            event.currentTarget.style.setProperty("--radix-toast-swipe-end-x", `${x2}px`);
+            event.currentTarget.style.setProperty("--radix-toast-swipe-end-y", `${y2}px`);
+            setOpen(false);
+          })
+        }
+      ) });
+    }
+  );
+  Toast.displayName = TOAST_NAME;
+  var [ToastInteractiveProvider, useToastInteractiveContext] = createToastContext(TOAST_NAME, {
+    onClose() {
+    }
+  });
+  var ToastImpl = reactExports.forwardRef(
+    (props, forwardedRef) => {
+      const {
+        __scopeToast,
+        type = "foreground",
+        duration: durationProp,
+        open,
+        onClose,
+        onEscapeKeyDown,
+        onPause,
+        onResume,
+        onSwipeStart,
+        onSwipeMove,
+        onSwipeCancel,
+        onSwipeEnd,
+        ...toastProps
+      } = props;
+      const context = useToastProviderContext(TOAST_NAME, __scopeToast);
+      const [node2, setNode] = reactExports.useState(null);
+      const composedRefs = useComposedRefs(forwardedRef, (node22) => setNode(node22));
+      const pointerStartRef = reactExports.useRef(null);
+      const swipeDeltaRef = reactExports.useRef(null);
+      const duration2 = durationProp || context.duration;
+      const closeTimerStartTimeRef = reactExports.useRef(0);
+      const closeTimerRemainingTimeRef = reactExports.useRef(duration2);
+      const closeTimerRef = reactExports.useRef(0);
+      const { onToastAdd, onToastRemove } = context;
+      const handleClose = useCallbackRef$1(() => {
+        var _a;
+        const isFocusInToast = node2 == null ? void 0 : node2.contains(document.activeElement);
+        if (isFocusInToast)
+          (_a = context.viewport) == null ? void 0 : _a.focus();
+        onClose();
+      });
+      const startTimer = reactExports.useCallback(
+        (duration22) => {
+          if (!duration22 || duration22 === Infinity)
+            return;
+          window.clearTimeout(closeTimerRef.current);
+          closeTimerStartTimeRef.current = (/* @__PURE__ */ new Date()).getTime();
+          closeTimerRef.current = window.setTimeout(handleClose, duration22);
+        },
+        [handleClose]
+      );
+      reactExports.useEffect(() => {
+        const viewport2 = context.viewport;
+        if (viewport2) {
+          const handleResume = () => {
+            startTimer(closeTimerRemainingTimeRef.current);
+            onResume == null ? void 0 : onResume();
+          };
+          const handlePause = () => {
+            const elapsedTime = (/* @__PURE__ */ new Date()).getTime() - closeTimerStartTimeRef.current;
+            closeTimerRemainingTimeRef.current = closeTimerRemainingTimeRef.current - elapsedTime;
+            window.clearTimeout(closeTimerRef.current);
+            onPause == null ? void 0 : onPause();
+          };
+          viewport2.addEventListener(VIEWPORT_PAUSE, handlePause);
+          viewport2.addEventListener(VIEWPORT_RESUME, handleResume);
+          return () => {
+            viewport2.removeEventListener(VIEWPORT_PAUSE, handlePause);
+            viewport2.removeEventListener(VIEWPORT_RESUME, handleResume);
+          };
+        }
+      }, [context.viewport, duration2, onPause, onResume, startTimer]);
+      reactExports.useEffect(() => {
+        if (open && !context.isClosePausedRef.current)
+          startTimer(duration2);
+      }, [open, duration2, context.isClosePausedRef, startTimer]);
+      reactExports.useEffect(() => {
+        onToastAdd();
+        return () => onToastRemove();
+      }, [onToastAdd, onToastRemove]);
+      const announceTextContent = reactExports.useMemo(() => {
+        return node2 ? getAnnounceTextContent(node2) : null;
+      }, [node2]);
+      if (!context.viewport)
+        return null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        announceTextContent && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ToastAnnounce,
+          {
+            __scopeToast,
+            role: "status",
+            "aria-live": type === "foreground" ? "assertive" : "polite",
+            "aria-atomic": true,
+            children: announceTextContent
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ToastInteractiveProvider, { scope: __scopeToast, onClose: handleClose, children: reactDomExports.createPortal(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.ItemSlot, { scope: __scopeToast, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Root$1,
+            {
+              asChild: true,
+              onEscapeKeyDown: composeEventHandlers(onEscapeKeyDown, () => {
+                if (!context.isFocusedToastEscapeKeyDownRef.current)
+                  handleClose();
+                context.isFocusedToastEscapeKeyDownRef.current = false;
+              }),
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Primitive.li,
+                {
+                  role: "status",
+                  "aria-live": "off",
+                  "aria-atomic": true,
+                  tabIndex: 0,
+                  "data-state": open ? "open" : "closed",
+                  "data-swipe-direction": context.swipeDirection,
+                  ...toastProps,
+                  ref: composedRefs,
+                  style: { userSelect: "none", touchAction: "none", ...props.style },
+                  onKeyDown: composeEventHandlers(props.onKeyDown, (event) => {
+                    if (event.key !== "Escape")
+                      return;
+                    onEscapeKeyDown == null ? void 0 : onEscapeKeyDown(event.nativeEvent);
+                    if (!event.nativeEvent.defaultPrevented) {
+                      context.isFocusedToastEscapeKeyDownRef.current = true;
+                      handleClose();
+                    }
+                  }),
+                  onPointerDown: composeEventHandlers(props.onPointerDown, (event) => {
+                    if (event.button !== 0)
+                      return;
+                    pointerStartRef.current = { x: event.clientX, y: event.clientY };
+                  }),
+                  onPointerMove: composeEventHandlers(props.onPointerMove, (event) => {
+                    if (!pointerStartRef.current)
+                      return;
+                    const x2 = event.clientX - pointerStartRef.current.x;
+                    const y2 = event.clientY - pointerStartRef.current.y;
+                    const hasSwipeMoveStarted = Boolean(swipeDeltaRef.current);
+                    const isHorizontalSwipe = ["left", "right"].includes(context.swipeDirection);
+                    const clamp2 = ["left", "up"].includes(context.swipeDirection) ? Math.min : Math.max;
+                    const clampedX = isHorizontalSwipe ? clamp2(0, x2) : 0;
+                    const clampedY = !isHorizontalSwipe ? clamp2(0, y2) : 0;
+                    const moveStartBuffer = event.pointerType === "touch" ? 10 : 2;
+                    const delta = { x: clampedX, y: clampedY };
+                    const eventDetail = { originalEvent: event, delta };
+                    if (hasSwipeMoveStarted) {
+                      swipeDeltaRef.current = delta;
+                      handleAndDispatchCustomEvent(TOAST_SWIPE_MOVE, onSwipeMove, eventDetail, {
+                        discrete: false
+                      });
+                    } else if (isDeltaInDirection(delta, context.swipeDirection, moveStartBuffer)) {
+                      swipeDeltaRef.current = delta;
+                      handleAndDispatchCustomEvent(TOAST_SWIPE_START, onSwipeStart, eventDetail, {
+                        discrete: false
+                      });
+                      event.target.setPointerCapture(event.pointerId);
+                    } else if (Math.abs(x2) > moveStartBuffer || Math.abs(y2) > moveStartBuffer) {
+                      pointerStartRef.current = null;
+                    }
+                  }),
+                  onPointerUp: composeEventHandlers(props.onPointerUp, (event) => {
+                    const delta = swipeDeltaRef.current;
+                    const target = event.target;
+                    if (target.hasPointerCapture(event.pointerId)) {
+                      target.releasePointerCapture(event.pointerId);
+                    }
+                    swipeDeltaRef.current = null;
+                    pointerStartRef.current = null;
+                    if (delta) {
+                      const toast = event.currentTarget;
+                      const eventDetail = { originalEvent: event, delta };
+                      if (isDeltaInDirection(delta, context.swipeDirection, context.swipeThreshold)) {
+                        handleAndDispatchCustomEvent(TOAST_SWIPE_END, onSwipeEnd, eventDetail, {
+                          discrete: true
+                        });
+                      } else {
+                        handleAndDispatchCustomEvent(
+                          TOAST_SWIPE_CANCEL,
+                          onSwipeCancel,
+                          eventDetail,
+                          {
+                            discrete: true
+                          }
+                        );
+                      }
+                      toast.addEventListener("click", (event2) => event2.preventDefault(), {
+                        once: true
+                      });
+                    }
+                  })
+                }
+              )
+            }
+          ) }),
+          context.viewport
+        ) })
+      ] });
+    }
+  );
+  var ToastAnnounce = (props) => {
+    const { __scopeToast, children, ...announceProps } = props;
+    const context = useToastProviderContext(TOAST_NAME, __scopeToast);
+    const [renderAnnounceText, setRenderAnnounceText] = reactExports.useState(false);
+    const [isAnnounced, setIsAnnounced] = reactExports.useState(false);
+    useNextFrame(() => setRenderAnnounceText(true));
+    reactExports.useEffect(() => {
+      const timer = window.setTimeout(() => setIsAnnounced(true), 1e3);
+      return () => window.clearTimeout(timer);
+    }, []);
+    return isAnnounced ? null : /* @__PURE__ */ jsxRuntimeExports.jsx(Portal$2, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(VisuallyHidden, { ...announceProps, children: renderAnnounceText && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      context.label,
+      " ",
+      children
+    ] }) }) });
+  };
+  var TITLE_NAME$1 = "ToastTitle";
+  var ToastTitle = reactExports.forwardRef(
+    (props, forwardedRef) => {
+      const { __scopeToast, ...titleProps } = props;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { ...titleProps, ref: forwardedRef });
+    }
+  );
+  ToastTitle.displayName = TITLE_NAME$1;
+  var DESCRIPTION_NAME$1 = "ToastDescription";
+  var ToastDescription = reactExports.forwardRef(
+    (props, forwardedRef) => {
+      const { __scopeToast, ...descriptionProps } = props;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { ...descriptionProps, ref: forwardedRef });
+    }
+  );
+  ToastDescription.displayName = DESCRIPTION_NAME$1;
+  var ACTION_NAME = "ToastAction";
+  var ToastAction = reactExports.forwardRef(
+    (props, forwardedRef) => {
+      const { altText, ...actionProps } = props;
+      if (!altText.trim()) {
+        console.error(
+          `Invalid prop \`altText\` supplied to \`${ACTION_NAME}\`. Expected non-empty \`string\`.`
+        );
+        return null;
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(ToastAnnounceExclude, { altText, asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastClose, { ...actionProps, ref: forwardedRef }) });
+    }
+  );
+  ToastAction.displayName = ACTION_NAME;
+  var CLOSE_NAME$1 = "ToastClose";
+  var ToastClose = reactExports.forwardRef(
+    (props, forwardedRef) => {
+      const { __scopeToast, ...closeProps } = props;
+      const interactiveContext = useToastInteractiveContext(CLOSE_NAME$1, __scopeToast);
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(ToastAnnounceExclude, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Primitive.button,
+        {
+          type: "button",
+          ...closeProps,
+          ref: forwardedRef,
+          onClick: composeEventHandlers(props.onClick, interactiveContext.onClose)
+        }
+      ) });
+    }
+  );
+  ToastClose.displayName = CLOSE_NAME$1;
+  var ToastAnnounceExclude = reactExports.forwardRef((props, forwardedRef) => {
+    const { __scopeToast, altText, ...announceExcludeProps } = props;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive.div,
+      {
+        "data-radix-toast-announce-exclude": "",
+        "data-radix-toast-announce-alt": altText || void 0,
+        ...announceExcludeProps,
+        ref: forwardedRef
+      }
+    );
+  });
+  function getAnnounceTextContent(container) {
+    const textContent = [];
+    const childNodes = Array.from(container.childNodes);
+    childNodes.forEach((node2) => {
+      if (node2.nodeType === node2.TEXT_NODE && node2.textContent)
+        textContent.push(node2.textContent);
+      if (isHTMLElement$2(node2)) {
+        const isHidden2 = node2.ariaHidden || node2.hidden || node2.style.display === "none";
+        const isExcluded = node2.dataset.radixToastAnnounceExclude === "";
+        if (!isHidden2) {
+          if (isExcluded) {
+            const altText = node2.dataset.radixToastAnnounceAlt;
+            if (altText)
+              textContent.push(altText);
+          } else {
+            textContent.push(...getAnnounceTextContent(node2));
+          }
+        }
+      }
+    });
+    return textContent;
+  }
+  function handleAndDispatchCustomEvent(name, handler, detail, { discrete }) {
+    const currentTarget = detail.originalEvent.currentTarget;
+    const event = new CustomEvent(name, { bubbles: true, cancelable: true, detail });
+    if (handler)
+      currentTarget.addEventListener(name, handler, { once: true });
+    if (discrete) {
+      dispatchDiscreteCustomEvent(currentTarget, event);
+    } else {
+      currentTarget.dispatchEvent(event);
+    }
+  }
+  var isDeltaInDirection = (delta, direction, threshold = 0) => {
+    const deltaX = Math.abs(delta.x);
+    const deltaY = Math.abs(delta.y);
+    const isDeltaX = deltaX > deltaY;
+    if (direction === "left" || direction === "right") {
+      return isDeltaX && deltaX > threshold;
+    } else {
+      return !isDeltaX && deltaY > threshold;
+    }
+  };
+  function useNextFrame(callback = () => {
+  }) {
+    const fn = useCallbackRef$1(callback);
+    useLayoutEffect2(() => {
+      let raf1 = 0;
+      let raf2 = 0;
+      raf1 = window.requestAnimationFrame(() => raf2 = window.requestAnimationFrame(fn));
+      return () => {
+        window.cancelAnimationFrame(raf1);
+        window.cancelAnimationFrame(raf2);
+      };
+    }, [fn]);
+  }
+  function isHTMLElement$2(node2) {
+    return node2.nodeType === node2.ELEMENT_NODE;
+  }
+  function getTabbableCandidates$1(container) {
+    const nodes = [];
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+      acceptNode: (node2) => {
+        const isHiddenInput = node2.tagName === "INPUT" && node2.type === "hidden";
+        if (node2.disabled || node2.hidden || isHiddenInput)
+          return NodeFilter.FILTER_SKIP;
+        return node2.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+      }
+    });
+    while (walker.nextNode())
+      nodes.push(walker.currentNode);
+    return nodes;
+  }
+  function focusFirst$1(candidates) {
+    const previouslyFocusedElement = document.activeElement;
+    return candidates.some((candidate) => {
+      if (candidate === previouslyFocusedElement)
+        return true;
+      candidate.focus();
+      return document.activeElement !== previouslyFocusedElement;
+    });
+  }
+  var Provider = ToastProvider;
+  var Viewport = ToastViewport;
+  var Root2 = Toast;
+  var Title$1 = ToastTitle;
+  var useReactId = React$2["useId".toString()] || (() => void 0);
+  var count$1 = 0;
+  function useId$1(deterministicId) {
+    const [id2, setId] = reactExports.useState(useReactId());
+    useLayoutEffect2(() => {
+      if (!deterministicId)
+        setId((reactId) => reactId ?? String(count$1++));
+    }, [deterministicId]);
+    return deterministicId || (id2 ? `radix-${id2}` : "");
   }
   var AUTOFOCUS_ON_MOUNT = "focusScope.autoFocusOnMount";
   var AUTOFOCUS_ON_UNMOUNT = "focusScope.autoFocusOnUnmount";
@@ -8314,128 +9158,6 @@
   }
   function removeLinks(items) {
     return items.filter((item) => item.tagName !== "A");
-  }
-  var PORTAL_NAME$1 = "Portal";
-  var Portal$2 = reactExports.forwardRef((props, forwardedRef) => {
-    var _a;
-    const { container: containerProp, ...portalProps } = props;
-    const [mounted, setMounted] = reactExports.useState(false);
-    useLayoutEffect2(() => setMounted(true), []);
-    const container = containerProp || mounted && ((_a = globalThis == null ? void 0 : globalThis.document) == null ? void 0 : _a.body);
-    return container ? ReactDOM.createPortal(/* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { ...portalProps, ref: forwardedRef }), container) : null;
-  });
-  Portal$2.displayName = PORTAL_NAME$1;
-  function useStateMachine(initialState, machine) {
-    return reactExports.useReducer((state, event) => {
-      const nextState = machine[state][event];
-      return nextState ?? state;
-    }, initialState);
-  }
-  var Presence = (props) => {
-    const { present, children } = props;
-    const presence = usePresence(present);
-    const child = typeof children === "function" ? children({ present: presence.isPresent }) : reactExports.Children.only(children);
-    const ref = useComposedRefs(presence.ref, getElementRef(child));
-    const forceMount = typeof children === "function";
-    return forceMount || presence.isPresent ? reactExports.cloneElement(child, { ref }) : null;
-  };
-  Presence.displayName = "Presence";
-  function usePresence(present) {
-    const [node2, setNode] = reactExports.useState();
-    const stylesRef = reactExports.useRef({});
-    const prevPresentRef = reactExports.useRef(present);
-    const prevAnimationNameRef = reactExports.useRef("none");
-    const initialState = present ? "mounted" : "unmounted";
-    const [state, send] = useStateMachine(initialState, {
-      mounted: {
-        UNMOUNT: "unmounted",
-        ANIMATION_OUT: "unmountSuspended"
-      },
-      unmountSuspended: {
-        MOUNT: "mounted",
-        ANIMATION_END: "unmounted"
-      },
-      unmounted: {
-        MOUNT: "mounted"
-      }
-    });
-    reactExports.useEffect(() => {
-      const currentAnimationName = getAnimationName(stylesRef.current);
-      prevAnimationNameRef.current = state === "mounted" ? currentAnimationName : "none";
-    }, [state]);
-    useLayoutEffect2(() => {
-      const styles2 = stylesRef.current;
-      const wasPresent = prevPresentRef.current;
-      const hasPresentChanged = wasPresent !== present;
-      if (hasPresentChanged) {
-        const prevAnimationName = prevAnimationNameRef.current;
-        const currentAnimationName = getAnimationName(styles2);
-        if (present) {
-          send("MOUNT");
-        } else if (currentAnimationName === "none" || (styles2 == null ? void 0 : styles2.display) === "none") {
-          send("UNMOUNT");
-        } else {
-          const isAnimating = prevAnimationName !== currentAnimationName;
-          if (wasPresent && isAnimating) {
-            send("ANIMATION_OUT");
-          } else {
-            send("UNMOUNT");
-          }
-        }
-        prevPresentRef.current = present;
-      }
-    }, [present, send]);
-    useLayoutEffect2(() => {
-      if (node2) {
-        const handleAnimationEnd = (event) => {
-          const currentAnimationName = getAnimationName(stylesRef.current);
-          const isCurrentAnimation = currentAnimationName.includes(event.animationName);
-          if (event.target === node2 && isCurrentAnimation) {
-            reactDomExports.flushSync(() => send("ANIMATION_END"));
-          }
-        };
-        const handleAnimationStart = (event) => {
-          if (event.target === node2) {
-            prevAnimationNameRef.current = getAnimationName(stylesRef.current);
-          }
-        };
-        node2.addEventListener("animationstart", handleAnimationStart);
-        node2.addEventListener("animationcancel", handleAnimationEnd);
-        node2.addEventListener("animationend", handleAnimationEnd);
-        return () => {
-          node2.removeEventListener("animationstart", handleAnimationStart);
-          node2.removeEventListener("animationcancel", handleAnimationEnd);
-          node2.removeEventListener("animationend", handleAnimationEnd);
-        };
-      } else {
-        send("ANIMATION_END");
-      }
-    }, [node2, send]);
-    return {
-      isPresent: ["mounted", "unmountSuspended"].includes(state),
-      ref: reactExports.useCallback((node22) => {
-        if (node22)
-          stylesRef.current = getComputedStyle(node22);
-        setNode(node22);
-      }, [])
-    };
-  }
-  function getAnimationName(styles2) {
-    return (styles2 == null ? void 0 : styles2.animationName) || "none";
-  }
-  function getElementRef(element) {
-    var _a, _b;
-    let getter = (_a = Object.getOwnPropertyDescriptor(element.props, "ref")) == null ? void 0 : _a.get;
-    let mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
-    if (mayWarn) {
-      return element.ref;
-    }
-    getter = (_b = Object.getOwnPropertyDescriptor(element, "ref")) == null ? void 0 : _b.get;
-    mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
-    if (mayWarn) {
-      return element.props.ref;
-    }
-    return element.props.ref || element.ref;
   }
   var count = 0;
   function useFocusGuards() {
@@ -11778,7 +12500,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     getFunctionName
   }, Symbol.toStringTag, { value: "Module" }));
   const require$$6 = /* @__PURE__ */ getAugmentedNamespace(getDisplayName);
-  const _excluded$1y = ["values", "unit", "step"];
+  const _excluded$1v = ["values", "unit", "step"];
   const sortBreakpointsValues = (values2) => {
     const breakpointsAsArray = Object.keys(values2).map((key) => ({
       key,
@@ -11809,7 +12531,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       },
       unit = "px",
       step = 5
-    } = breakpoints, other = _objectWithoutPropertiesLoose(breakpoints, _excluded$1y);
+    } = breakpoints, other = _objectWithoutPropertiesLoose(breakpoints, _excluded$1v);
     const sortedValues = sortBreakpointsValues(values2);
     const keys = Object.keys(sortedValues);
     function up(key) {
@@ -12730,14 +13452,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }
     return {};
   }
-  const _excluded$1x = ["breakpoints", "palette", "spacing", "shape"];
+  const _excluded$1u = ["breakpoints", "palette", "spacing", "shape"];
   function createTheme$2(options2 = {}, ...args) {
     const {
       breakpoints: breakpointsInput = {},
       palette: paletteInput = {},
       spacing: spacingInput,
       shape: shapeInput = {}
-    } = options2, other = _objectWithoutPropertiesLoose(options2, _excluded$1x);
+    } = options2, other = _objectWithoutPropertiesLoose(options2, _excluded$1u);
     const breakpoints = createBreakpoints(breakpointsInput);
     const spacing = createSpacing(spacingInput);
     let muiTheme = deepmerge$1({
@@ -12769,7 +13491,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     unstable_applyStyles: applyStyles$2
   }, Symbol.toStringTag, { value: "Module" }));
   const require$$7 = /* @__PURE__ */ getAugmentedNamespace(createTheme$1);
-  const _excluded$1w = ["sx"];
+  const _excluded$1t = ["sx"];
   const splitProps = (props) => {
     var _props$theme$unstable, _props$theme;
     const result = {
@@ -12789,7 +13511,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   function extendSxProp(props) {
     const {
       sx: inSx
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1w);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1t);
     const {
       systemProps,
       otherProps
@@ -12835,7 +13557,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   _interopRequireDefault(require$$6);
   var _createTheme = _interopRequireDefault(require$$7);
   var _styleFunctionSx = _interopRequireDefault(require$$8);
-  const _excluded$1v = ["ownerState"], _excluded2$c = ["variants"], _excluded3$4 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
+  const _excluded$1s = ["ownerState"], _excluded2$c = ["variants"], _excluded3$4 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
   function _getRequireWildcardCache$1(e2) {
     if ("function" != typeof WeakMap)
       return null;
@@ -12895,7 +13617,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   function processStyleArg(callableStyle, _ref) {
     let {
       ownerState
-    } = _ref, props = (0, _objectWithoutPropertiesLoose2.default)(_ref, _excluded$1v);
+    } = _ref, props = (0, _objectWithoutPropertiesLoose2.default)(_ref, _excluded$1s);
     const resolvedStylesArg = typeof callableStyle === "function" ? callableStyle((0, _extends2.default)({
       ownerState
     }, props)) : callableStyle;
@@ -13216,7 +13938,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     A400: "#00e676",
     A700: "#00c853"
   };
-  const _excluded$1u = ["mode", "contrastThreshold", "tonalOffset"];
+  const _excluded$1r = ["mode", "contrastThreshold", "tonalOffset"];
   const light = {
     // The colors used to style the text.
     text: {
@@ -13384,7 +14106,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       mode = "light",
       contrastThreshold = 3,
       tonalOffset = 0.2
-    } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$1u);
+    } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$1r);
     const primary = palette.primary || getDefaultPrimary(mode);
     const secondary = palette.secondary || getDefaultSecondary(mode);
     const error = palette.error || getDefaultError(mode);
@@ -13478,7 +14200,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }, modes[mode]), other);
     return paletteOutput;
   }
-  const _excluded$1t = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
+  const _excluded$1q = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
   function round$2(value) {
     return Math.round(value * 1e5) / 1e5;
   }
@@ -13502,7 +14224,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       // Apply the CSS properties to all the variants.
       allVariants,
       pxToRem: pxToRem2
-    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$1t);
+    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$1q);
     const coef = fontSize / 14;
     const pxToRem = pxToRem2 || ((size) => `${size / htmlFontSize * coef}rem`);
     const buildVariant = (fontWeight, size, lineHeight, letterSpacing, casing) => _extends$1({
@@ -13558,7 +14280,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return [`${px[0]}px ${px[1]}px ${px[2]}px ${px[3]}px rgba(0,0,0,${shadowKeyUmbraOpacity})`, `${px[4]}px ${px[5]}px ${px[6]}px ${px[7]}px rgba(0,0,0,${shadowKeyPenumbraOpacity})`, `${px[8]}px ${px[9]}px ${px[10]}px ${px[11]}px rgba(0,0,0,${shadowAmbientShadowOpacity})`].join(",");
   }
   const shadows = ["none", createShadow(0, 2, 1, -1, 0, 1, 1, 0, 0, 1, 3, 0), createShadow(0, 3, 1, -2, 0, 2, 2, 0, 0, 1, 5, 0), createShadow(0, 3, 3, -2, 0, 3, 4, 0, 0, 1, 8, 0), createShadow(0, 2, 4, -1, 0, 4, 5, 0, 0, 1, 10, 0), createShadow(0, 3, 5, -1, 0, 5, 8, 0, 0, 1, 14, 0), createShadow(0, 3, 5, -1, 0, 6, 10, 0, 0, 1, 18, 0), createShadow(0, 4, 5, -2, 0, 7, 10, 1, 0, 2, 16, 1), createShadow(0, 5, 5, -3, 0, 8, 10, 1, 0, 3, 14, 2), createShadow(0, 5, 6, -3, 0, 9, 12, 1, 0, 3, 16, 2), createShadow(0, 6, 6, -3, 0, 10, 14, 1, 0, 4, 18, 3), createShadow(0, 6, 7, -4, 0, 11, 15, 1, 0, 4, 20, 3), createShadow(0, 7, 8, -4, 0, 12, 17, 2, 0, 5, 22, 4), createShadow(0, 7, 8, -4, 0, 13, 19, 2, 0, 5, 24, 4), createShadow(0, 7, 9, -4, 0, 14, 21, 2, 0, 5, 26, 4), createShadow(0, 8, 9, -5, 0, 15, 22, 2, 0, 6, 28, 5), createShadow(0, 8, 10, -5, 0, 16, 24, 2, 0, 6, 30, 5), createShadow(0, 8, 11, -5, 0, 17, 26, 2, 0, 6, 32, 5), createShadow(0, 9, 11, -5, 0, 18, 28, 2, 0, 7, 34, 6), createShadow(0, 9, 12, -6, 0, 19, 29, 2, 0, 7, 36, 6), createShadow(0, 10, 13, -6, 0, 20, 31, 3, 0, 8, 38, 7), createShadow(0, 10, 13, -6, 0, 21, 33, 3, 0, 8, 40, 7), createShadow(0, 10, 14, -6, 0, 22, 35, 3, 0, 8, 42, 7), createShadow(0, 11, 14, -7, 0, 23, 36, 3, 0, 9, 44, 8), createShadow(0, 11, 15, -7, 0, 24, 38, 3, 0, 9, 46, 8)];
-  const _excluded$1s = ["duration", "easing", "delay"];
+  const _excluded$1p = ["duration", "easing", "delay"];
   const easing = {
     // This is the most common easing curve.
     easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
@@ -13602,7 +14324,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         easing: easingOption = mergedEasing.easeInOut,
         delay = 0
       } = options2;
-      _objectWithoutPropertiesLoose(options2, _excluded$1s);
+      _objectWithoutPropertiesLoose(options2, _excluded$1p);
       return (Array.isArray(props) ? props : [props]).map((animatedProp) => `${animatedProp} ${typeof durationOption === "string" ? durationOption : formatMs(durationOption)} ${easingOption} ${typeof delay === "string" ? delay : formatMs(delay)}`).join(",");
     };
     return _extends$1({
@@ -13623,14 +14345,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     snackbar: 1400,
     tooltip: 1500
   };
-  const _excluded$1r = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
+  const _excluded$1o = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
   function createTheme(options2 = {}, ...args) {
     const {
       mixins: mixinsInput = {},
       palette: paletteInput = {},
       transitions: transitionsInput = {},
       typography: typographyInput = {}
-    } = options2, other = _objectWithoutPropertiesLoose(options2, _excluded$1r);
+    } = options2, other = _objectWithoutPropertiesLoose(options2, _excluded$1o);
     if (options2.vars) {
       throw new Error(formatMuiErrorMessage$1(18));
     }
@@ -14958,7 +15680,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }
     return componentProps;
   }
-  const _excluded$1q = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
+  const _excluded$1n = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
   function useSlotProps(parameters) {
     var _parameters$additiona;
     const {
@@ -14966,7 +15688,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       externalSlotProps,
       ownerState,
       skipResolvingSlotProps = false
-    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$1q);
+    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$1n);
     const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
     const {
       props: mergedProps,
@@ -15027,7 +15749,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     });
   }
   const touchRippleClasses = generateUtilityClasses("MuiTouchRipple", ["root", "ripple", "rippleVisible", "ripplePulsate", "child", "childLeaving", "childPulsate"]);
-  const _excluded$1p = ["center", "classes", "className"];
+  const _excluded$1m = ["center", "classes", "className"];
   let _ = (t2) => t2, _t, _t2, _t3, _t4;
   const DURATION = 550;
   const DELAY_RIPPLE = 80;
@@ -15142,7 +15864,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       center: centerProp = false,
       classes = {},
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1p);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1m);
     const [ripples, setRipples] = reactExports.useState([]);
     const nextKey = reactExports.useRef(0);
     const rippleCallback = reactExports.useRef(null);
@@ -15300,8 +16022,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiButtonBase", slot);
   }
   const buttonBaseClasses = generateUtilityClasses("MuiButtonBase", ["root", "disabled", "focusVisible"]);
-  const _excluded$1o = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
-  const useUtilityClasses$16 = (ownerState) => {
+  const _excluded$1l = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
+  const useUtilityClasses$15 = (ownerState) => {
     const {
       disabled,
       focusVisible,
@@ -15395,7 +16117,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       TouchRippleProps,
       touchRippleRef,
       type
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1o);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1l);
     const buttonRef = reactExports.useRef(null);
     const rippleRef = reactExports.useRef(null);
     const handleRippleRef = useForkRef(rippleRef, touchRippleRef);
@@ -15542,7 +16264,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       tabIndex,
       focusVisible
     });
-    const classes = useUtilityClasses$16(ownerState);
+    const classes = useUtilityClasses$15(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(ButtonBaseRoot, _extends$1({
       as: ComponentProp,
       className: clsx(classes.root, className),
@@ -15577,8 +16299,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("PrivateSwitchBase", slot);
   }
   generateUtilityClasses("PrivateSwitchBase", ["root", "checked", "disabled", "input", "edgeStart", "edgeEnd"]);
-  const _excluded$1n = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
-  const useUtilityClasses$15 = (ownerState) => {
+  const _excluded$1k = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
+  const useUtilityClasses$14 = (ownerState) => {
     const {
       classes,
       checked,
@@ -15638,7 +16360,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       tabIndex,
       type,
       value
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1n);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1k);
     const [checked, setCheckedState] = useControlled({
       controlled: checkedProp,
       default: Boolean(defaultChecked),
@@ -15685,7 +16407,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       disableFocusRipple,
       edge
     });
-    const classes = useUtilityClasses$15(ownerState);
+    const classes = useUtilityClasses$14(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(SwitchBaseRoot, _extends$1({
       component: "span",
       className: clsx(classes.root, className),
@@ -15734,8 +16456,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiSwitch", slot);
   }
   const switchClasses = generateUtilityClasses("MuiSwitch", ["root", "edgeStart", "edgeEnd", "switchBase", "colorPrimary", "colorSecondary", "sizeSmall", "sizeMedium", "checked", "disabled", "input", "thumb", "track"]);
-  const _excluded$1m = ["className", "color", "edge", "size", "sx"];
-  const useUtilityClasses$14 = (ownerState) => {
+  const _excluded$1j = ["className", "color", "edge", "size", "sx"];
+  const useUtilityClasses$13 = (ownerState) => {
     const {
       classes,
       edge,
@@ -15927,13 +16649,13 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       edge = false,
       size = "medium",
       sx
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1m);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1j);
     const ownerState = _extends$1({}, props, {
       color: color2,
       edge,
       size
     });
-    const classes = useUtilityClasses$14(ownerState);
+    const classes = useUtilityClasses$13(ownerState);
     const icon = /* @__PURE__ */ jsxRuntimeExports.jsx(SwitchThumb, {
       className: classes.thumb,
       ownerState
@@ -15975,8 +16697,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiDivider", slot);
   }
   const dividerClasses = generateUtilityClasses("MuiDivider", ["root", "absolute", "fullWidth", "inset", "middle", "flexItem", "light", "vertical", "withChildren", "withChildrenVertical", "textAlignRight", "textAlignLeft", "wrapper", "wrapperVertical"]);
-  const _excluded$1l = ["absolute", "children", "className", "component", "flexItem", "light", "orientation", "role", "textAlign", "variant"];
-  const useUtilityClasses$13 = (ownerState) => {
+  const _excluded$1i = ["absolute", "children", "className", "component", "flexItem", "light", "orientation", "role", "textAlign", "variant"];
+  const useUtilityClasses$12 = (ownerState) => {
     const {
       absolute,
       children,
@@ -16120,7 +16842,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       role = component !== "hr" ? "separator" : void 0,
       textAlign = "center",
       variant = "fullWidth"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1l);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1i);
     const ownerState = _extends$1({}, props, {
       absolute,
       component,
@@ -16131,7 +16853,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       textAlign,
       variant
     });
-    const classes = useUtilityClasses$13(ownerState);
+    const classes = useUtilityClasses$12(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(DividerRoot, _extends$1({
       as: component,
       className: clsx(classes.root, className),
@@ -16945,7 +17667,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         return section.contentType !== "letter" ? Number(section.value) : void 0;
     }
   };
-  const _excluded$1k = ["value", "referenceDate"];
+  const _excluded$1h = ["value", "referenceDate"];
   const singleItemValueManager = {
     emptyValue: null,
     getTodayValue: getTodayDate,
@@ -16953,7 +17675,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       let {
         value,
         referenceDate
-      } = _ref, params = _objectWithoutPropertiesLoose(_ref, _excluded$1k);
+      } = _ref, params = _objectWithoutPropertiesLoose(_ref, _excluded$1h);
       if (value != null && params.utils.isValid(value)) {
         return value;
       }
@@ -16992,7 +17714,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }),
     parseValueStr: (valueStr, referenceValue, parseDate) => parseDate(valueStr.trim(), referenceValue)
   };
-  const _excluded$1j = ["onChange", "maxRows", "minRows", "style", "value"];
+  const _excluded$1g = ["onChange", "maxRows", "minRows", "style", "value"];
   function getStyleValue(value) {
     return parseInt(value, 10) || 0;
   }
@@ -17021,7 +17743,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       minRows = 1,
       style: style2,
       value
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1j);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1g);
     const {
       current: isControlled
     } = reactExports.useRef(value != null);
@@ -17167,7 +17889,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiInputBase", slot);
   }
   const inputBaseClasses = generateUtilityClasses("MuiInputBase", ["root", "formControl", "focused", "disabled", "adornedStart", "adornedEnd", "error", "sizeSmall", "multiline", "colorSecondary", "fullWidth", "hiddenLabel", "readOnly", "input", "inputSizeSmall", "inputMultiline", "inputTypeSearch", "inputAdornedStart", "inputAdornedEnd", "inputHiddenLabel"]);
-  const _excluded$1i = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
+  const _excluded$1f = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
   const rootOverridesResolver = (props, styles2) => {
     const {
       ownerState
@@ -17180,7 +17902,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     } = props;
     return [styles2.input, ownerState.size === "small" && styles2.inputSizeSmall, ownerState.multiline && styles2.inputMultiline, ownerState.type === "search" && styles2.inputTypeSearch, ownerState.startAdornment && styles2.inputAdornedStart, ownerState.endAdornment && styles2.inputAdornedEnd, ownerState.hiddenLabel && styles2.inputHiddenLabel];
   };
-  const useUtilityClasses$12 = (ownerState) => {
+  const useUtilityClasses$11 = (ownerState) => {
     const {
       classes,
       color: color2,
@@ -17391,7 +18113,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       startAdornment,
       type = "text",
       value: valueProp
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1i);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1f);
     const value = inputPropsProp.value != null ? inputPropsProp.value : valueProp;
     const {
       current: isControlled
@@ -17534,13 +18256,13 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       startAdornment,
       type
     });
-    const classes = useUtilityClasses$12(ownerState);
-    const Root2 = slots.root || components.Root || InputBaseRoot;
+    const classes = useUtilityClasses$11(ownerState);
+    const Root3 = slots.root || components.Root || InputBaseRoot;
     const rootProps = slotProps.root || componentsProps.root || {};
     const Input2 = slots.input || components.Input || InputBaseComponent;
     inputProps = _extends$1({}, inputProps, (_slotProps$input = slotProps.input) != null ? _slotProps$input : componentsProps.input);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
-      children: [!disableInjectingGlobalStyles && inputGlobalStyles, /* @__PURE__ */ jsxRuntimeExports.jsxs(Root2, _extends$1({}, rootProps, !isHostComponent(Root2) && {
+      children: [!disableInjectingGlobalStyles && inputGlobalStyles, /* @__PURE__ */ jsxRuntimeExports.jsxs(Root3, _extends$1({}, rootProps, !isHostComponent(Root3) && {
         ownerState: _extends$1({}, ownerState, rootProps.ownerState)
       }, {
         ref,
@@ -17589,8 +18311,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiInput", slot);
   }
   const inputClasses = _extends$1({}, inputBaseClasses, generateUtilityClasses("MuiInput", ["root", "underline", "input"]));
-  const _excluded$1h = ["disableUnderline", "components", "componentsProps", "fullWidth", "inputComponent", "multiline", "slotProps", "slots", "type"];
-  const useUtilityClasses$11 = (ownerState) => {
+  const _excluded$1e = ["disableUnderline", "components", "componentsProps", "fullWidth", "inputComponent", "multiline", "slotProps", "slots", "type"];
+  const useUtilityClasses$10 = (ownerState) => {
     const {
       classes,
       disableUnderline
@@ -17701,8 +18423,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       slotProps,
       slots = {},
       type = "text"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1h);
-    const classes = useUtilityClasses$11(props);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1e);
+    const classes = useUtilityClasses$10(props);
     const ownerState = {
       disableUnderline
     };
@@ -17734,8 +18456,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiFilledInput", slot);
   }
   const filledInputClasses = _extends$1({}, inputBaseClasses, generateUtilityClasses("MuiFilledInput", ["root", "underline", "input"]));
-  const _excluded$1g = ["disableUnderline", "components", "componentsProps", "fullWidth", "hiddenLabel", "inputComponent", "multiline", "slotProps", "slots", "type"];
-  const useUtilityClasses$10 = (ownerState) => {
+  const _excluded$1d = ["disableUnderline", "components", "componentsProps", "fullWidth", "hiddenLabel", "inputComponent", "multiline", "slotProps", "slots", "type"];
+  const useUtilityClasses$$ = (ownerState) => {
     const {
       classes,
       disableUnderline
@@ -17920,14 +18642,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       slotProps,
       slots = {},
       type = "text"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1g);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1d);
     const ownerState = _extends$1({}, props, {
       fullWidth,
       inputComponent,
       multiline,
       type
     });
-    const classes = useUtilityClasses$10(props);
+    const classes = useUtilityClasses$$(props);
     const filledInputComponentsProps = {
       root: {
         ownerState
@@ -17956,7 +18678,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   });
   FilledInput.muiName = "Input";
   var _span$3;
-  const _excluded$1f = ["children", "classes", "className", "label", "notched"];
+  const _excluded$1c = ["children", "classes", "className", "label", "notched"];
   const NotchedOutlineRoot$1 = styled("fieldset", {
     shouldForwardProp: rootShouldForwardProp
   })({
@@ -18028,7 +18750,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       className,
       label,
       notched
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1f);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1c);
     const withLabel = label != null && label !== "";
     const ownerState = _extends$1({}, props, {
       notched,
@@ -18057,8 +18779,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiOutlinedInput", slot);
   }
   const outlinedInputClasses = _extends$1({}, inputBaseClasses, generateUtilityClasses("MuiOutlinedInput", ["root", "notchedOutline", "input"]));
-  const _excluded$1e = ["components", "fullWidth", "inputComponent", "label", "multiline", "notched", "slots", "type"];
-  const useUtilityClasses$$ = (ownerState) => {
+  const _excluded$1b = ["components", "fullWidth", "inputComponent", "label", "multiline", "notched", "slots", "type"];
+  const useUtilityClasses$_ = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -18175,8 +18897,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       notched,
       slots = {},
       type = "text"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1e);
-    const classes = useUtilityClasses$$(props);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1b);
+    const classes = useUtilityClasses$_(props);
     const muiFormControl = useFormControl();
     const fcs = formControlState({
       props,
@@ -18226,8 +18948,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiFormLabel", slot);
   }
   const formLabelClasses = generateUtilityClasses("MuiFormLabel", ["root", "colorSecondary", "focused", "disabled", "error", "filled", "required", "asterisk"]);
-  const _excluded$1d = ["children", "className", "color", "component", "disabled", "error", "filled", "focused", "required"];
-  const useUtilityClasses$_ = (ownerState) => {
+  const _excluded$1a = ["children", "className", "color", "component", "disabled", "error", "filled", "focused", "required"];
+  const useUtilityClasses$Z = (ownerState) => {
     const {
       classes,
       color: color2,
@@ -18290,7 +19012,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       children,
       className,
       component = "label"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1d);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1a);
     const muiFormControl = useFormControl();
     const fcs = formControlState({
       props,
@@ -18306,7 +19028,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       focused: fcs.focused,
       required: fcs.required
     });
-    const classes = useUtilityClasses$_(ownerState);
+    const classes = useUtilityClasses$Z(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(FormLabelRoot, _extends$1({
       as: component,
       ownerState,
@@ -18325,8 +19047,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiInputLabel", slot);
   }
   generateUtilityClasses("MuiInputLabel", ["root", "focused", "disabled", "error", "required", "asterisk", "formControl", "sizeSmall", "shrink", "animated", "standard", "filled", "outlined"]);
-  const _excluded$1c = ["disableAnimation", "margin", "shrink", "variant", "className"];
-  const useUtilityClasses$Z = (ownerState) => {
+  const _excluded$19 = ["disableAnimation", "margin", "shrink", "variant", "className"];
+  const useUtilityClasses$Y = (ownerState) => {
     const {
       classes,
       formControl,
@@ -18426,7 +19148,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       disableAnimation = false,
       shrink: shrinkProp,
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1c);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$19);
     const muiFormControl = useFormControl();
     let shrink = shrinkProp;
     if (typeof shrink === "undefined" && muiFormControl) {
@@ -18446,7 +19168,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       required: fcs.required,
       focused: fcs.focused
     });
-    const classes = useUtilityClasses$Z(ownerState);
+    const classes = useUtilityClasses$Y(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabelRoot, _extends$1({
       "data-shrink": shrink,
       ownerState,
@@ -18460,8 +19182,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiFormControl", slot);
   }
   generateUtilityClasses("MuiFormControl", ["root", "marginNone", "marginNormal", "marginDense", "fullWidth", "disabled"]);
-  const _excluded$1b = ["children", "className", "color", "component", "disabled", "error", "focused", "fullWidth", "hiddenLabel", "margin", "required", "size", "variant"];
-  const useUtilityClasses$Y = (ownerState) => {
+  const _excluded$18 = ["children", "className", "color", "component", "disabled", "error", "focused", "fullWidth", "hiddenLabel", "margin", "required", "size", "variant"];
+  const useUtilityClasses$X = (ownerState) => {
     const {
       classes,
       margin: margin2,
@@ -18520,7 +19242,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       required = false,
       size = "medium",
       variant = "outlined"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1b);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$18);
     const ownerState = _extends$1({}, props, {
       color: color2,
       component,
@@ -18533,7 +19255,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       size,
       variant
     });
-    const classes = useUtilityClasses$Y(ownerState);
+    const classes = useUtilityClasses$X(ownerState);
     const [adornedStart, setAdornedStart] = reactExports.useState(() => {
       let initialAdornedStart = false;
       if (children) {
@@ -18615,8 +19337,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   }
   const formHelperTextClasses = generateUtilityClasses("MuiFormHelperText", ["root", "error", "disabled", "sizeSmall", "sizeMedium", "contained", "focused", "filled", "required"]);
   var _span$2;
-  const _excluded$1a = ["children", "className", "component", "disabled", "error", "filled", "focused", "margin", "required", "variant"];
-  const useUtilityClasses$X = (ownerState) => {
+  const _excluded$17 = ["children", "className", "component", "disabled", "error", "filled", "focused", "margin", "required", "variant"];
+  const useUtilityClasses$W = (ownerState) => {
     const {
       classes,
       contained,
@@ -18673,7 +19395,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       children,
       className,
       component = "p"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1a);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$17);
     const muiFormControl = useFormControl();
     const fcs = formControlState({
       props,
@@ -18691,7 +19413,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       focused: fcs.focused,
       required: fcs.required
     });
-    const classes = useUtilityClasses$X(ownerState);
+    const classes = useUtilityClasses$W(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(FormHelperTextRoot, _extends$1({
       as: component,
       ownerState,
@@ -18712,8 +19434,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiList", slot);
   }
   generateUtilityClasses("MuiList", ["root", "padding", "dense", "subheader"]);
-  const _excluded$19 = ["children", "className", "component", "dense", "disablePadding", "subheader"];
-  const useUtilityClasses$W = (ownerState) => {
+  const _excluded$16 = ["children", "className", "component", "dense", "disablePadding", "subheader"];
+  const useUtilityClasses$V = (ownerState) => {
     const {
       classes,
       disablePadding,
@@ -18759,7 +19481,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       dense = false,
       disablePadding = false,
       subheader
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$19);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$16);
     const context = reactExports.useMemo(() => ({
       dense
     }), [dense]);
@@ -18768,7 +19490,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       dense,
       disablePadding
     });
-    const classes = useUtilityClasses$W(ownerState);
+    const classes = useUtilityClasses$V(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(ListContext.Provider, {
       value: context,
       children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListRoot, _extends$1({
@@ -18781,7 +19503,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }))
     });
   });
-  const _excluded$18 = ["actions", "autoFocus", "autoFocusItem", "children", "className", "disabledItemsFocusable", "disableListWrap", "onKeyDown", "variant"];
+  const _excluded$15 = ["actions", "autoFocus", "autoFocusItem", "children", "className", "disabledItemsFocusable", "disableListWrap", "onKeyDown", "variant"];
   function nextItem$1(list, item, disableListWrap) {
     if (list === item) {
       return list.firstChild;
@@ -18850,7 +19572,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       disableListWrap = false,
       onKeyDown,
       variant = "selectedMenu"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$18);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$15);
     const listRef = reactExports.useRef(null);
     const textCriteriaRef = reactExports.useRef({
       keys: [],
@@ -18981,7 +19703,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       delay: style2.transitionDelay
     };
   }
-  const _excluded$17 = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
+  const _excluded$14 = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
   function getScale(value) {
     return `scale(${value}, ${value ** 2})`;
   }
@@ -19013,7 +19735,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       timeout = "auto",
       // eslint-disable-next-line react/prop-types
       TransitionComponent = Transition
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$17);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$14);
     const timer = useTimeout();
     const autoTimeout = reactExports.useRef();
     const theme = useTheme$1();
@@ -19563,7 +20285,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       children: mountNode ? /* @__PURE__ */ reactDomExports.createPortal(children, mountNode) : mountNode
     });
   });
-  const _excluded$16 = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
+  const _excluded$13 = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
   const styles$1 = {
     entering: {
       opacity: 1
@@ -19594,7 +20316,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       timeout = defaultTimeout,
       // eslint-disable-next-line react/prop-types
       TransitionComponent = Transition
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$16);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$13);
     const nodeRef = reactExports.useRef(null);
     const handleRef = useForkRef(nodeRef, children.ref, ref);
     const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
@@ -19673,8 +20395,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiBackdrop", slot);
   }
   generateUtilityClasses("MuiBackdrop", ["root", "invisible"]);
-  const _excluded$15 = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
-  const useUtilityClasses$V = (ownerState) => {
+  const _excluded$12 = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
+  const useUtilityClasses$U = (ownerState) => {
     const {
       classes,
       invisible
@@ -19727,12 +20449,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       slots = {},
       TransitionComponent = Fade,
       transitionDuration
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$15);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$12);
     const ownerState = _extends$1({}, props, {
       component,
       invisible
     });
-    const classes = useUtilityClasses$V(ownerState);
+    const classes = useUtilityClasses$U(ownerState);
     const rootSlotProps = (_slotProps$root = slotProps.root) != null ? _slotProps$root : componentsProps.root;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
       in: open,
@@ -19911,8 +20633,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiModal", slot);
   }
   generateUtilityClasses("MuiModal", ["root", "hidden", "backdrop"]);
-  const _excluded$14 = ["BackdropComponent", "BackdropProps", "classes", "className", "closeAfterTransition", "children", "container", "component", "components", "componentsProps", "disableAutoFocus", "disableEnforceFocus", "disableEscapeKeyDown", "disablePortal", "disableRestoreFocus", "disableScrollLock", "hideBackdrop", "keepMounted", "onBackdropClick", "onClose", "onTransitionEnter", "onTransitionExited", "open", "slotProps", "slots", "theme"];
-  const useUtilityClasses$U = (ownerState) => {
+  const _excluded$11 = ["BackdropComponent", "BackdropProps", "classes", "className", "closeAfterTransition", "children", "container", "component", "components", "componentsProps", "disableAutoFocus", "disableEnforceFocus", "disableEscapeKeyDown", "disablePortal", "disableRestoreFocus", "disableScrollLock", "hideBackdrop", "keepMounted", "onBackdropClick", "onClose", "onTransitionEnter", "onTransitionExited", "open", "slotProps", "slots", "theme"];
+  const useUtilityClasses$T = (ownerState) => {
     const {
       open,
       exited,
@@ -19984,7 +20706,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       slotProps,
       slots
       // eslint-disable-next-line react/prop-types
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$14);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$11);
     const propsWithDefaults = _extends$1({}, props, {
       closeAfterTransition,
       disableAutoFocus,
@@ -20010,7 +20732,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const ownerState = _extends$1({}, propsWithDefaults, {
       exited
     });
-    const classes = useUtilityClasses$U(ownerState);
+    const classes = useUtilityClasses$T(ownerState);
     const childProps = {};
     if (children.props.tabIndex === void 0) {
       childProps.tabIndex = "-1";
@@ -20081,8 +20803,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPaper", slot);
   }
   generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
-  const _excluded$13 = ["className", "component", "elevation", "square", "variant"];
-  const useUtilityClasses$T = (ownerState) => {
+  const _excluded$10 = ["className", "component", "elevation", "square", "variant"];
+  const useUtilityClasses$S = (ownerState) => {
     const {
       square,
       elevation,
@@ -20135,14 +20857,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       elevation = 1,
       square = false,
       variant = "elevation"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$13);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$10);
     const ownerState = _extends$1({}, props, {
       component,
       elevation,
       square,
       variant
     });
-    const classes = useUtilityClasses$T(ownerState);
+    const classes = useUtilityClasses$S(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(PaperRoot, _extends$1({
       as: component,
       ownerState,
@@ -20154,7 +20876,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPopover", slot);
   }
   generateUtilityClasses("MuiPopover", ["root", "paper"]);
-  const _excluded$12 = ["onEntering"], _excluded2$b = ["action", "anchorEl", "anchorOrigin", "anchorPosition", "anchorReference", "children", "className", "container", "elevation", "marginThreshold", "open", "PaperProps", "slots", "slotProps", "transformOrigin", "TransitionComponent", "transitionDuration", "TransitionProps", "disableScrollLock"], _excluded3$3 = ["slotProps"];
+  const _excluded$$ = ["onEntering"], _excluded2$b = ["action", "anchorEl", "anchorOrigin", "anchorPosition", "anchorReference", "children", "className", "container", "elevation", "marginThreshold", "open", "PaperProps", "slots", "slotProps", "transformOrigin", "TransitionComponent", "transitionDuration", "TransitionProps", "disableScrollLock"], _excluded3$3 = ["slotProps"];
   function getOffsetTop(rect, vertical) {
     let offset2 = 0;
     if (typeof vertical === "number") {
@@ -20183,7 +20905,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   function resolveAnchorEl$1(anchorEl) {
     return typeof anchorEl === "function" ? anchorEl() : anchorEl;
   }
-  const useUtilityClasses$S = (ownerState) => {
+  const useUtilityClasses$R = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -20249,7 +20971,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         onEntering
       } = {},
       disableScrollLock = false
-    } = props, TransitionProps = _objectWithoutPropertiesLoose(props.TransitionProps, _excluded$12), other = _objectWithoutPropertiesLoose(props, _excluded2$b);
+    } = props, TransitionProps = _objectWithoutPropertiesLoose(props.TransitionProps, _excluded$$), other = _objectWithoutPropertiesLoose(props, _excluded2$b);
     const externalPaperSlotProps = (_slotProps$paper = slotProps == null ? void 0 : slotProps.paper) != null ? _slotProps$paper : PaperPropsProp;
     const paperRef = reactExports.useRef();
     const handlePaperRef = useForkRef(paperRef, externalPaperSlotProps.ref);
@@ -20264,7 +20986,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       transitionDuration: transitionDurationProp,
       TransitionProps
     });
-    const classes = useUtilityClasses$S(ownerState);
+    const classes = useUtilityClasses$R(ownerState);
     const getAnchorOffset = reactExports.useCallback(() => {
       if (anchorReference === "anchorPosition") {
         return anchorPosition;
@@ -20444,7 +21166,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiMenu", slot);
   }
   generateUtilityClasses("MuiMenu", ["root", "paper", "list"]);
-  const _excluded$11 = ["onEntering"], _excluded2$a = ["autoFocus", "children", "className", "disableAutoFocusItem", "MenuListProps", "onClose", "open", "PaperProps", "PopoverClasses", "transitionDuration", "TransitionProps", "variant", "slots", "slotProps"];
+  const _excluded$_ = ["onEntering"], _excluded2$a = ["autoFocus", "children", "className", "disableAutoFocusItem", "MenuListProps", "onClose", "open", "PaperProps", "PopoverClasses", "transitionDuration", "TransitionProps", "variant", "slots", "slotProps"];
   const RTL_ORIGIN = {
     vertical: "top",
     horizontal: "right"
@@ -20453,7 +21175,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     vertical: "top",
     horizontal: "left"
   };
-  const useUtilityClasses$R = (ownerState) => {
+  const useUtilityClasses$Q = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -20513,7 +21235,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       variant = "selectedMenu",
       slots = {},
       slotProps = {}
-    } = props, TransitionProps = _objectWithoutPropertiesLoose(props.TransitionProps, _excluded$11), other = _objectWithoutPropertiesLoose(props, _excluded2$a);
+    } = props, TransitionProps = _objectWithoutPropertiesLoose(props.TransitionProps, _excluded$_), other = _objectWithoutPropertiesLoose(props, _excluded2$a);
     const isRtl = useRtl();
     const ownerState = _extends$1({}, props, {
       autoFocus,
@@ -20525,7 +21247,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       TransitionProps,
       variant
     });
-    const classes = useUtilityClasses$R(ownerState);
+    const classes = useUtilityClasses$Q(ownerState);
     const autoFocusItem = autoFocus && !disableAutoFocusItem && open;
     const menuListActionsRef = reactExports.useRef(null);
     const handleEntering = (element, isAppearing) => {
@@ -20613,8 +21335,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiNativeSelect", slot);
   }
   const nativeSelectClasses = generateUtilityClasses("MuiNativeSelect", ["root", "select", "multiple", "filled", "outlined", "standard", "disabled", "icon", "iconOpen", "iconFilled", "iconOutlined", "iconStandard", "nativeInput", "error"]);
-  const _excluded$10 = ["className", "disabled", "error", "IconComponent", "inputRef", "variant"];
-  const useUtilityClasses$Q = (ownerState) => {
+  const _excluded$Z = ["className", "disabled", "error", "IconComponent", "inputRef", "variant"];
+  const useUtilityClasses$P = (ownerState) => {
     const {
       classes,
       variant,
@@ -20738,13 +21460,13 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       IconComponent,
       inputRef,
       variant = "standard"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$10);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
     const ownerState = _extends$1({}, props, {
       disabled,
       variant,
       error
     });
-    const classes = useUtilityClasses$Q(ownerState);
+    const classes = useUtilityClasses$P(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
       children: [/* @__PURE__ */ jsxRuntimeExports.jsx(NativeSelectSelect, _extends$1({
         ownerState,
@@ -20763,7 +21485,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   }
   const selectClasses = generateUtilityClasses("MuiSelect", ["root", "select", "multiple", "filled", "outlined", "standard", "disabled", "focused", "icon", "iconOpen", "iconFilled", "iconOutlined", "iconStandard", "nativeInput", "error"]);
   var _span$1;
-  const _excluded$$ = ["aria-describedby", "aria-label", "autoFocus", "autoWidth", "children", "className", "defaultOpen", "defaultValue", "disabled", "displayEmpty", "error", "IconComponent", "inputRef", "labelId", "MenuProps", "multiple", "name", "onBlur", "onChange", "onClose", "onFocus", "onOpen", "open", "readOnly", "renderValue", "SelectDisplayProps", "tabIndex", "type", "value", "variant"];
+  const _excluded$Y = ["aria-describedby", "aria-label", "autoFocus", "autoWidth", "children", "className", "defaultOpen", "defaultValue", "disabled", "displayEmpty", "error", "IconComponent", "inputRef", "labelId", "MenuProps", "multiple", "name", "onBlur", "onChange", "onClose", "onFocus", "onOpen", "open", "readOnly", "renderValue", "SelectDisplayProps", "tabIndex", "type", "value", "variant"];
   const SelectSelect = styled("div", {
     name: "MuiSelect",
     slot: "Select",
@@ -20832,7 +21554,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   function isEmpty(display) {
     return display == null || typeof display === "string" && !display.trim();
   }
-  const useUtilityClasses$P = (ownerState) => {
+  const useUtilityClasses$O = (ownerState) => {
     const {
       classes,
       variant,
@@ -20880,7 +21602,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       tabIndex: tabIndexProp,
       value: valueProp,
       variant = "standard"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$$);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
     const [value, setValueState] = useControlled({
       controlled: valueProp,
       default: defaultValue,
@@ -21130,7 +21852,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       open,
       error
     });
-    const classes = useUtilityClasses$P(ownerState);
+    const classes = useUtilityClasses$O(ownerState);
     const paperProps = _extends$1({}, MenuProps.PaperProps, (_MenuProps$slotProps = MenuProps.slotProps) == null ? void 0 : _MenuProps$slotProps.paper);
     const listboxId = useId();
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
@@ -21212,8 +21934,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiSvgIcon", slot);
   }
   generateUtilityClasses("MuiSvgIcon", ["root", "colorPrimary", "colorSecondary", "colorAction", "colorError", "colorDisabled", "fontSizeInherit", "fontSizeSmall", "fontSizeMedium", "fontSizeLarge"]);
-  const _excluded$_ = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
-  const useUtilityClasses$O = (ownerState) => {
+  const _excluded$X = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
+  const useUtilityClasses$N = (ownerState) => {
     const {
       color: color2,
       fontSize,
@@ -21279,7 +22001,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       inheritViewBox = false,
       titleAccess,
       viewBox = "0 0 24 24"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$_);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
     const hasSvgAsChild = /* @__PURE__ */ reactExports.isValidElement(children) && children.type === "svg";
     const ownerState = _extends$1({}, props, {
       color: color2,
@@ -21294,7 +22016,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     if (!inheritViewBox) {
       more.viewBox = viewBox;
     }
-    const classes = useUtilityClasses$O(ownerState);
+    const classes = useUtilityClasses$N(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(SvgIconRoot, _extends$1({
       as: component,
       className: clsx(classes.root, className),
@@ -21326,8 +22048,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   const ArrowDropDownIcon$1 = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M7 10l5 5 5-5z"
   }), "ArrowDropDown");
-  const _excluded$Z = ["autoWidth", "children", "classes", "className", "defaultOpen", "displayEmpty", "IconComponent", "id", "input", "inputProps", "label", "labelId", "MenuProps", "multiple", "native", "onClose", "onOpen", "open", "renderValue", "SelectDisplayProps", "variant"], _excluded2$9 = ["root"];
-  const useUtilityClasses$N = (ownerState) => {
+  const _excluded$W = ["autoWidth", "children", "classes", "className", "defaultOpen", "displayEmpty", "IconComponent", "id", "input", "inputProps", "label", "labelId", "MenuProps", "multiple", "native", "onClose", "onOpen", "open", "renderValue", "SelectDisplayProps", "variant"], _excluded2$9 = ["root"];
+  const useUtilityClasses$M = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -21369,7 +22091,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       renderValue,
       SelectDisplayProps,
       variant: variantProp = "outlined"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
     const inputComponent = native ? NativeSelectInput : SelectInput;
     const muiFormControl = useFormControl();
     const fcs = formControlState({
@@ -21382,7 +22104,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       variant,
       classes: classesProp
     });
-    const classes = useUtilityClasses$N(ownerState);
+    const classes = useUtilityClasses$M(ownerState);
     const restOfClasses = _objectWithoutPropertiesLoose(classes, _excluded2$9);
     const InputComponent = input || {
       standard: /* @__PURE__ */ jsxRuntimeExports.jsx(StyledInput, {
@@ -21443,13 +22165,13 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiTextField", slot);
   }
   generateUtilityClasses("MuiTextField", ["root"]);
-  const _excluded$Y = ["autoComplete", "autoFocus", "children", "className", "color", "defaultValue", "disabled", "error", "FormHelperTextProps", "fullWidth", "helperText", "id", "InputLabelProps", "inputProps", "InputProps", "inputRef", "label", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onFocus", "placeholder", "required", "rows", "select", "SelectProps", "type", "value", "variant"];
+  const _excluded$V = ["autoComplete", "autoFocus", "children", "className", "color", "defaultValue", "disabled", "error", "FormHelperTextProps", "fullWidth", "helperText", "id", "InputLabelProps", "inputProps", "InputProps", "inputRef", "label", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onFocus", "placeholder", "required", "rows", "select", "SelectProps", "type", "value", "variant"];
   const variantComponent = {
     standard: Input,
     filled: FilledInput,
     outlined: OutlinedInput
   };
-  const useUtilityClasses$M = (ownerState) => {
+  const useUtilityClasses$L = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -21501,7 +22223,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       type,
       value,
       variant = "outlined"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
     const ownerState = _extends$1({}, props, {
       autoFocus,
       color: color2,
@@ -21513,7 +22235,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       select,
       variant
     });
-    const classes = useUtilityClasses$M(ownerState);
+    const classes = useUtilityClasses$L(ownerState);
     const InputMore = {};
     if (variant === "outlined") {
       if (InputLabelProps && typeof InputLabelProps.shrink !== "undefined") {
@@ -21583,12 +22305,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }))]
     }));
   });
-  const _excluded$X = ["localeText"];
+  const _excluded$U = ["localeText"];
   const MuiPickersAdapterContext = /* @__PURE__ */ reactExports.createContext(null);
   const LocalizationProvider = function LocalizationProvider2(inProps) {
     const {
       localeText: inLocaleText
-    } = inProps, otherInProps = _objectWithoutPropertiesLoose(inProps, _excluded$X);
+    } = inProps, otherInProps = _objectWithoutPropertiesLoose(inProps, _excluded$U);
     const {
       utils: parentUtils,
       localeText: parentLocaleText
@@ -23494,11 +24216,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }
     };
     SHARED_FIELD_INTERNAL_PROP_NAMES.forEach(extractProp);
-    if (valueType === "date") {
-      DATE_VALIDATION_PROP_NAMES.forEach(extractProp);
-    } else if (valueType === "time") {
-      TIME_VALIDATION_PROP_NAMES.forEach(extractProp);
-    } else if (valueType === "date-time") {
+    {
       DATE_VALIDATION_PROP_NAMES.forEach(extractProp);
       TIME_VALIDATION_PROP_NAMES.forEach(extractProp);
       DATE_TIME_VALIDATION_PROP_NAMES.forEach(extractProp);
@@ -23507,16 +24225,6 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       forwardedProps,
       internalProps
     };
-  };
-  const useDefaultizedTimeField = (props) => {
-    const utils2 = useUtils();
-    const ampm = props.ampm ?? utils2.is12HourCycleInCurrentLocale();
-    const defaultFormat = ampm ? utils2.formats.fullTime12h : utils2.formats.fullTime24h;
-    return _extends$1({}, props, {
-      disablePast: props.disablePast ?? false,
-      disableFuture: props.disableFuture ?? false,
-      format: props.format ?? defaultFormat
-    });
   };
   const useDefaultizedDateTimeField = (props) => {
     const utils2 = useUtils();
@@ -23539,7 +24247,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const {
       forwardedProps,
       internalProps
-    } = splitFieldInternalAndForwardedProps(props, "date-time");
+    } = splitFieldInternalAndForwardedProps(props);
     return useField({
       forwardedProps,
       internalProps,
@@ -23553,8 +24261,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiIconButton", slot);
   }
   const iconButtonClasses = generateUtilityClasses("MuiIconButton", ["root", "disabled", "colorInherit", "colorPrimary", "colorSecondary", "colorError", "colorInfo", "colorSuccess", "colorWarning", "edgeStart", "edgeEnd", "sizeSmall", "sizeMedium", "sizeLarge"]);
-  const _excluded$W = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
-  const useUtilityClasses$L = (ownerState) => {
+  const _excluded$T = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
+  const useUtilityClasses$K = (ownerState) => {
     const {
       classes,
       disabled,
@@ -23648,7 +24356,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       disabled = false,
       disableFocusRipple = false,
       size = "medium"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
     const ownerState = _extends$1({}, props, {
       edge,
       color: color2,
@@ -23656,7 +24364,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       disableFocusRipple,
       size
     });
-    const classes = useUtilityClasses$L(ownerState);
+    const classes = useUtilityClasses$K(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(IconButtonRoot, _extends$1({
       className: clsx(classes.root, className),
       centerRipple: true,
@@ -23672,8 +24380,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiTypography", slot);
   }
   generateUtilityClasses("MuiTypography", ["root", "h1", "h2", "h3", "h4", "h5", "h6", "subtitle1", "subtitle2", "body1", "body2", "inherit", "button", "caption", "overline", "alignLeft", "alignRight", "alignCenter", "alignJustify", "noWrap", "gutterBottom", "paragraph"]);
-  const _excluded$V = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
-  const useUtilityClasses$K = (ownerState) => {
+  const _excluded$S = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
+  const useUtilityClasses$J = (ownerState) => {
     const {
       align,
       gutterBottom,
@@ -23756,7 +24464,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       paragraph = false,
       variant = "body1",
       variantMapping = defaultVariantMapping
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$S);
     const ownerState = _extends$1({}, props, {
       align,
       color: color2,
@@ -23769,7 +24477,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       variantMapping
     });
     const Component = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
-    const classes = useUtilityClasses$K(ownerState);
+    const classes = useUtilityClasses$J(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(TypographyRoot, _extends$1({
       as: Component,
       ref,
@@ -23782,14 +24490,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   }
   const inputAdornmentClasses = generateUtilityClasses("MuiInputAdornment", ["root", "filled", "standard", "outlined", "positionStart", "positionEnd", "disablePointerEvents", "hiddenLabel", "sizeSmall"]);
   var _span;
-  const _excluded$U = ["children", "className", "component", "disablePointerEvents", "disableTypography", "position", "variant"];
+  const _excluded$R = ["children", "className", "component", "disablePointerEvents", "disableTypography", "position", "variant"];
   const overridesResolver$3 = (props, styles2) => {
     const {
       ownerState
     } = props;
     return [styles2.root, styles2[`position${capitalize$1(ownerState.position)}`], ownerState.disablePointerEvents === true && styles2.disablePointerEvents, styles2[ownerState.variant]];
   };
-  const useUtilityClasses$J = (ownerState) => {
+  const useUtilityClasses$I = (ownerState) => {
     const {
       classes,
       disablePointerEvents,
@@ -23846,7 +24554,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       disableTypography = false,
       position: position2,
       variant: variantProp
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$R);
     const muiFormControl = useFormControl() || {};
     let variant = variantProp;
     if (variantProp && muiFormControl.variant)
@@ -23861,7 +24569,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       position: position2,
       variant
     });
-    const classes = useUtilityClasses$J(ownerState);
+    const classes = useUtilityClasses$I(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(FormControlContext.Provider, {
       value: null,
       children: /* @__PURE__ */ jsxRuntimeExports.jsx(InputAdornmentRoot, _extends$1({
@@ -23897,7 +24605,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   const CalendarIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
   }), "Calendar");
-  const ClockIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
+  createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
     children: [/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
       d: "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
     }), /* @__PURE__ */ jsxRuntimeExports.jsx("path", {
@@ -23917,7 +24625,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   const ClearIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Clear");
-  const _excluded$T = ["clearable", "onClear", "InputProps", "sx", "slots", "slotProps"], _excluded2$8 = ["ownerState"];
+  const _excluded$Q = ["clearable", "onClear", "InputProps", "sx", "slots", "slotProps"], _excluded2$8 = ["ownerState"];
   const useClearableField = (props) => {
     const translations = usePickersTranslations();
     const {
@@ -23927,7 +24635,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       sx,
       slots,
       slotProps
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Q);
     const IconButton$1 = (slots == null ? void 0 : slots.clearButton) ?? IconButton;
     const _useSlotProps = useSlotProps({
       elementType: IconButton$1,
@@ -23990,7 +24698,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPickersSectionList", slot);
   }
   const pickersSectionListClasses = generateUtilityClasses("MuiPickersSectionList", ["root", "section", "sectionContent"]);
-  const _excluded$S = ["slots", "slotProps", "elements", "sectionListRef"];
+  const _excluded$P = ["slots", "slotProps", "elements", "sectionListRef"];
   const PickersSectionListRoot = styled("div", {
     name: "MuiPickersSectionList",
     slot: "Root",
@@ -24018,7 +24726,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   })({
     outline: "none"
   });
-  const useUtilityClasses$I = (ownerState) => {
+  const useUtilityClasses$H = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -24086,8 +24794,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       slotProps,
       elements,
       sectionListRef
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$S);
-    const classes = useUtilityClasses$I(props);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$P);
+    const classes = useUtilityClasses$H(props);
     const rootRef = reactExports.useRef(null);
     const handleRootRef = useForkRef(ref, rootRef);
     const getRoot = (methodName) => {
@@ -24125,9 +24833,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         return Number(sectionContainer.dataset.sectionindex);
       }
     }));
-    const Root2 = (slots == null ? void 0 : slots.root) ?? PickersSectionListRoot;
+    const Root3 = (slots == null ? void 0 : slots.root) ?? PickersSectionListRoot;
     const rootProps = useSlotProps({
-      elementType: Root2,
+      elementType: Root3,
       externalSlotProps: slotProps == null ? void 0 : slotProps.root,
       externalForwardedProps: other,
       additionalProps: {
@@ -24137,7 +24845,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       className: classes.root,
       ownerState: {}
     });
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2, _extends$1({}, rootProps, {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Root3, _extends$1({}, rootProps, {
       children: rootProps.contentEditable ? elements.map(({
         content,
         before,
@@ -24152,7 +24860,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       })
     }));
   });
-  const _excluded$R = ["elements", "areAllSectionsEmpty", "defaultValue", "label", "value", "onChange", "id", "autoFocus", "endAdornment", "startAdornment", "renderSuffix", "slots", "slotProps", "contentEditable", "tabIndex", "onInput", "onPaste", "onKeyDown", "fullWidth", "name", "readOnly", "inputProps", "inputRef", "sectionListRef"];
+  const _excluded$O = ["elements", "areAllSectionsEmpty", "defaultValue", "label", "value", "onChange", "id", "autoFocus", "endAdornment", "startAdornment", "renderSuffix", "slots", "slotProps", "contentEditable", "tabIndex", "onInput", "onPaste", "onKeyDown", "fullWidth", "name", "readOnly", "inputProps", "inputRef", "sectionListRef"];
   const round$1 = (value) => Math.round(value * 1e5) / 1e5;
   const PickersInputBaseRoot = styled("div", {
     name: "MuiPickersInputBase",
@@ -24280,7 +24988,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Input",
     overridesResolver: (props, styles2) => styles2.hiddenInput
   })(_extends$1({}, visuallyHidden));
-  const useUtilityClasses$H = (ownerState) => {
+  const useUtilityClasses$G = (ownerState) => {
     const {
       focused,
       disabled,
@@ -24330,7 +25038,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       inputProps,
       inputRef,
       sectionListRef
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$R);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$O);
     const rootRef = reactExports.useRef(null);
     const handleRootRef = useForkRef(ref, rootRef);
     const handleInputRef = useForkRef(inputProps == null ? void 0 : inputProps.ref, inputRef);
@@ -24365,7 +25073,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const ownerState = _extends$1({}, props, muiFormControl, {
       isRtl
     });
-    const classes = useUtilityClasses$H(ownerState);
+    const classes = useUtilityClasses$G(ownerState);
     const InputRoot2 = (slots == null ? void 0 : slots.root) || PickersInputBaseRoot;
     const inputRootProps = useSlotProps({
       elementType: InputRoot2,
@@ -24430,7 +25138,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPickersOutlinedInput", slot);
   }
   const pickersOutlinedInputClasses = _extends$1({}, pickersInputBaseClasses, generateUtilityClasses("MuiPickersOutlinedInput", ["root", "notchedOutline", "input"]));
-  const _excluded$Q = ["children", "className", "label", "notched", "shrink"];
+  const _excluded$N = ["children", "className", "label", "notched", "shrink"];
   const OutlineRoot = styled("fieldset", {
     name: "MuiPickersOutlinedInput",
     slot: "NotchedOutline",
@@ -24530,7 +25238,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const {
       className,
       label
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Q);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$N);
     const withLabel = label != null && label !== "";
     const ownerState = _extends$1({}, props, {
       withLabel
@@ -24554,7 +25262,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       })
     }));
   }
-  const _excluded$P = ["label", "autoFocus", "ownerState", "notched"];
+  const _excluded$M = ["label", "autoFocus", "ownerState", "notched"];
   const PickersOutlinedInputRoot = styled(PickersInputBaseRoot, {
     name: "MuiPickersOutlinedInput",
     slot: "Root",
@@ -24621,7 +25329,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }
     }]
   });
-  const useUtilityClasses$G = (ownerState) => {
+  const useUtilityClasses$F = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -24642,12 +25350,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       label,
       ownerState: ownerStateProp,
       notched
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$P);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$M);
     const muiFormControl = useFormControl();
     const ownerState = _extends$1({}, props, ownerStateProp, muiFormControl, {
       color: (muiFormControl == null ? void 0 : muiFormControl.color) || "primary"
     });
-    const classes = useUtilityClasses$G(ownerState);
+    const classes = useUtilityClasses$F(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(PickersInputBase, _extends$1({
       slots: {
         root: PickersOutlinedInputRoot,
@@ -24673,7 +25381,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPickersFilledInput", slot);
   }
   const pickersFilledInputClasses = _extends$1({}, pickersInputBaseClasses, generateUtilityClasses("MuiPickersFilledInput", ["root", "underline", "input"]));
-  const _excluded$O = ["label", "autoFocus", "disableUnderline", "ownerState"];
+  const _excluded$L = ["label", "autoFocus", "disableUnderline", "ownerState"];
   const PickersFilledInputRoot = styled(PickersInputBaseRoot, {
     name: "MuiPickersFilledInput",
     slot: "Root",
@@ -24840,7 +25548,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }
     }]
   });
-  const useUtilityClasses$F = (ownerState) => {
+  const useUtilityClasses$E = (ownerState) => {
     const {
       classes,
       disableUnderline
@@ -24861,12 +25569,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       label,
       disableUnderline = false,
       ownerState: ownerStateProp
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$O);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$L);
     const muiFormControl = useFormControl();
     const ownerState = _extends$1({}, props, ownerStateProp, muiFormControl, {
       color: (muiFormControl == null ? void 0 : muiFormControl.color) || "primary"
     });
-    const classes = useUtilityClasses$F(ownerState);
+    const classes = useUtilityClasses$E(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(PickersInputBase, _extends$1({
       slots: {
         root: PickersFilledInputRoot,
@@ -24888,7 +25596,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPickersFilledInput", slot);
   }
   const pickersInputClasses = _extends$1({}, pickersInputBaseClasses, generateUtilityClasses("MuiPickersInput", ["root", "input"]));
-  const _excluded$N = ["label", "autoFocus", "disableUnderline", "ownerState"];
+  const _excluded$K = ["label", "autoFocus", "disableUnderline", "ownerState"];
   const PickersInputRoot = styled(PickersInputBaseRoot, {
     name: "MuiPickersInput",
     slot: "Root",
@@ -24974,7 +25682,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }]
     };
   });
-  const useUtilityClasses$E = (ownerState) => {
+  const useUtilityClasses$D = (ownerState) => {
     const {
       classes,
       disableUnderline
@@ -24995,13 +25703,13 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       label,
       disableUnderline = false,
       ownerState: ownerStateProp
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$N);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$K);
     const muiFormControl = useFormControl();
     const ownerState = _extends$1({}, props, ownerStateProp, muiFormControl, {
       disableUnderline,
       color: (muiFormControl == null ? void 0 : muiFormControl.color) || "primary"
     });
-    const classes = useUtilityClasses$E(ownerState);
+    const classes = useUtilityClasses$D(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(PickersInputBase, _extends$1({
       slots: {
         root: PickersInputRoot
@@ -25013,7 +25721,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }));
   });
   PickersInput.muiName = "Input";
-  const _excluded$M = ["onFocus", "onBlur", "className", "color", "disabled", "error", "variant", "required", "InputProps", "inputProps", "inputRef", "sectionListRef", "elements", "areAllSectionsEmpty", "onClick", "onKeyDown", "onKeyUp", "onPaste", "onInput", "endAdornment", "startAdornment", "tabIndex", "contentEditable", "focused", "value", "onChange", "fullWidth", "id", "name", "helperText", "FormHelperTextProps", "label", "InputLabelProps"];
+  const _excluded$J = ["onFocus", "onBlur", "className", "color", "disabled", "error", "variant", "required", "InputProps", "inputProps", "inputRef", "sectionListRef", "elements", "areAllSectionsEmpty", "onClick", "onKeyDown", "onKeyUp", "onPaste", "onInput", "endAdornment", "startAdornment", "tabIndex", "contentEditable", "focused", "value", "onChange", "fullWidth", "id", "name", "helperText", "FormHelperTextProps", "label", "InputLabelProps"];
   const VARIANT_COMPONENT = {
     standard: PickersInput,
     filled: PickersFilledInput,
@@ -25024,7 +25732,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     slot: "Root",
     overridesResolver: (props, styles2) => styles2.root
   })({});
-  const useUtilityClasses$D = (ownerState) => {
+  const useUtilityClasses$C = (ownerState) => {
     const {
       focused,
       disabled,
@@ -25079,7 +25787,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       // Props used by InputLabel
       label,
       InputLabelProps
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$M);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$J);
     const rootRef = reactExports.useRef(null);
     const handleRootRef = useForkRef(ref, rootRef);
     const id2 = useId(idProp);
@@ -25093,7 +25801,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       required,
       variant
     });
-    const classes = useUtilityClasses$D(ownerState);
+    const classes = useUtilityClasses$C(ownerState);
     const PickersInputComponent = VARIANT_COMPONENT[variant];
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(PickersTextFieldRoot, _extends$1({
       className: clsx(classes.root, className),
@@ -25144,11 +25852,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }))]
     }));
   });
-  const _excluded$L = ["enableAccessibleFieldDOMStructure"], _excluded2$7 = ["InputProps", "readOnly"], _excluded3$2 = ["onPaste", "onKeyDown", "inputMode", "readOnly", "InputProps", "inputProps", "inputRef"];
+  const _excluded$I = ["enableAccessibleFieldDOMStructure"], _excluded2$7 = ["InputProps", "readOnly"], _excluded3$2 = ["onPaste", "onKeyDown", "inputMode", "readOnly", "InputProps", "inputProps", "inputRef"];
   const convertFieldResponseIntoMuiTextFieldProps = (_ref) => {
     let {
       enableAccessibleFieldDOMStructure
-    } = _ref, fieldResponse = _objectWithoutPropertiesLoose(_ref, _excluded$L);
+    } = _ref, fieldResponse = _objectWithoutPropertiesLoose(_ref, _excluded$I);
     if (enableAccessibleFieldDOMStructure) {
       const {
         InputProps: InputProps2,
@@ -25181,7 +25889,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       })
     });
   };
-  const _excluded$K = ["slots", "slotProps", "InputProps", "inputProps"];
+  const _excluded$H = ["slots", "slotProps", "InputProps", "inputProps"];
   const DateTimeField = /* @__PURE__ */ reactExports.forwardRef(function DateTimeField2(inProps, inRef) {
     const themeProps = useThemeProps({
       props: inProps,
@@ -25192,7 +25900,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       slotProps,
       InputProps,
       inputProps
-    } = themeProps, other = _objectWithoutPropertiesLoose(themeProps, _excluded$K);
+    } = themeProps, other = _objectWithoutPropertiesLoose(themeProps, _excluded$H);
     const ownerState = themeProps;
     const TextField$1 = (slots == null ? void 0 : slots.textField) ?? (inProps.enableAccessibleFieldDOMStructure ? PickersTextField : TextField);
     const textFieldProps = useSlotProps({
@@ -25218,8 +25926,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiTab", slot);
   }
   const tabClasses = generateUtilityClasses("MuiTab", ["root", "labelIcon", "textColorInherit", "textColorPrimary", "textColorSecondary", "selected", "disabled", "fullWidth", "wrapped", "iconWrapper"]);
-  const _excluded$J = ["className", "disabled", "disableFocusRipple", "fullWidth", "icon", "iconPosition", "indicator", "label", "onChange", "onClick", "onFocus", "selected", "selectionFollowsFocus", "textColor", "value", "wrapped"];
-  const useUtilityClasses$C = (ownerState) => {
+  const _excluded$G = ["className", "disabled", "disableFocusRipple", "fullWidth", "icon", "iconPosition", "indicator", "label", "onChange", "onClick", "onFocus", "selected", "selectionFollowsFocus", "textColor", "value", "wrapped"];
+  const useUtilityClasses$B = (ownerState) => {
     const {
       classes,
       textColor,
@@ -25338,7 +26046,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       textColor = "inherit",
       value,
       wrapped = false
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$J);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$G);
     const ownerState = _extends$1({}, props, {
       disabled,
       disableFocusRipple,
@@ -25350,7 +26058,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       textColor,
       wrapped
     });
-    const classes = useUtilityClasses$C(ownerState);
+    const classes = useUtilityClasses$B(ownerState);
     const icon = iconProp && label && /* @__PURE__ */ reactExports.isValidElement(iconProp) ? /* @__PURE__ */ reactExports.cloneElement(iconProp, {
       className: clsx(classes.iconWrapper, iconProp.props.className)
     }) : iconProp;
@@ -25430,7 +26138,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     requestAnimationFrame(step);
     return cancel;
   }
-  const _excluded$I = ["onChange"];
+  const _excluded$F = ["onChange"];
   const styles = {
     width: 99,
     height: 99,
@@ -25441,7 +26149,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   function ScrollbarSize(props) {
     const {
       onChange
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$I);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$F);
     const scrollbarHeight = reactExports.useRef();
     const nodeRef = reactExports.useRef(null);
     const setMeasurements = () => {
@@ -25481,8 +26189,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiTabScrollButton", slot);
   }
   const tabScrollButtonClasses = generateUtilityClasses("MuiTabScrollButton", ["root", "vertical", "horizontal", "disabled"]);
-  const _excluded$H = ["className", "slots", "slotProps", "direction", "orientation", "disabled"];
-  const useUtilityClasses$B = (ownerState) => {
+  const _excluded$E = ["className", "slots", "slotProps", "direction", "orientation", "disabled"];
+  const useUtilityClasses$A = (ownerState) => {
     const {
       classes,
       orientation,
@@ -25529,12 +26237,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       slots = {},
       slotProps = {},
       direction
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$H);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$E);
     const isRtl = useRtl();
     const ownerState = _extends$1({
       isRtl
     }, props);
-    const classes = useUtilityClasses$B(ownerState);
+    const classes = useUtilityClasses$A(ownerState);
     const StartButtonIcon = (_slots$StartScrollBut = slots.StartScrollButtonIcon) != null ? _slots$StartScrollBut : KeyboardArrowLeft;
     const EndButtonIcon = (_slots$EndScrollButto = slots.EndScrollButtonIcon) != null ? _slots$EndScrollButto : KeyboardArrowRight;
     const startButtonIconProps = useSlotProps({
@@ -25568,7 +26276,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiTabs", slot);
   }
   const tabsClasses = generateUtilityClasses("MuiTabs", ["root", "vertical", "flexContainer", "flexContainerVertical", "centered", "scroller", "fixed", "scrollableX", "scrollableY", "hideScrollbar", "scrollButtons", "scrollButtonsHideMobile", "indicator"]);
-  const _excluded$G = ["aria-label", "aria-labelledby", "action", "centered", "children", "className", "component", "allowScrollButtonsMobile", "indicatorColor", "onChange", "orientation", "ScrollButtonComponent", "scrollButtons", "selectionFollowsFocus", "slots", "slotProps", "TabIndicatorProps", "TabScrollButtonProps", "textColor", "value", "variant", "visibleScrollbar"];
+  const _excluded$D = ["aria-label", "aria-labelledby", "action", "centered", "children", "className", "component", "allowScrollButtonsMobile", "indicatorColor", "onChange", "orientation", "ScrollButtonComponent", "scrollButtons", "selectionFollowsFocus", "slots", "slotProps", "TabIndicatorProps", "TabScrollButtonProps", "textColor", "value", "variant", "visibleScrollbar"];
   const nextItem = (list, item) => {
     if (list === item) {
       return list.firstChild;
@@ -25606,7 +26314,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }
     }
   };
-  const useUtilityClasses$A = (ownerState) => {
+  const useUtilityClasses$z = (ownerState) => {
     const {
       vertical,
       fixed,
@@ -25775,7 +26483,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       value,
       variant = "standard",
       visibleScrollbar = false
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$G);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$D);
     const scrollable = variant === "scrollable";
     const vertical = orientation === "vertical";
     const scrollStart = vertical ? "scrollTop" : "scrollLeft";
@@ -25800,7 +26508,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       centered: centered && !scrollable,
       scrollButtonsHideMobile: !allowScrollButtonsMobile
     });
-    const classes = useUtilityClasses$A(ownerState);
+    const classes = useUtilityClasses$z(ownerState);
     const startScrollButtonIconProps = useSlotProps({
       elementType: slots.StartScrollButtonIcon,
       externalSlotProps: slotProps.startScrollButtonIcon,
@@ -26186,7 +26894,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }
     return "hours";
   };
-  const useUtilityClasses$z = (ownerState) => {
+  const useUtilityClasses$y = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -26226,7 +26934,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       sx
     } = props;
     const translations = usePickersTranslations();
-    const classes = useUtilityClasses$z(props);
+    const classes = useUtilityClasses$y(props);
     const handleChange = (event, value) => {
       onViewChange(tabToView(value));
     };
@@ -26259,8 +26967,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPickersToolbarText", slot);
   }
   const pickersToolbarTextClasses = generateUtilityClasses("MuiPickersToolbarText", ["root", "selected"]);
-  const _excluded$F = ["className", "selected", "value"];
-  const useUtilityClasses$y = (ownerState) => {
+  const _excluded$C = ["className", "selected", "value"];
+  const useUtilityClasses$x = (ownerState) => {
     const {
       classes,
       selected
@@ -26293,8 +27001,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const {
       className,
       value
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$F);
-    const classes = useUtilityClasses$y(props);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$C);
+    const classes = useUtilityClasses$x(props);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(PickersToolbarTextRoot, _extends$1({
       ref,
       className: clsx(className, classes.root),
@@ -26307,8 +27015,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPickersToolbar", slot);
   }
   const pickersToolbarClasses = generateUtilityClasses("MuiPickersToolbar", ["root", "content"]);
-  const _excluded$E = ["children", "className", "toolbarTitle", "hidden", "titleId", "isLandscape", "classes", "landscapeDirection"];
-  const useUtilityClasses$x = (ownerState) => {
+  const _excluded$B = ["children", "className", "toolbarTitle", "hidden", "titleId", "isLandscape", "classes", "landscapeDirection"];
+  const useUtilityClasses$w = (ownerState) => {
     const {
       classes,
       isLandscape
@@ -26387,9 +27095,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       toolbarTitle,
       hidden,
       titleId
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$E);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$B);
     const ownerState = props;
-    const classes = useUtilityClasses$x(ownerState);
+    const classes = useUtilityClasses$w(ownerState);
     if (hidden) {
       return null;
     }
@@ -26416,8 +27124,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   const buttonClasses = generateUtilityClasses("MuiButton", ["root", "text", "textInherit", "textPrimary", "textSecondary", "textSuccess", "textError", "textInfo", "textWarning", "outlined", "outlinedInherit", "outlinedPrimary", "outlinedSecondary", "outlinedSuccess", "outlinedError", "outlinedInfo", "outlinedWarning", "contained", "containedInherit", "containedPrimary", "containedSecondary", "containedSuccess", "containedError", "containedInfo", "containedWarning", "disableElevation", "focusVisible", "disabled", "colorInherit", "colorPrimary", "colorSecondary", "colorSuccess", "colorError", "colorInfo", "colorWarning", "textSizeSmall", "textSizeMedium", "textSizeLarge", "outlinedSizeSmall", "outlinedSizeMedium", "outlinedSizeLarge", "containedSizeSmall", "containedSizeMedium", "containedSizeLarge", "sizeMedium", "sizeSmall", "sizeLarge", "fullWidth", "startIcon", "endIcon", "icon", "iconSizeSmall", "iconSizeMedium", "iconSizeLarge"]);
   const ButtonGroupContext = /* @__PURE__ */ reactExports.createContext({});
   const ButtonGroupButtonContext = /* @__PURE__ */ reactExports.createContext(void 0);
-  const _excluded$D = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
-  const useUtilityClasses$w = (ownerState) => {
+  const _excluded$A = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
+  const useUtilityClasses$v = (ownerState) => {
     const {
       color: color2,
       disableElevation,
@@ -26642,7 +27350,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       startIcon: startIconProp,
       type,
       variant = "text"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$D);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$A);
     const ownerState = _extends$1({}, props, {
       color: color2,
       component,
@@ -26654,7 +27362,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       type,
       variant
     });
-    const classes = useUtilityClasses$w(ownerState);
+    const classes = useUtilityClasses$v(ownerState);
     const startIcon = startIconProp && /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonStartIcon, {
       className: classes.startIcon,
       ownerState,
@@ -26680,8 +27388,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       children: [startIcon, children, endIcon]
     }));
   });
-  const _excluded$C = ["align", "className", "selected", "typographyClassName", "value", "variant", "width"];
-  const useUtilityClasses$v = (ownerState) => {
+  const _excluded$z = ["align", "className", "selected", "typographyClassName", "value", "variant", "width"];
+  const useUtilityClasses$u = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -26712,8 +27420,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       value,
       variant,
       width: width2
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$C);
-    const classes = useUtilityClasses$v(props);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$z);
+    const classes = useUtilityClasses$u(props);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(PickersToolbarButtonRoot, _extends$1({
       variant: "text",
       ref,
@@ -26779,8 +27487,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   const VIEW_HEIGHT = 336;
   const DIGITAL_CLOCK_VIEW_HEIGHT = 232;
   const MULTI_SECTION_CLOCK_SECTION_WIDTH = 48;
-  const _excluded$B = ["ampm", "ampmInClock", "value", "onChange", "view", "isLandscape", "onViewChange", "toolbarFormat", "toolbarPlaceholder", "views", "disabled", "readOnly", "toolbarVariant", "toolbarTitle", "className"];
-  const useUtilityClasses$u = (ownerState) => {
+  const _excluded$y = ["ampm", "ampmInClock", "value", "onChange", "view", "isLandscape", "onViewChange", "toolbarFormat", "toolbarPlaceholder", "views", "disabled", "readOnly", "toolbarVariant", "toolbarTitle", "className"];
+  const useUtilityClasses$t = (ownerState) => {
     const {
       classes,
       isLandscape,
@@ -26977,7 +27685,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       toolbarVariant = "mobile",
       toolbarTitle: inToolbarTitle,
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$B);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$y);
     const isRtl = useRtl();
     const ownerState = _extends$1({}, props, {
       isRtl
@@ -26990,7 +27698,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const showAmPmControl = Boolean(ampm && !ampmInClock);
     const isDesktop = toolbarVariant === "desktop";
     const translations = usePickersTranslations();
-    const classes = useUtilityClasses$u(ownerState);
+    const classes = useUtilityClasses$t(ownerState);
     const toolbarTitle = inToolbarTitle ?? translations.dateTimePickerToolbarTitle;
     const formatHours = (time) => ampm ? utils2.format(time, "hours12h") : utils2.format(time, "hours24h");
     const dateText = reactExports.useMemo(() => {
@@ -27281,7 +27989,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   };
   const getPickersFadeTransitionGroupUtilityClass = (slot) => generateUtilityClass("MuiPickersFadeTransitionGroup", slot);
   generateUtilityClasses("MuiPickersFadeTransitionGroup", ["root"]);
-  const useUtilityClasses$t = (ownerState) => {
+  const useUtilityClasses$s = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -27309,7 +28017,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       reduceAnimations,
       transKey
     } = props;
-    const classes = useUtilityClasses$t(props);
+    const classes = useUtilityClasses$s(props);
     const theme = useTheme$1();
     if (reduceAnimations) {
       return children;
@@ -27333,8 +28041,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPickersDay", slot);
   }
   const pickersDayClasses = generateUtilityClasses("MuiPickersDay", ["root", "dayWithMargin", "dayOutsideMonth", "hiddenDaySpacingFiller", "today", "selected", "disabled"]);
-  const _excluded$A = ["autoFocus", "className", "day", "disabled", "disableHighlightToday", "disableMargin", "hidden", "isAnimating", "onClick", "onDaySelect", "onFocus", "onBlur", "onKeyDown", "onMouseDown", "onMouseEnter", "outsideCurrentMonth", "selected", "showDaysOutsideCurrentMonth", "children", "today", "isFirstVisibleCell", "isLastVisibleCell"];
-  const useUtilityClasses$s = (ownerState) => {
+  const _excluded$x = ["autoFocus", "className", "day", "disabled", "disableHighlightToday", "disableMargin", "hidden", "isAnimating", "onClick", "onDaySelect", "onFocus", "onBlur", "onKeyDown", "onMouseDown", "onMouseEnter", "outsideCurrentMonth", "selected", "showDaysOutsideCurrentMonth", "children", "today", "isFirstVisibleCell", "isLastVisibleCell"];
+  const useUtilityClasses$r = (ownerState) => {
     const {
       selected,
       disableMargin,
@@ -27470,7 +28178,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       showDaysOutsideCurrentMonth = false,
       children,
       today: isToday = false
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$A);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$x);
     const ownerState = _extends$1({}, props, {
       autoFocus,
       disabled,
@@ -27480,7 +28188,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       showDaysOutsideCurrentMonth,
       today: isToday
     });
-    const classes = useUtilityClasses$s(ownerState);
+    const classes = useUtilityClasses$r(ownerState);
     const utils2 = useUtils();
     const ref = reactExports.useRef(null);
     const handleRef = useForkRef(ref, forwardedRef);
@@ -27533,8 +28241,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   const PickersDay = /* @__PURE__ */ reactExports.memo(PickersDayRaw);
   const getPickersSlideTransitionUtilityClass = (slot) => generateUtilityClass("MuiPickersSlideTransition", slot);
   const pickersSlideTransitionClasses = generateUtilityClasses("MuiPickersSlideTransition", ["root", "slideEnter-left", "slideEnter-right", "slideEnterActive", "slideExit", "slideExitActiveLeft-left", "slideExitActiveLeft-right"]);
-  const _excluded$z = ["children", "className", "reduceAnimations", "slideDirection", "transKey", "classes"];
-  const useUtilityClasses$r = (ownerState) => {
+  const _excluded$w = ["children", "className", "reduceAnimations", "slideDirection", "transKey", "classes"];
+  const useUtilityClasses$q = (ownerState) => {
     const {
       classes,
       slideDirection
@@ -27623,8 +28331,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       reduceAnimations,
       transKey
       // extracting `classes` from `other`
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$z);
-    const classes = useUtilityClasses$r(props);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$w);
+    const classes = useUtilityClasses$q(props);
     const theme = useTheme$1();
     if (reduceAnimations) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
@@ -27656,8 +28364,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   }
   const getDayCalendarUtilityClass = (slot) => generateUtilityClass("MuiDayCalendar", slot);
   generateUtilityClasses("MuiDayCalendar", ["root", "header", "weekDayLabel", "loadingContainer", "slideTransition", "monthContainer", "weekContainer", "weekNumberLabel", "weekNumber"]);
-  const _excluded$y = ["parentProps", "day", "focusableDay", "selectedDays", "isDateDisabled", "currentMonthNumber", "isViewFocused"], _excluded2$6 = ["ownerState"];
-  const useUtilityClasses$q = (ownerState) => {
+  const _excluded$v = ["parentProps", "day", "focusableDay", "selectedDays", "isDateDisabled", "currentMonthNumber", "isViewFocused"], _excluded2$6 = ["ownerState"];
+  const useUtilityClasses$p = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -27780,7 +28488,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       isDateDisabled,
       currentMonthNumber,
       isViewFocused
-    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$y);
+    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$v);
     const {
       disabled,
       disableHighlightToday,
@@ -27881,7 +28589,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       timezone
     } = props;
     const now = useNow(timezone);
-    const classes = useUtilityClasses$q(props);
+    const classes = useUtilityClasses$p(props);
     const isRtl = useRtl();
     const isDateDisabled = useIsDateDisabled({
       shouldDisableDate,
@@ -28085,8 +28793,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPickersMonth", slot);
   }
   const pickersMonthClasses = generateUtilityClasses("MuiPickersMonth", ["root", "monthButton", "disabled", "selected"]);
-  const _excluded$x = ["autoFocus", "className", "children", "disabled", "selected", "value", "tabIndex", "onClick", "onKeyDown", "onFocus", "onBlur", "aria-current", "aria-label", "monthsPerRow", "slots", "slotProps"];
-  const useUtilityClasses$p = (ownerState) => {
+  const _excluded$u = ["autoFocus", "className", "children", "disabled", "selected", "value", "tabIndex", "onClick", "onKeyDown", "onFocus", "onBlur", "aria-current", "aria-label", "monthsPerRow", "slots", "slotProps"];
+  const useUtilityClasses$o = (ownerState) => {
     const {
       disabled,
       selected,
@@ -28179,9 +28887,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       "aria-label": ariaLabel,
       slots,
       slotProps
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$x);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$u);
     const ref = reactExports.useRef(null);
-    const classes = useUtilityClasses$p(props);
+    const classes = useUtilityClasses$o(props);
     useEnhancedEffect(() => {
       var _a;
       if (autoFocus) {
@@ -28221,8 +28929,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiMonthCalendar", slot);
   }
   generateUtilityClasses("MuiMonthCalendar", ["root"]);
-  const _excluded$w = ["className", "value", "defaultValue", "referenceDate", "disabled", "disableFuture", "disablePast", "maxDate", "minDate", "onChange", "shouldDisableMonth", "readOnly", "disableHighlightToday", "autoFocus", "onMonthFocus", "hasFocus", "onFocusedViewChange", "monthsPerRow", "timezone", "gridLabelId", "slots", "slotProps"];
-  const useUtilityClasses$o = (ownerState) => {
+  const _excluded$t = ["className", "value", "defaultValue", "referenceDate", "disabled", "disableFuture", "disablePast", "maxDate", "minDate", "onChange", "shouldDisableMonth", "readOnly", "disableHighlightToday", "autoFocus", "onMonthFocus", "hasFocus", "onFocusedViewChange", "monthsPerRow", "timezone", "gridLabelId", "slots", "slotProps"];
+  const useUtilityClasses$n = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -28283,7 +28991,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       gridLabelId,
       slots,
       slotProps
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$w);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$t);
     const {
       value,
       handleValueChange,
@@ -28312,7 +29020,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       // eslint-disable-line react-hooks/exhaustive-deps
     );
     const ownerState = props;
-    const classes = useUtilityClasses$o(ownerState);
+    const classes = useUtilityClasses$n(ownerState);
     const todayMonth = reactExports.useMemo(() => utils2.getMonth(now), [utils2, now]);
     const selectedMonth = reactExports.useMemo(() => {
       if (value != null) {
@@ -28434,8 +29142,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPickersYear", slot);
   }
   const pickersYearClasses = generateUtilityClasses("MuiPickersYear", ["root", "yearButton", "selected", "disabled"]);
-  const _excluded$v = ["autoFocus", "className", "children", "disabled", "selected", "value", "tabIndex", "onClick", "onKeyDown", "onFocus", "onBlur", "aria-current", "yearsPerRow", "slots", "slotProps"];
-  const useUtilityClasses$n = (ownerState) => {
+  const _excluded$s = ["autoFocus", "className", "children", "disabled", "selected", "value", "tabIndex", "onClick", "onKeyDown", "onFocus", "onBlur", "aria-current", "yearsPerRow", "slots", "slotProps"];
+  const useUtilityClasses$m = (ownerState) => {
     const {
       disabled,
       selected,
@@ -28527,9 +29235,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       "aria-current": ariaCurrent,
       slots,
       slotProps
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$v);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$s);
     const ref = reactExports.useRef(null);
-    const classes = useUtilityClasses$n(props);
+    const classes = useUtilityClasses$m(props);
     useEnhancedEffect(() => {
       var _a;
       if (autoFocus) {
@@ -28568,8 +29276,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiYearCalendar", slot);
   }
   generateUtilityClasses("MuiYearCalendar", ["root"]);
-  const _excluded$u = ["autoFocus", "className", "value", "defaultValue", "referenceDate", "disabled", "disableFuture", "disablePast", "maxDate", "minDate", "onChange", "readOnly", "shouldDisableYear", "disableHighlightToday", "onYearFocus", "hasFocus", "onFocusedViewChange", "yearsPerRow", "timezone", "gridLabelId", "slots", "slotProps"];
-  const useUtilityClasses$m = (ownerState) => {
+  const _excluded$r = ["autoFocus", "className", "value", "defaultValue", "referenceDate", "disabled", "disableFuture", "disablePast", "maxDate", "minDate", "onChange", "readOnly", "shouldDisableYear", "disableHighlightToday", "onYearFocus", "hasFocus", "onFocusedViewChange", "yearsPerRow", "timezone", "gridLabelId", "slots", "slotProps"];
+  const useUtilityClasses$l = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -28635,7 +29343,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       gridLabelId,
       slots,
       slotProps
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$u);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$r);
     const {
       value,
       handleValueChange,
@@ -28664,7 +29372,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       // eslint-disable-line react-hooks/exhaustive-deps
     );
     const ownerState = props;
-    const classes = useUtilityClasses$m(ownerState);
+    const classes = useUtilityClasses$l(ownerState);
     const todayYear = reactExports.useMemo(() => utils2.getYear(now), [utils2, now]);
     const selectedYear = reactExports.useMemo(() => {
       if (value != null) {
@@ -28898,7 +29606,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPickersArrowSwitcher", slot);
   }
   generateUtilityClasses("MuiPickersArrowSwitcher", ["root", "spacer", "button", "previousIconButton", "nextIconButton", "leftArrowIcon", "rightArrowIcon"]);
-  const _excluded$t = ["children", "className", "slots", "slotProps", "isNextDisabled", "isNextHidden", "onGoToNext", "nextLabel", "isPreviousDisabled", "isPreviousHidden", "onGoToPrevious", "previousLabel", "labelId"], _excluded2$5 = ["ownerState"], _excluded3$1 = ["ownerState"];
+  const _excluded$q = ["children", "className", "slots", "slotProps", "isNextDisabled", "isNextHidden", "onGoToNext", "nextLabel", "isPreviousDisabled", "isPreviousHidden", "onGoToPrevious", "previousLabel", "labelId"], _excluded2$5 = ["ownerState"], _excluded3$1 = ["ownerState"];
   const PickersArrowSwitcherRoot = styled("div", {
     name: "MuiPickersArrowSwitcher",
     slot: "Root",
@@ -28929,7 +29637,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }
     }]
   });
-  const useUtilityClasses$l = (ownerState) => {
+  const useUtilityClasses$k = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -28964,9 +29672,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       onGoToPrevious,
       previousLabel,
       labelId
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$t);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$q);
     const ownerState = props;
-    const classes = useUtilityClasses$l(ownerState);
+    const classes = useUtilityClasses$k(ownerState);
     const nextProps = {
       isDisabled: isNextDisabled,
       isHidden: isNextHidden,
@@ -29053,8 +29761,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }))]
     }));
   });
-  const _excluded$s = ["slots", "slotProps", "currentMonth", "disabled", "disableFuture", "disablePast", "maxDate", "minDate", "onMonthChange", "onViewChange", "view", "reduceAnimations", "views", "labelId", "className", "timezone", "format"], _excluded2$4 = ["ownerState"];
-  const useUtilityClasses$k = (ownerState) => {
+  const _excluded$p = ["slots", "slotProps", "currentMonth", "disabled", "disableFuture", "disablePast", "maxDate", "minDate", "onMonthChange", "onViewChange", "view", "reduceAnimations", "views", "labelId", "className", "timezone", "format"], _excluded2$4 = ["ownerState"];
+  const useUtilityClasses$j = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -29157,9 +29865,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       className,
       timezone,
       format = `${utils2.formats.month} ${utils2.formats.year}`
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$s);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$p);
     const ownerState = props;
-    const classes = useUtilityClasses$k(props);
+    const classes = useUtilityClasses$j(props);
     const SwitchViewButton = (slots == null ? void 0 : slots.switchViewButton) ?? PickersCalendarHeaderSwitchViewButton;
     const switchViewButtonProps = useSlotProps({
       elementType: SwitchViewButton,
@@ -29263,8 +29971,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   };
   const getDateCalendarUtilityClass = (slot) => generateUtilityClass("MuiDateCalendar", slot);
   generateUtilityClasses("MuiDateCalendar", ["root", "viewTransitionContainer"]);
-  const _excluded$r = ["autoFocus", "onViewChange", "value", "defaultValue", "referenceDate", "disableFuture", "disablePast", "onChange", "onYearChange", "onMonthChange", "reduceAnimations", "shouldDisableDate", "shouldDisableMonth", "shouldDisableYear", "view", "views", "openTo", "className", "disabled", "readOnly", "minDate", "maxDate", "disableHighlightToday", "focusedView", "onFocusedViewChange", "showDaysOutsideCurrentMonth", "fixedWeekNumber", "dayOfWeekFormatter", "slots", "slotProps", "loading", "renderLoading", "displayWeekNumber", "yearsPerRow", "monthsPerRow", "timezone"];
-  const useUtilityClasses$j = (ownerState) => {
+  const _excluded$o = ["autoFocus", "onViewChange", "value", "defaultValue", "referenceDate", "disableFuture", "disablePast", "onChange", "onYearChange", "onMonthChange", "reduceAnimations", "shouldDisableDate", "shouldDisableMonth", "shouldDisableYear", "view", "views", "openTo", "className", "disabled", "readOnly", "minDate", "maxDate", "disableHighlightToday", "focusedView", "onFocusedViewChange", "showDaysOutsideCurrentMonth", "fixedWeekNumber", "dayOfWeekFormatter", "slots", "slotProps", "loading", "renderLoading", "displayWeekNumber", "yearsPerRow", "monthsPerRow", "timezone"];
+  const useUtilityClasses$i = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -29351,7 +30059,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       yearsPerRow,
       monthsPerRow,
       timezone: timezoneProp
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$r);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$o);
     const {
       value,
       handleValueChange,
@@ -29485,7 +30193,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }
     }, [value]);
     const ownerState = props;
-    const classes = useUtilityClasses$j(ownerState);
+    const classes = useUtilityClasses$i(ownerState);
     const baseDateValidationProps = {
       disablePast,
       disableFuture,
@@ -31034,7 +31742,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPopper", slot);
   }
   generateUtilityClasses("MuiPopper", ["root"]);
-  const _excluded$q = ["anchorEl", "children", "direction", "disablePortal", "modifiers", "open", "placement", "popperOptions", "popperRef", "slotProps", "slots", "TransitionProps", "ownerState"], _excluded2$3 = ["anchorEl", "children", "container", "direction", "disablePortal", "keepMounted", "modifiers", "open", "placement", "popperOptions", "popperRef", "style", "transition", "slotProps", "slots"];
+  const _excluded$n = ["anchorEl", "children", "direction", "disablePortal", "modifiers", "open", "placement", "popperOptions", "popperRef", "slotProps", "slots", "TransitionProps", "ownerState"], _excluded2$3 = ["anchorEl", "children", "container", "direction", "disablePortal", "keepMounted", "modifiers", "open", "placement", "popperOptions", "popperRef", "style", "transition", "slotProps", "slots"];
   function flipPlacement(placement, direction) {
     if (direction === "ltr") {
       return placement;
@@ -31058,7 +31766,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   function isHTMLElement(element) {
     return element.nodeType !== void 0;
   }
-  const useUtilityClasses$i = (ownerState) => {
+  const useUtilityClasses$h = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -31085,7 +31793,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       TransitionProps
       // @ts-ignore internal logic
       // prevent from spreading to DOM, it can come from the parent component e.g. Select.
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$q);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$n);
     const tooltipRef = reactExports.useRef(null);
     const ownRef = useForkRef(tooltipRef, forwardedRef);
     const popperRef = reactExports.useRef(null);
@@ -31158,10 +31866,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     if (TransitionProps !== null) {
       childProps.TransitionProps = TransitionProps;
     }
-    const classes = useUtilityClasses$i(props);
-    const Root2 = (_slots$root = slots.root) != null ? _slots$root : "div";
+    const classes = useUtilityClasses$h(props);
+    const Root3 = (_slots$root = slots.root) != null ? _slots$root : "div";
     const rootProps = useSlotProps({
-      elementType: Root2,
+      elementType: Root3,
       externalSlotProps: slotProps.root,
       externalForwardedProps: other,
       additionalProps: {
@@ -31171,7 +31879,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       ownerState: props,
       className: classes.root
     });
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2, _extends$1({}, rootProps, {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Root3, _extends$1({}, rootProps, {
       children: typeof children === "function" ? children(childProps) : children
     }));
   });
@@ -31245,7 +31953,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }))
     });
   });
-  const _excluded$p = ["anchorEl", "component", "components", "componentsProps", "container", "disablePortal", "keepMounted", "modifiers", "open", "placement", "popperOptions", "popperRef", "transition", "slots", "slotProps"];
+  const _excluded$m = ["anchorEl", "component", "components", "componentsProps", "container", "disablePortal", "keepMounted", "modifiers", "open", "placement", "popperOptions", "popperRef", "transition", "slots", "slotProps"];
   const PopperRoot = styled(Popper$1, {
     name: "MuiPopper",
     slot: "Root",
@@ -31274,7 +31982,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       transition,
       slots,
       slotProps
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$p);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$m);
     const RootComponent = (_slots$root = slots == null ? void 0 : slots.root) != null ? _slots$root : components == null ? void 0 : components.Root;
     const otherProps = _extends$1({
       anchorEl,
@@ -31303,8 +32011,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiPickersPopper", slot);
   }
   generateUtilityClasses("MuiPickersPopper", ["root", "paper"]);
-  const _excluded$o = ["PaperComponent", "popperPlacement", "ownerState", "children", "paperSlotProps", "paperClasses", "onPaperClick", "onPaperTouchStart"];
-  const useUtilityClasses$h = (ownerState) => {
+  const _excluded$l = ["PaperComponent", "popperPlacement", "ownerState", "children", "paperSlotProps", "paperClasses", "onPaperClick", "onPaperTouchStart"];
+  const useUtilityClasses$g = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -31430,7 +32138,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       onPaperTouchStart
       // picks up the style props provided by `Transition`
       // https://mui.com/material-ui/transitions/#child-requirement
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$o);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$l);
     const ownerState = _extends$1({}, inOwnerState, {
       placement: popperPlacement
     });
@@ -31510,7 +32218,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const handleRef = useForkRef(paperRef, containerRef);
     const handlePaperRef = useForkRef(handleRef, clickAwayRef);
     const ownerState = props;
-    const classes = useUtilityClasses$h(ownerState);
+    const classes = useUtilityClasses$g(ownerState);
     const defaultReduceAnimations = useDefaultReduceAnimations();
     const reduceAnimations = inReduceAnimations ?? defaultReduceAnimations;
     const handleKeyDown2 = (event) => {
@@ -31889,7 +32597,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       actions
     };
   };
-  const _excluded$n = ["className", "sx"];
+  const _excluded$k = ["className", "sx"];
   const usePickerViews = ({
     props,
     propsFromPickerValue,
@@ -31911,7 +32619,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       viewRenderers,
       timezone
     } = props;
-    const propsToForwardToView = _objectWithoutPropertiesLoose(props, _excluded$n);
+    const propsToForwardToView = _objectWithoutPropertiesLoose(props, _excluded$k);
     const {
       view,
       setView,
@@ -32123,8 +32831,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiDialogActions", slot);
   }
   generateUtilityClasses("MuiDialogActions", ["root", "spacing"]);
-  const _excluded$m = ["className", "disableSpacing"];
-  const useUtilityClasses$g = (ownerState) => {
+  const _excluded$j = ["className", "disableSpacing"];
+  const useUtilityClasses$f = (ownerState) => {
     const {
       classes,
       disableSpacing
@@ -32164,18 +32872,18 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const {
       className,
       disableSpacing = false
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$m);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$j);
     const ownerState = _extends$1({}, props, {
       disableSpacing
     });
-    const classes = useUtilityClasses$g(ownerState);
+    const classes = useUtilityClasses$f(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogActionsRoot, _extends$1({
       className: clsx(classes.root, className),
       ownerState,
       ref
     }, other));
   });
-  const _excluded$l = ["onAccept", "onClear", "onCancel", "onSetToday", "actions"];
+  const _excluded$i = ["onAccept", "onClear", "onCancel", "onSetToday", "actions"];
   function PickersActionBar(props) {
     const {
       onAccept,
@@ -32183,7 +32891,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       onCancel,
       onSetToday,
       actions
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$l);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$i);
     const translations = usePickersTranslations();
     if (actions == null || actions.length === 0) {
       return null;
@@ -32227,8 +32935,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiListItemSecondaryAction", slot);
   }
   generateUtilityClasses("MuiListItemSecondaryAction", ["root", "disableGutters"]);
-  const _excluded$k = ["className"];
-  const useUtilityClasses$f = (ownerState) => {
+  const _excluded$h = ["className"];
+  const useUtilityClasses$e = (ownerState) => {
     const {
       disableGutters,
       classes
@@ -32264,12 +32972,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$k);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$h);
     const context = reactExports.useContext(ListContext);
     const ownerState = _extends$1({}, props, {
       disableGutters: context.disableGutters
     });
-    const classes = useUtilityClasses$f(ownerState);
+    const classes = useUtilityClasses$e(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemSecondaryActionRoot, _extends$1({
       className: clsx(classes.root, className),
       ownerState,
@@ -32277,14 +32985,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }, other));
   });
   ListItemSecondaryAction.muiName = "ListItemSecondaryAction";
-  const _excluded$j = ["className"], _excluded2$2 = ["alignItems", "autoFocus", "button", "children", "className", "component", "components", "componentsProps", "ContainerComponent", "ContainerProps", "dense", "disabled", "disableGutters", "disablePadding", "divider", "focusVisibleClassName", "secondaryAction", "selected", "slotProps", "slots"];
+  const _excluded$g = ["className"], _excluded2$2 = ["alignItems", "autoFocus", "button", "children", "className", "component", "components", "componentsProps", "ContainerComponent", "ContainerProps", "dense", "disabled", "disableGutters", "disablePadding", "divider", "focusVisibleClassName", "secondaryAction", "selected", "slotProps", "slots"];
   const overridesResolver$1 = (props, styles2) => {
     const {
       ownerState
     } = props;
     return [styles2.root, ownerState.dense && styles2.dense, ownerState.alignItems === "flex-start" && styles2.alignItemsFlexStart, ownerState.divider && styles2.divider, !ownerState.disableGutters && styles2.gutters, !ownerState.disablePadding && styles2.padding, ownerState.button && styles2.button, ownerState.hasSecondaryAction && styles2.secondaryAction];
   };
-  const useUtilityClasses$e = (ownerState) => {
+  const useUtilityClasses$d = (ownerState) => {
     const {
       alignItems,
       button,
@@ -32413,7 +33121,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       selected = false,
       slotProps = {},
       slots = {}
-    } = props, ContainerProps = _objectWithoutPropertiesLoose(props.ContainerProps, _excluded$j), other = _objectWithoutPropertiesLoose(props, _excluded2$2);
+    } = props, ContainerProps = _objectWithoutPropertiesLoose(props.ContainerProps, _excluded$g), other = _objectWithoutPropertiesLoose(props, _excluded2$2);
     const context = reactExports.useContext(ListContext);
     const childContext = reactExports.useMemo(() => ({
       dense: dense || context.dense || false,
@@ -32442,9 +33150,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       hasSecondaryAction,
       selected
     });
-    const classes = useUtilityClasses$e(ownerState);
+    const classes = useUtilityClasses$d(ownerState);
     const handleRef = useForkRef(listItemRef, ref);
-    const Root2 = slots.root || components.Root || ListItemRoot;
+    const Root3 = slots.root || components.Root || ListItemRoot;
     const rootProps = slotProps.root || componentsProps.root || {};
     const componentProps = _extends$1({
       className: clsx(classes.root, rootProps.className, className),
@@ -32473,7 +33181,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
           ref: handleRef,
           ownerState
         }, ContainerProps, {
-          children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Root2, _extends$1({}, rootProps, !isHostComponent(Root2) && {
+          children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Root3, _extends$1({}, rootProps, !isHostComponent(Root3) && {
             as: Component,
             ownerState: _extends$1({}, ownerState, rootProps.ownerState)
           }, componentProps, {
@@ -32484,10 +33192,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsx(ListContext.Provider, {
       value: childContext,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Root2, _extends$1({}, rootProps, {
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Root3, _extends$1({}, rootProps, {
         as: Component,
         ref: handleRef
-      }, !isHostComponent(Root2) && {
+      }, !isHostComponent(Root3) && {
         ownerState: _extends$1({}, ownerState, rootProps.ownerState)
       }, componentProps, {
         children: [children, secondaryAction && /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemSecondaryAction, {
@@ -32503,8 +33211,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiChip", slot);
   }
   const chipClasses = generateUtilityClasses("MuiChip", ["root", "sizeSmall", "sizeMedium", "colorError", "colorInfo", "colorPrimary", "colorSecondary", "colorSuccess", "colorWarning", "disabled", "clickable", "clickableColorPrimary", "clickableColorSecondary", "deletable", "deletableColorPrimary", "deletableColorSecondary", "outlined", "filled", "outlinedPrimary", "outlinedSecondary", "filledPrimary", "filledSecondary", "avatar", "avatarSmall", "avatarMedium", "avatarColorPrimary", "avatarColorSecondary", "icon", "iconSmall", "iconMedium", "iconColorPrimary", "iconColorSecondary", "label", "labelSmall", "labelMedium", "deleteIcon", "deleteIconSmall", "deleteIconMedium", "deleteIconColorPrimary", "deleteIconColorSecondary", "deleteIconOutlinedColorPrimary", "deleteIconOutlinedColorSecondary", "deleteIconFilledColorPrimary", "deleteIconFilledColorSecondary", "focusVisible"]);
-  const _excluded$i = ["avatar", "className", "clickable", "color", "component", "deleteIcon", "disabled", "icon", "label", "onClick", "onDelete", "onKeyDown", "onKeyUp", "size", "variant", "tabIndex", "skipFocusWhenDisabled"];
-  const useUtilityClasses$d = (ownerState) => {
+  const _excluded$f = ["avatar", "className", "clickable", "color", "component", "deleteIcon", "disabled", "icon", "label", "onClick", "onDelete", "onKeyDown", "onKeyUp", "size", "variant", "tabIndex", "skipFocusWhenDisabled"];
+  const useUtilityClasses$c = (ownerState) => {
     const {
       classes,
       disabled,
@@ -32785,7 +33493,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       tabIndex,
       skipFocusWhenDisabled = false
       // TODO v6: Rename to `focusableWhenDisabled`.
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$i);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$f);
     const chipRef = reactExports.useRef(null);
     const handleRef = useForkRef(chipRef, ref);
     const handleDeleteIconClick = (event) => {
@@ -32826,7 +33534,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       clickable,
       variant
     });
-    const classes = useUtilityClasses$d(ownerState);
+    const classes = useUtilityClasses$c(ownerState);
     const moreProps = component === ButtonBase ? _extends$1({
       component: ComponentProp || "div",
       focusVisibleClassName: classes.focusVisible
@@ -32873,14 +33581,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }), deleteIcon]
     }));
   });
-  const _excluded$h = ["items", "changeImportance", "isLandscape", "onChange", "isValid"], _excluded2$1 = ["getValue"];
+  const _excluded$e = ["items", "changeImportance", "isLandscape", "onChange", "isValid"], _excluded2$1 = ["getValue"];
   function PickersShortcuts(props) {
     const {
       items,
       changeImportance = "accept",
       onChange,
       isValid
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$h);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$e);
     if (items == null || items.length === 0) {
       return null;
     }
@@ -32917,7 +33625,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   function toolbarHasView(toolbarProps) {
     return toolbarProps.view !== null;
   }
-  const useUtilityClasses$c = (ownerState) => {
+  const useUtilityClasses$b = (ownerState) => {
     const {
       classes,
       isLandscape
@@ -32958,7 +33666,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       // - For pickers value: TDate | null
       // - For range pickers value: [TDate | null, TDate | null]
     } = props;
-    const classes = useUtilityClasses$c(props);
+    const classes = useUtilityClasses$b(props);
     const ActionBar = (slots == null ? void 0 : slots.actionBar) ?? PickersActionBar;
     const actionBarProps = useSlotProps({
       elementType: ActionBar,
@@ -33029,7 +33737,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       shortcuts
     };
   };
-  const useUtilityClasses$b = (ownerState) => {
+  const useUtilityClasses$a = (ownerState) => {
     const {
       isLandscape,
       classes
@@ -33130,7 +33838,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       isLandscape,
       wrapperVariant
     } = props;
-    const classes = useUtilityClasses$b(props);
+    const classes = useUtilityClasses$a(props);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(PickersLayoutRoot, {
       ref,
       sx,
@@ -33146,13 +33854,13 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }), actionBar]
     });
   });
-  const _excluded$g = ["props", "getOpenDialogAriaText"], _excluded2 = ["ownerState"], _excluded3 = ["ownerState"];
+  const _excluded$d = ["props", "getOpenDialogAriaText"], _excluded2 = ["ownerState"], _excluded3 = ["ownerState"];
   const useDesktopPicker = (_ref) => {
     var _a;
     let {
       props,
       getOpenDialogAriaText
-    } = _ref, pickerParams = _objectWithoutPropertiesLoose(_ref, _excluded$g);
+    } = _ref, pickerParams = _objectWithoutPropertiesLoose(_ref, _excluded$d);
     const {
       slots,
       slotProps: innerSlotProps,
@@ -33302,12 +34010,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       renderPicker
     };
   };
-  const _excluded$f = ["views", "format"];
+  const _excluded$c = ["views", "format"];
   const resolveDateTimeFormat = (utils2, _ref, ignoreDateResolving) => {
     let {
       views,
       format
-    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$f);
+    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$c);
     if (format) {
       return format;
     }
@@ -33425,8 +34133,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiClockPointer", slot);
   }
   generateUtilityClasses("MuiClockPointer", ["root", "thumb"]);
-  const _excluded$e = ["className", "hasSelected", "isInner", "type", "viewValue"];
-  const useUtilityClasses$a = (ownerState) => {
+  const _excluded$b = ["className", "hasSelected", "isInner", "type", "viewValue"];
+  const useUtilityClasses$9 = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -33493,7 +34201,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       isInner,
       type,
       viewValue
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$e);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$b);
     const previousType = reactExports.useRef(type);
     reactExports.useEffect(() => {
       previousType.current = type;
@@ -33501,7 +34209,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const ownerState = _extends$1({}, props, {
       shouldAnimate: previousType.current !== type
     });
-    const classes = useUtilityClasses$a(ownerState);
+    const classes = useUtilityClasses$9(ownerState);
     const getAngleStyle = () => {
       const max2 = type === "hours" ? 12 : 60;
       let angle = 360 / max2 * viewValue;
@@ -33528,7 +34236,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiClock", slot);
   }
   generateUtilityClasses("MuiClock", ["root", "clock", "wrapper", "squareMask", "pin", "amButton", "pmButton", "meridiemText", "selected"]);
-  const useUtilityClasses$9 = (ownerState) => {
+  const useUtilityClasses$8 = (ownerState) => {
     const {
       classes,
       meridiemMode
@@ -33700,7 +34408,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const utils2 = useUtils();
     const translations = usePickersTranslations();
     const isMoving = reactExports.useRef(false);
-    const classes = useUtilityClasses$9(ownerState);
+    const classes = useUtilityClasses$8(ownerState);
     const isSelectedTimeDisabled = isTimeDisabled(viewValue, type);
     const isPointerInner = !ampm && type === "hours" && (viewValue < 1 || viewValue > 12);
     const handleValueChange = (newValue, isFinish) => {
@@ -33851,8 +34559,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiClockNumber", slot);
   }
   const clockNumberClasses = generateUtilityClasses("MuiClockNumber", ["root", "selected", "disabled"]);
-  const _excluded$d = ["className", "disabled", "index", "inner", "label", "selected"];
-  const useUtilityClasses$8 = (ownerState) => {
+  const _excluded$a = ["className", "disabled", "index", "inner", "label", "selected"];
+  const useUtilityClasses$7 = (ownerState) => {
     const {
       classes,
       selected,
@@ -33915,9 +34623,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       inner,
       label,
       selected
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$d);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$a);
     const ownerState = props;
-    const classes = useUtilityClasses$8(ownerState);
+    const classes = useUtilityClasses$7(ownerState);
     const angle = index % 12 / 12 * Math.PI * 2 - Math.PI / 2;
     const length2 = (CLOCK_WIDTH - CLOCK_HOUR_WIDTH - 2) / 2 * (inner ? 0.65 : 1);
     const x2 = Math.round(Math.cos(angle) * length2);
@@ -34023,8 +34731,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     );
     return value ?? referenceDate;
   };
-  const _excluded$c = ["ampm", "ampmInClock", "autoFocus", "slots", "slotProps", "value", "defaultValue", "referenceDate", "disableIgnoringDatePartForTimeValidation", "maxTime", "minTime", "disableFuture", "disablePast", "minutesStep", "shouldDisableTime", "showViewSwitcher", "onChange", "view", "views", "openTo", "onViewChange", "focusedView", "onFocusedViewChange", "className", "disabled", "readOnly", "timezone"];
-  const useUtilityClasses$7 = (ownerState) => {
+  const _excluded$9 = ["ampm", "ampmInClock", "autoFocus", "slots", "slotProps", "value", "defaultValue", "referenceDate", "disableIgnoringDatePartForTimeValidation", "maxTime", "minTime", "disableFuture", "disablePast", "minutesStep", "shouldDisableTime", "showViewSwitcher", "onChange", "view", "views", "openTo", "onViewChange", "focusedView", "onFocusedViewChange", "className", "disabled", "readOnly", "timezone"];
+  const useUtilityClasses$6 = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -34087,7 +34795,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       disabled,
       readOnly,
       timezone: timezoneProp
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$c);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$9);
     const {
       value,
       handleValueChange,
@@ -34263,7 +34971,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }
     }, [view, utils2, value, ampm, translations.hoursClockNumberText, translations.minutesClockNumberText, translations.secondsClockNumberText, meridiemMode, setValueAndGoToNextView, valueOrReferenceDate, isTimeDisabled, selectedId, disabled]);
     const ownerState = props;
-    const classes = useUtilityClasses$7(ownerState);
+    const classes = useUtilityClasses$6(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(TimeClockRoot, _extends$1({
       ref,
       className: clsx(classes.root, className),
@@ -34302,14 +35010,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiMenuItem", slot);
   }
   const menuItemClasses = generateUtilityClasses("MuiMenuItem", ["root", "focusVisible", "dense", "disabled", "divider", "gutters", "selected"]);
-  const _excluded$b = ["autoFocus", "component", "dense", "divider", "disableGutters", "focusVisibleClassName", "role", "tabIndex", "className"];
+  const _excluded$8 = ["autoFocus", "component", "dense", "divider", "disableGutters", "focusVisibleClassName", "role", "tabIndex", "className"];
   const overridesResolver = (props, styles2) => {
     const {
       ownerState
     } = props;
     return [styles2.root, ownerState.dense && styles2.dense, ownerState.divider && styles2.divider, !ownerState.disableGutters && styles2.gutters];
   };
-  const useUtilityClasses$6 = (ownerState) => {
+  const useUtilityClasses$5 = (ownerState) => {
     const {
       disabled,
       dense,
@@ -34423,7 +35131,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       role = "menuitem",
       tabIndex: tabIndexProp,
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$b);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$8);
     const context = reactExports.useContext(ListContext);
     const childContext = reactExports.useMemo(() => ({
       dense: dense || context.dense || false,
@@ -34442,7 +35150,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       divider,
       disableGutters
     });
-    const classes = useUtilityClasses$6(props);
+    const classes = useUtilityClasses$5(props);
     const handleRef = useForkRef(menuItemRef, ref);
     let tabIndex;
     if (!props.disabled) {
@@ -34467,8 +35175,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiDigitalClock", slot);
   }
   const digitalClockClasses = generateUtilityClasses("MuiDigitalClock", ["root", "list", "item"]);
-  const _excluded$a = ["ampm", "timeStep", "autoFocus", "slots", "slotProps", "value", "defaultValue", "referenceDate", "disableIgnoringDatePartForTimeValidation", "maxTime", "minTime", "disableFuture", "disablePast", "minutesStep", "shouldDisableTime", "onChange", "view", "openTo", "onViewChange", "focusedView", "onFocusedViewChange", "className", "disabled", "readOnly", "views", "skipDisabled", "timezone"];
-  const useUtilityClasses$5 = (ownerState) => {
+  const _excluded$7 = ["ampm", "timeStep", "autoFocus", "slots", "slotProps", "value", "defaultValue", "referenceDate", "disableIgnoringDatePartForTimeValidation", "maxTime", "minTime", "disableFuture", "disablePast", "minutesStep", "shouldDisableTime", "onChange", "view", "openTo", "onViewChange", "focusedView", "onFocusedViewChange", "className", "disabled", "readOnly", "views", "skipDisabled", "timezone"];
+  const useUtilityClasses$4 = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -34570,7 +35278,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       views = ["hours"],
       skipDisabled = false,
       timezone: timezoneProp
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$a);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$7);
     const {
       value,
       handleValueChange: handleRawValueChange,
@@ -34588,7 +35296,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const ownerState = reactExports.useMemo(() => _extends$1({}, props, {
       alreadyRendered: !!containerRef.current
     }), [props]);
-    const classes = useUtilityClasses$5(ownerState);
+    const classes = useUtilityClasses$4(ownerState);
     const ClockItem = (slots == null ? void 0 : slots.digitalClockItem) ?? DigitalClockItem;
     const clockItemProps = useSlotProps({
       elementType: ClockItem,
@@ -34707,8 +35415,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return generateUtilityClass("MuiMultiSectionDigitalClockSection", slot);
   }
   const multiSectionDigitalClockSectionClasses = generateUtilityClasses("MuiMultiSectionDigitalClockSection", ["root", "item"]);
-  const _excluded$9 = ["autoFocus", "onChange", "className", "disabled", "readOnly", "items", "active", "slots", "slotProps", "skipDisabled"];
-  const useUtilityClasses$4 = (ownerState) => {
+  const _excluded$6 = ["autoFocus", "onChange", "className", "disabled", "readOnly", "items", "active", "slots", "slotProps", "skipDisabled"];
+  const useUtilityClasses$3 = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -34807,11 +35515,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       slots,
       slotProps,
       skipDisabled
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$9);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$6);
     const ownerState = reactExports.useMemo(() => _extends$1({}, props, {
       alreadyRendered: !!containerRef.current
     }), [props]);
-    const classes = useUtilityClasses$4(ownerState);
+    const classes = useUtilityClasses$3(ownerState);
     const DigitalClockSectionItem = (slots == null ? void 0 : slots.digitalClockSectionItem) ?? MultiSectionDigitalClockSectionItem;
     reactExports.useEffect(() => {
       if (containerRef.current === null) {
@@ -34938,8 +35646,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       };
     })];
   };
-  const _excluded$8 = ["ampm", "timeSteps", "autoFocus", "slots", "slotProps", "value", "defaultValue", "referenceDate", "disableIgnoringDatePartForTimeValidation", "maxTime", "minTime", "disableFuture", "disablePast", "minutesStep", "shouldDisableTime", "onChange", "view", "views", "openTo", "onViewChange", "focusedView", "onFocusedViewChange", "className", "disabled", "readOnly", "skipDisabled", "timezone"];
-  const useUtilityClasses$3 = (ownerState) => {
+  const _excluded$5 = ["ampm", "timeSteps", "autoFocus", "slots", "slotProps", "value", "defaultValue", "referenceDate", "disableIgnoringDatePartForTimeValidation", "maxTime", "minTime", "disableFuture", "disablePast", "minutesStep", "shouldDisableTime", "onChange", "view", "views", "openTo", "onViewChange", "focusedView", "onFocusedViewChange", "className", "disabled", "readOnly", "skipDisabled", "timezone"];
+  const useUtilityClasses$2 = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -34995,7 +35703,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       readOnly,
       skipDisabled = false,
       timezone: timezoneProp
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$8);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$5);
     const {
       value,
       handleValueChange: handleRawValueChange,
@@ -35216,7 +35924,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }, {});
     }, [views, buildViewProps]);
     const ownerState = props;
-    const classes = useUtilityClasses$3(ownerState);
+    const classes = useUtilityClasses$2(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(MultiSectionDigitalClockRoot, _extends$1({
       ref,
       className: clsx(classes.root, className),
@@ -35461,14 +36169,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       }), actionBar]
     });
   });
-  const _excluded$7 = ["openTo", "focusedView", "timeViewsCount"];
+  const _excluded$4 = ["openTo", "focusedView", "timeViewsCount"];
   const rendererInterceptor = function rendererInterceptor2(inViewRenderers, popperView, rendererProps) {
     var _a, _b;
     const {
       openTo,
       focusedView,
       timeViewsCount
-    } = rendererProps, otherProps = _objectWithoutPropertiesLoose(rendererProps, _excluded$7);
+    } = rendererProps, otherProps = _objectWithoutPropertiesLoose(rendererProps, _excluded$4);
     const finalProps = _extends$1({}, otherProps, {
       focusedView: null,
       sx: [{
@@ -35963,8 +36671,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   }
   generateUtilityClasses("MuiDialogContent", ["root", "dividers"]);
   const dialogTitleClasses = generateUtilityClasses("MuiDialogTitle", ["root"]);
-  const _excluded$6 = ["className", "dividers"];
-  const useUtilityClasses$2 = (ownerState) => {
+  const _excluded$3 = ["className", "dividers"];
+  const useUtilityClasses$1 = (ownerState) => {
     const {
       classes,
       dividers
@@ -36009,11 +36717,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const {
       className,
       dividers = false
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$6);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$3);
     const ownerState = _extends$1({}, props, {
       dividers
     });
-    const classes = useUtilityClasses$2(ownerState);
+    const classes = useUtilityClasses$1(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentRoot, _extends$1({
       className: clsx(classes.root, className),
       ownerState,
@@ -36025,7 +36733,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   }
   const dialogClasses = generateUtilityClasses("MuiDialog", ["root", "scrollPaper", "scrollBody", "container", "paper", "paperScrollPaper", "paperScrollBody", "paperWidthFalse", "paperWidthXs", "paperWidthSm", "paperWidthMd", "paperWidthLg", "paperWidthXl", "paperFullWidth", "paperFullScreen"]);
   const DialogContext = /* @__PURE__ */ reactExports.createContext({});
-  const _excluded$5 = ["aria-describedby", "aria-labelledby", "BackdropComponent", "BackdropProps", "children", "className", "disableEscapeKeyDown", "fullScreen", "fullWidth", "maxWidth", "onBackdropClick", "onClick", "onClose", "open", "PaperComponent", "PaperProps", "scroll", "TransitionComponent", "transitionDuration", "TransitionProps"];
+  const _excluded$2 = ["aria-describedby", "aria-labelledby", "BackdropComponent", "BackdropProps", "children", "className", "disableEscapeKeyDown", "fullScreen", "fullWidth", "maxWidth", "onBackdropClick", "onClick", "onClose", "open", "PaperComponent", "PaperProps", "scroll", "TransitionComponent", "transitionDuration", "TransitionProps"];
   const DialogBackdrop = styled(Backdrop, {
     name: "MuiDialog",
     slot: "Backdrop",
@@ -36034,7 +36742,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     // Improve scrollable dialog support.
     zIndex: -1
   });
-  const useUtilityClasses$1 = (ownerState) => {
+  const useUtilityClasses = (ownerState) => {
     const {
       classes,
       scroll,
@@ -36184,7 +36892,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       TransitionComponent = Fade,
       transitionDuration = defaultTransitionDuration,
       TransitionProps
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$5);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$2);
     const ownerState = _extends$1({}, props, {
       disableEscapeKeyDown,
       fullScreen,
@@ -36192,7 +36900,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       maxWidth: maxWidth2,
       scroll
     });
-    const classes = useUtilityClasses$1(ownerState);
+    const classes = useUtilityClasses(ownerState);
     const backdropClick = reactExports.useRef();
     const handleMouseDown = (event) => {
       backdropClick.current = event.target === event.currentTarget;
@@ -36302,13 +37010,13 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       })
     }));
   }
-  const _excluded$4 = ["props", "getOpenDialogAriaText"];
+  const _excluded$1 = ["props", "getOpenDialogAriaText"];
   const useMobilePicker = (_ref) => {
     var _a;
     let {
       props,
       getOpenDialogAriaText
-    } = _ref, pickerParams = _objectWithoutPropertiesLoose(_ref, _excluded$4);
+    } = _ref, pickerParams = _objectWithoutPropertiesLoose(_ref, _excluded$1);
     const {
       slots,
       slotProps: innerSlotProps,
@@ -36819,7 +37527,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
      */
     yearsPerRow: PropTypes.oneOf([3, 4])
   };
-  const _excluded$3 = ["desktopModeMediaQuery"];
+  const _excluded = ["desktopModeMediaQuery"];
   const DateTimePicker = /* @__PURE__ */ reactExports.forwardRef(function DateTimePicker2(inProps, ref) {
     const props = useThemeProps({
       props: inProps,
@@ -36827,7 +37535,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     });
     const {
       desktopModeMediaQuery = DEFAULT_DESKTOP_MODE_MEDIA_QUERY
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$3);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded);
     const isDesktop = useMediaQuery(desktopModeMediaQuery, {
       defaultMatches: true
     });
@@ -39234,7 +39942,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   axios.HttpStatusCode = HttpStatusCode;
   axios.default = axios;
   function Macro() {
-    const { isMacroEnabled, macroTime } = getAppContext();
+    const { isMacroEnabled, macroTime, setToasts } = getAppContext();
     const book = reactExports.useCallback(async () => {
       var _a;
       const result = [...document.getElementsByClassName("selected")].map((el2) => el2.children[0].innerHTML).join("|");
@@ -39248,7 +39956,15 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
           `https://reboks.nus.edu.sg/nus_public_web/public/facilities/group_booking?table_exclusive_length=10&add_cart=Add+to+shopping+cart&result=${result}&params=${params}`
         );
         console.log(data);
+        setToasts((toasts) => {
+          toasts.push("success");
+          return toasts.slice();
+        });
       } catch (error) {
+        setToasts((toasts) => {
+          toasts.push("fail");
+          return toasts.slice();
+        });
         console.error(error);
       }
     }, [document, axios]);
@@ -39562,904 +40278,6 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   })(dayjs_min);
   var dayjs_minExports = dayjs_min.exports;
   const dayjs = /* @__PURE__ */ getDefaultExportFromCjs(dayjs_minExports);
-  const useTimeField = (inProps) => {
-    const props = useDefaultizedTimeField(inProps);
-    const {
-      forwardedProps,
-      internalProps
-    } = splitFieldInternalAndForwardedProps(props, "time");
-    return useField({
-      forwardedProps,
-      internalProps,
-      valueManager: singleItemValueManager,
-      fieldValueManager: singleItemFieldValueManager,
-      validator: validateTime,
-      valueType: "time"
-    });
-  };
-  const _excluded$2 = ["slots", "slotProps", "InputProps", "inputProps"];
-  const TimeField = /* @__PURE__ */ reactExports.forwardRef(function TimeField2(inProps, inRef) {
-    const themeProps = useThemeProps({
-      props: inProps,
-      name: "MuiTimeField"
-    });
-    const {
-      slots,
-      slotProps,
-      InputProps,
-      inputProps
-    } = themeProps, other = _objectWithoutPropertiesLoose(themeProps, _excluded$2);
-    const ownerState = themeProps;
-    const TextField$1 = (slots == null ? void 0 : slots.textField) ?? (inProps.enableAccessibleFieldDOMStructure ? PickersTextField : TextField);
-    const textFieldProps = useSlotProps({
-      elementType: TextField$1,
-      externalSlotProps: slotProps == null ? void 0 : slotProps.textField,
-      externalForwardedProps: other,
-      ownerState,
-      additionalProps: {
-        ref: inRef
-      }
-    });
-    textFieldProps.inputProps = _extends$1({}, inputProps, textFieldProps.inputProps);
-    textFieldProps.InputProps = _extends$1({}, InputProps, textFieldProps.InputProps);
-    const fieldResponse = useTimeField(textFieldProps);
-    const convertedFieldResponse = convertFieldResponseIntoMuiTextFieldProps(fieldResponse);
-    const processedFieldProps = useClearableField(_extends$1({}, convertedFieldResponse, {
-      slots,
-      slotProps
-    }));
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(TextField$1, _extends$1({}, processedFieldProps));
-  });
-  function getTimePickerToolbarUtilityClass(slot) {
-    return generateUtilityClass("MuiTimePickerToolbar", slot);
-  }
-  const timePickerToolbarClasses = generateUtilityClasses("MuiTimePickerToolbar", ["root", "separator", "hourMinuteLabel", "hourMinuteLabelLandscape", "hourMinuteLabelReverse", "ampmSelection", "ampmLandscape", "ampmLabel"]);
-  const _excluded$1 = ["ampm", "ampmInClock", "value", "isLandscape", "onChange", "view", "onViewChange", "views", "disabled", "readOnly", "className"];
-  const useUtilityClasses = (ownerState) => {
-    const {
-      isLandscape,
-      classes,
-      isRtl
-    } = ownerState;
-    const slots = {
-      root: ["root"],
-      separator: ["separator"],
-      hourMinuteLabel: ["hourMinuteLabel", isLandscape && "hourMinuteLabelLandscape", isRtl && "hourMinuteLabelReverse"],
-      ampmSelection: ["ampmSelection", isLandscape && "ampmLandscape"],
-      ampmLabel: ["ampmLabel"]
-    };
-    return composeClasses(slots, getTimePickerToolbarUtilityClass, classes);
-  };
-  const TimePickerToolbarRoot = styled(PickersToolbar, {
-    name: "MuiTimePickerToolbar",
-    slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
-  })({});
-  const TimePickerToolbarSeparator = styled(PickersToolbarText, {
-    name: "MuiTimePickerToolbar",
-    slot: "Separator",
-    overridesResolver: (props, styles2) => styles2.separator
-  })({
-    outline: 0,
-    margin: "0 4px 0 2px",
-    cursor: "default"
-  });
-  const TimePickerToolbarHourMinuteLabel = styled("div", {
-    name: "MuiTimePickerToolbar",
-    slot: "HourMinuteLabel",
-    overridesResolver: (props, styles2) => [{
-      [`&.${timePickerToolbarClasses.hourMinuteLabelLandscape}`]: styles2.hourMinuteLabelLandscape,
-      [`&.${timePickerToolbarClasses.hourMinuteLabelReverse}`]: styles2.hourMinuteLabelReverse
-    }, styles2.hourMinuteLabel]
-  })({
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-    variants: [{
-      props: {
-        isRtl: true
-      },
-      style: {
-        flexDirection: "row-reverse"
-      }
-    }, {
-      props: {
-        isLandscape: true
-      },
-      style: {
-        marginTop: "auto"
-      }
-    }]
-  });
-  const TimePickerToolbarAmPmSelection = styled("div", {
-    name: "MuiTimePickerToolbar",
-    slot: "AmPmSelection",
-    overridesResolver: (props, styles2) => [{
-      [`.${timePickerToolbarClasses.ampmLabel}`]: styles2.ampmLabel
-    }, {
-      [`&.${timePickerToolbarClasses.ampmLandscape}`]: styles2.ampmLandscape
-    }, styles2.ampmSelection]
-  })({
-    display: "flex",
-    flexDirection: "column",
-    marginRight: "auto",
-    marginLeft: 12,
-    [`& .${timePickerToolbarClasses.ampmLabel}`]: {
-      fontSize: 17
-    },
-    variants: [{
-      props: {
-        isLandscape: true
-      },
-      style: {
-        margin: "4px 0 auto",
-        flexDirection: "row",
-        justifyContent: "space-around",
-        flexBasis: "100%"
-      }
-    }]
-  });
-  function TimePickerToolbar(inProps) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiTimePickerToolbar"
-    });
-    const {
-      ampm,
-      ampmInClock,
-      value,
-      isLandscape,
-      onChange,
-      view,
-      onViewChange,
-      views,
-      disabled,
-      readOnly,
-      className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1);
-    const utils2 = useUtils();
-    const translations = usePickersTranslations();
-    const isRtl = useRtl();
-    const showAmPmControl = Boolean(ampm && !ampmInClock && views.includes("hours"));
-    const {
-      meridiemMode,
-      handleMeridiemChange
-    } = useMeridiemMode(value, ampm, onChange);
-    const formatHours = (time) => ampm ? utils2.format(time, "hours12h") : utils2.format(time, "hours24h");
-    const ownerState = _extends$1({}, props, {
-      isRtl
-    });
-    const classes = useUtilityClasses(ownerState);
-    const separator = /* @__PURE__ */ jsxRuntimeExports.jsx(TimePickerToolbarSeparator, {
-      tabIndex: -1,
-      value: ":",
-      variant: "h3",
-      selected: false,
-      className: classes.separator
-    });
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(TimePickerToolbarRoot, _extends$1({
-      landscapeDirection: "row",
-      toolbarTitle: translations.timePickerToolbarTitle,
-      isLandscape,
-      ownerState,
-      className: clsx(classes.root, className)
-    }, other, {
-      children: [/* @__PURE__ */ jsxRuntimeExports.jsxs(TimePickerToolbarHourMinuteLabel, {
-        className: classes.hourMinuteLabel,
-        ownerState,
-        children: [arrayIncludes(views, "hours") && /* @__PURE__ */ jsxRuntimeExports.jsx(PickersToolbarButton, {
-          tabIndex: -1,
-          variant: "h3",
-          onClick: () => onViewChange("hours"),
-          selected: view === "hours",
-          value: value ? formatHours(value) : "--"
-        }), arrayIncludes(views, ["hours", "minutes"]) && separator, arrayIncludes(views, "minutes") && /* @__PURE__ */ jsxRuntimeExports.jsx(PickersToolbarButton, {
-          tabIndex: -1,
-          variant: "h3",
-          onClick: () => onViewChange("minutes"),
-          selected: view === "minutes",
-          value: value ? utils2.format(value, "minutes") : "--"
-        }), arrayIncludes(views, ["minutes", "seconds"]) && separator, arrayIncludes(views, "seconds") && /* @__PURE__ */ jsxRuntimeExports.jsx(PickersToolbarButton, {
-          variant: "h3",
-          onClick: () => onViewChange("seconds"),
-          selected: view === "seconds",
-          value: value ? utils2.format(value, "seconds") : "--"
-        })]
-      }), showAmPmControl && /* @__PURE__ */ jsxRuntimeExports.jsxs(TimePickerToolbarAmPmSelection, {
-        className: classes.ampmSelection,
-        ownerState,
-        children: [/* @__PURE__ */ jsxRuntimeExports.jsx(PickersToolbarButton, {
-          disableRipple: true,
-          variant: "subtitle2",
-          selected: meridiemMode === "am",
-          typographyClassName: classes.ampmLabel,
-          value: formatMeridiem(utils2, "am"),
-          onClick: readOnly ? void 0 : () => handleMeridiemChange("am"),
-          disabled
-        }), /* @__PURE__ */ jsxRuntimeExports.jsx(PickersToolbarButton, {
-          disableRipple: true,
-          variant: "subtitle2",
-          selected: meridiemMode === "pm",
-          typographyClassName: classes.ampmLabel,
-          value: formatMeridiem(utils2, "pm"),
-          onClick: readOnly ? void 0 : () => handleMeridiemChange("pm"),
-          disabled
-        })]
-      })]
-    }));
-  }
-  function useTimePickerDefaultizedProps(props, name) {
-    var _a;
-    const utils2 = useUtils();
-    const themeProps = useThemeProps({
-      props,
-      name
-    });
-    const ampm = themeProps.ampm ?? utils2.is12HourCycleInCurrentLocale();
-    const localeText = reactExports.useMemo(() => {
-      var _a2;
-      if (((_a2 = themeProps.localeText) == null ? void 0 : _a2.toolbarTitle) == null) {
-        return themeProps.localeText;
-      }
-      return _extends$1({}, themeProps.localeText, {
-        timePickerToolbarTitle: themeProps.localeText.toolbarTitle
-      });
-    }, [themeProps.localeText]);
-    return _extends$1({}, themeProps, {
-      ampm,
-      localeText
-    }, applyDefaultViewProps({
-      views: themeProps.views,
-      openTo: themeProps.openTo,
-      defaultViews: ["hours", "minutes"],
-      defaultOpenTo: "hours"
-    }), {
-      disableFuture: themeProps.disableFuture ?? false,
-      disablePast: themeProps.disablePast ?? false,
-      slots: _extends$1({
-        toolbar: TimePickerToolbar
-      }, themeProps.slots),
-      slotProps: _extends$1({}, themeProps.slotProps, {
-        toolbar: _extends$1({
-          ampm,
-          ampmInClock: themeProps.ampmInClock
-        }, (_a = themeProps.slotProps) == null ? void 0 : _a.toolbar)
-      })
-    });
-  }
-  const DesktopTimePicker = /* @__PURE__ */ reactExports.forwardRef(function DesktopTimePicker2(inProps, ref) {
-    var _a, _b, _c, _d;
-    const translations = usePickersTranslations();
-    const utils2 = useUtils();
-    const defaultizedProps = useTimePickerDefaultizedProps(inProps, "MuiDesktopTimePicker");
-    const {
-      shouldRenderTimeInASingleColumn,
-      views: resolvedViews,
-      timeSteps
-    } = resolveTimeViewsResponse(defaultizedProps);
-    const renderTimeView = shouldRenderTimeInASingleColumn ? renderDigitalClockTimeView : renderMultiSectionDigitalClockTimeView;
-    const viewRenderers = _extends$1({
-      hours: renderTimeView,
-      minutes: renderTimeView,
-      seconds: renderTimeView,
-      meridiem: renderTimeView
-    }, defaultizedProps.viewRenderers);
-    const ampmInClock = defaultizedProps.ampmInClock ?? true;
-    const actionBarActions = shouldRenderTimeInASingleColumn ? [] : ["accept"];
-    const shouldHoursRendererContainMeridiemView = ((_a = viewRenderers.hours) == null ? void 0 : _a.name) === renderMultiSectionDigitalClockTimeView.name;
-    const views = !shouldHoursRendererContainMeridiemView ? resolvedViews.filter((view) => view !== "meridiem") : resolvedViews;
-    const props = _extends$1({}, defaultizedProps, {
-      ampmInClock,
-      timeSteps,
-      viewRenderers,
-      format: resolveTimeFormat(utils2, defaultizedProps),
-      // Setting only `hours` time view in case of single column time picker
-      // Allows for easy view lifecycle management
-      views: shouldRenderTimeInASingleColumn ? ["hours"] : views,
-      slots: _extends$1({
-        field: TimeField,
-        openPickerIcon: ClockIcon
-      }, defaultizedProps.slots),
-      slotProps: _extends$1({}, defaultizedProps.slotProps, {
-        field: (ownerState) => {
-          var _a2;
-          return _extends$1({}, resolveComponentProps((_a2 = defaultizedProps.slotProps) == null ? void 0 : _a2.field, ownerState), extractValidationProps(defaultizedProps), {
-            ref
-          });
-        },
-        toolbar: _extends$1({
-          hidden: true,
-          ampmInClock
-        }, (_b = defaultizedProps.slotProps) == null ? void 0 : _b.toolbar),
-        actionBar: _extends$1({
-          actions: actionBarActions
-        }, (_c = defaultizedProps.slotProps) == null ? void 0 : _c.actionBar)
-      })
-    });
-    const {
-      renderPicker
-    } = useDesktopPicker({
-      props,
-      valueManager: singleItemValueManager,
-      valueType: "time",
-      getOpenDialogAriaText: ((_d = props.localeText) == null ? void 0 : _d.openTimePickerDialogue) ?? translations.openTimePickerDialogue,
-      validator: validateTime
-    });
-    return renderPicker();
-  });
-  DesktopTimePicker.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // | To update them edit the TypeScript types and run "pnpm proptypes"  |
-    // ----------------------------------------------------------------------
-    /**
-     * 12h/24h view for hour selection clock.
-     * @default utils.is12HourCycleInCurrentLocale()
-     */
-    ampm: PropTypes.bool,
-    /**
-     * Display ampm controls under the clock (instead of in the toolbar).
-     * @default true on desktop, false on mobile
-     */
-    ampmInClock: PropTypes.bool,
-    /**
-     * If `true`, the main element is focused during the first mount.
-     * This main element is:
-     * - the element chosen by the visible view if any (i.e: the selected day on the `day` view).
-     * - the `input` element if there is a field rendered.
-     */
-    autoFocus: PropTypes.bool,
-    className: PropTypes.string,
-    /**
-     * If `true`, the popover or modal will close after submitting the full date.
-     * @default `true` for desktop, `false` for mobile (based on the chosen wrapper and `desktopModeMediaQuery` prop).
-     */
-    closeOnSelect: PropTypes.bool,
-    /**
-     * The default value.
-     * Used when the component is not controlled.
-     */
-    defaultValue: PropTypes.object,
-    /**
-     * If `true`, the picker and text field are disabled.
-     * @default false
-     */
-    disabled: PropTypes.bool,
-    /**
-     * If `true`, disable values after the current date for date components, time for time components and both for date time components.
-     * @default false
-     */
-    disableFuture: PropTypes.bool,
-    /**
-     * Do not ignore date part when validating min/max time.
-     * @default false
-     */
-    disableIgnoringDatePartForTimeValidation: PropTypes.bool,
-    /**
-     * If `true`, the open picker button will not be rendered (renders only the field).
-     * @default false
-     */
-    disableOpenPicker: PropTypes.bool,
-    /**
-     * If `true`, disable values before the current date for date components, time for time components and both for date time components.
-     * @default false
-     */
-    disablePast: PropTypes.bool,
-    /**
-     * @default false
-     */
-    enableAccessibleFieldDOMStructure: PropTypes.any,
-    /**
-     * Format of the date when rendered in the input(s).
-     * Defaults to localized format based on the used `views`.
-     */
-    format: PropTypes.string,
-    /**
-     * Density of the format when rendered in the input.
-     * Setting `formatDensity` to `"spacious"` will add a space before and after each `/`, `-` and `.` character.
-     * @default "dense"
-     */
-    formatDensity: PropTypes.oneOf(["dense", "spacious"]),
-    /**
-     * Pass a ref to the `input` element.
-     */
-    inputRef: refType,
-    /**
-     * The label content.
-     */
-    label: PropTypes.node,
-    /**
-     * Locale for components texts.
-     * Allows overriding texts coming from `LocalizationProvider` and `theme`.
-     */
-    localeText: PropTypes.object,
-    /**
-     * Maximal selectable time.
-     * The date part of the object will be ignored unless `props.disableIgnoringDatePartForTimeValidation === true`.
-     */
-    maxTime: PropTypes.object,
-    /**
-     * Minimal selectable time.
-     * The date part of the object will be ignored unless `props.disableIgnoringDatePartForTimeValidation === true`.
-     */
-    minTime: PropTypes.object,
-    /**
-     * Step over minutes.
-     * @default 1
-     */
-    minutesStep: PropTypes.number,
-    /**
-     * Name attribute used by the `input` element in the Field.
-     */
-    name: PropTypes.string,
-    /**
-     * Callback fired when the value is accepted.
-     * @template TValue The value type. Will be either the same type as `value` or `null`. Can be in `[start, end]` format in case of range value.
-     * @template TError The validation error type. Will be either `string` or a `null`. Can be in `[start, end]` format in case of range value.
-     * @param {TValue} value The value that was just accepted.
-     * @param {FieldChangeHandlerContext<TError>} context The context containing the validation result of the current value.
-     */
-    onAccept: PropTypes.func,
-    /**
-     * Callback fired when the value changes.
-     * @template TValue The value type. Will be either the same type as `value` or `null`. Can be in `[start, end]` format in case of range value.
-     * @template TError The validation error type. Will be either `string` or a `null`. Can be in `[start, end]` format in case of range value.
-     * @param {TValue} value The new value.
-     * @param {FieldChangeHandlerContext<TError>} context The context containing the validation result of the current value.
-     */
-    onChange: PropTypes.func,
-    /**
-     * Callback fired when the popup requests to be closed.
-     * Use in controlled mode (see `open`).
-     */
-    onClose: PropTypes.func,
-    /**
-     * Callback fired when the error associated to the current value changes.
-     * If the error has a non-null value, then the `TextField` will be rendered in `error` state.
-     *
-     * @template TValue The value type. Will be either the same type as `value` or `null`. Can be in `[start, end]` format in case of range value.
-     * @template TError The validation error type. Will be either `string` or a `null`. Can be in `[start, end]` format in case of range value.
-     * @param {TError} error The new error describing why the current value is not valid.
-     * @param {TValue} value The value associated to the error.
-     */
-    onError: PropTypes.func,
-    /**
-     * Callback fired when the popup requests to be opened.
-     * Use in controlled mode (see `open`).
-     */
-    onOpen: PropTypes.func,
-    /**
-     * Callback fired when the selected sections change.
-     * @param {FieldSelectedSections} newValue The new selected sections.
-     */
-    onSelectedSectionsChange: PropTypes.func,
-    /**
-     * Callback fired on view change.
-     * @template TView
-     * @param {TView} view The new view.
-     */
-    onViewChange: PropTypes.func,
-    /**
-     * Control the popup or dialog open state.
-     * @default false
-     */
-    open: PropTypes.bool,
-    /**
-     * The default visible view.
-     * Used when the component view is not controlled.
-     * Must be a valid option from `views` list.
-     */
-    openTo: PropTypes.oneOf(["hours", "meridiem", "minutes", "seconds"]),
-    /**
-     * Force rendering in particular orientation.
-     */
-    orientation: PropTypes.oneOf(["landscape", "portrait"]),
-    readOnly: PropTypes.bool,
-    /**
-     * If `true`, disable heavy animations.
-     * @default `@media(prefers-reduced-motion: reduce)` || `navigator.userAgent` matches Android <10 or iOS <13
-     */
-    reduceAnimations: PropTypes.bool,
-    /**
-     * The date used to generate the new value when both `value` and `defaultValue` are empty.
-     * @default The closest valid date-time using the validation props, except callbacks like `shouldDisable<...>`.
-     */
-    referenceDate: PropTypes.object,
-    /**
-     * The currently selected sections.
-     * This prop accepts four formats:
-     * 1. If a number is provided, the section at this index will be selected.
-     * 2. If a string of type `FieldSectionType` is provided, the first section with that name will be selected.
-     * 3. If `"all"` is provided, all the sections will be selected.
-     * 4. If `null` is provided, no section will be selected.
-     * If not provided, the selected sections will be handled internally.
-     */
-    selectedSections: PropTypes.oneOfType([PropTypes.oneOf(["all", "day", "empty", "hours", "meridiem", "minutes", "month", "seconds", "weekDay", "year"]), PropTypes.number]),
-    /**
-     * Disable specific time.
-     * @template TDate
-     * @param {TDate} value The value to check.
-     * @param {TimeView} view The clock type of the timeValue.
-     * @returns {boolean} If `true` the time will be disabled.
-     */
-    shouldDisableTime: PropTypes.func,
-    /**
-     * If `true`, disabled digital clock items will not be rendered.
-     * @default false
-     */
-    skipDisabled: PropTypes.bool,
-    /**
-     * The props used for each component slot.
-     * @default {}
-     */
-    slotProps: PropTypes.object,
-    /**
-     * Overridable component slots.
-     * @default {}
-     */
-    slots: PropTypes.object,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-    /**
-     * Amount of time options below or at which the single column time renderer is used.
-     * @default 24
-     */
-    thresholdToRenderTimeInASingleColumn: PropTypes.number,
-    /**
-     * The time steps between two time unit options.
-     * For example, if `timeStep.minutes = 8`, then the available minute options will be `[0, 8, 16, 24, 32, 40, 48, 56]`.
-     * When single column time renderer is used, only `timeStep.minutes` will be used.
-     * @default{ hours: 1, minutes: 5, seconds: 5 }
-     */
-    timeSteps: PropTypes.shape({
-      hours: PropTypes.number,
-      minutes: PropTypes.number,
-      seconds: PropTypes.number
-    }),
-    /**
-     * Choose which timezone to use for the value.
-     * Example: "default", "system", "UTC", "America/New_York".
-     * If you pass values from other timezones to some props, they will be converted to this timezone before being used.
-     * @see See the {@link https://mui.com/x/react-date-pickers/timezone/ timezones documentation} for more details.
-     * @default The timezone of the `value` or `defaultValue` prop is defined, 'default' otherwise.
-     */
-    timezone: PropTypes.string,
-    /**
-     * The selected value.
-     * Used when the component is controlled.
-     */
-    value: PropTypes.object,
-    /**
-     * The visible view.
-     * Used when the component view is controlled.
-     * Must be a valid option from `views` list.
-     */
-    view: PropTypes.oneOf(["hours", "meridiem", "minutes", "seconds"]),
-    /**
-     * Define custom view renderers for each section.
-     * If `null`, the section will only have field editing.
-     * If `undefined`, internally defined view will be used.
-     */
-    viewRenderers: PropTypes.shape({
-      hours: PropTypes.func,
-      meridiem: PropTypes.func,
-      minutes: PropTypes.func,
-      seconds: PropTypes.func
-    }),
-    /**
-     * Available views.
-     */
-    views: PropTypes.arrayOf(PropTypes.oneOf(["hours", "minutes", "seconds"]).isRequired)
-  };
-  const MobileTimePicker = /* @__PURE__ */ reactExports.forwardRef(function MobileTimePicker2(inProps, ref) {
-    var _a, _b;
-    const translations = usePickersTranslations();
-    const utils2 = useUtils();
-    const defaultizedProps = useTimePickerDefaultizedProps(inProps, "MuiMobileTimePicker");
-    const viewRenderers = _extends$1({
-      hours: renderTimeViewClock,
-      minutes: renderTimeViewClock,
-      seconds: renderTimeViewClock
-    }, defaultizedProps.viewRenderers);
-    const ampmInClock = defaultizedProps.ampmInClock ?? false;
-    const props = _extends$1({}, defaultizedProps, {
-      ampmInClock,
-      viewRenderers,
-      format: resolveTimeFormat(utils2, defaultizedProps),
-      slots: _extends$1({
-        field: TimeField
-      }, defaultizedProps.slots),
-      slotProps: _extends$1({}, defaultizedProps.slotProps, {
-        field: (ownerState) => {
-          var _a2;
-          return _extends$1({}, resolveComponentProps((_a2 = defaultizedProps.slotProps) == null ? void 0 : _a2.field, ownerState), extractValidationProps(defaultizedProps), {
-            ref
-          });
-        },
-        toolbar: _extends$1({
-          hidden: false,
-          ampmInClock
-        }, (_a = defaultizedProps.slotProps) == null ? void 0 : _a.toolbar)
-      })
-    });
-    const {
-      renderPicker
-    } = useMobilePicker({
-      props,
-      valueManager: singleItemValueManager,
-      valueType: "time",
-      getOpenDialogAriaText: ((_b = props.localeText) == null ? void 0 : _b.openTimePickerDialogue) ?? translations.openTimePickerDialogue,
-      validator: validateTime
-    });
-    return renderPicker();
-  });
-  MobileTimePicker.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // | To update them edit the TypeScript types and run "pnpm proptypes"  |
-    // ----------------------------------------------------------------------
-    /**
-     * 12h/24h view for hour selection clock.
-     * @default utils.is12HourCycleInCurrentLocale()
-     */
-    ampm: PropTypes.bool,
-    /**
-     * Display ampm controls under the clock (instead of in the toolbar).
-     * @default true on desktop, false on mobile
-     */
-    ampmInClock: PropTypes.bool,
-    /**
-     * If `true`, the main element is focused during the first mount.
-     * This main element is:
-     * - the element chosen by the visible view if any (i.e: the selected day on the `day` view).
-     * - the `input` element if there is a field rendered.
-     */
-    autoFocus: PropTypes.bool,
-    className: PropTypes.string,
-    /**
-     * If `true`, the popover or modal will close after submitting the full date.
-     * @default `true` for desktop, `false` for mobile (based on the chosen wrapper and `desktopModeMediaQuery` prop).
-     */
-    closeOnSelect: PropTypes.bool,
-    /**
-     * The default value.
-     * Used when the component is not controlled.
-     */
-    defaultValue: PropTypes.object,
-    /**
-     * If `true`, the picker and text field are disabled.
-     * @default false
-     */
-    disabled: PropTypes.bool,
-    /**
-     * If `true`, disable values after the current date for date components, time for time components and both for date time components.
-     * @default false
-     */
-    disableFuture: PropTypes.bool,
-    /**
-     * Do not ignore date part when validating min/max time.
-     * @default false
-     */
-    disableIgnoringDatePartForTimeValidation: PropTypes.bool,
-    /**
-     * If `true`, the open picker button will not be rendered (renders only the field).
-     * @default false
-     */
-    disableOpenPicker: PropTypes.bool,
-    /**
-     * If `true`, disable values before the current date for date components, time for time components and both for date time components.
-     * @default false
-     */
-    disablePast: PropTypes.bool,
-    /**
-     * @default false
-     */
-    enableAccessibleFieldDOMStructure: PropTypes.any,
-    /**
-     * Format of the date when rendered in the input(s).
-     * Defaults to localized format based on the used `views`.
-     */
-    format: PropTypes.string,
-    /**
-     * Density of the format when rendered in the input.
-     * Setting `formatDensity` to `"spacious"` will add a space before and after each `/`, `-` and `.` character.
-     * @default "dense"
-     */
-    formatDensity: PropTypes.oneOf(["dense", "spacious"]),
-    /**
-     * Pass a ref to the `input` element.
-     */
-    inputRef: refType,
-    /**
-     * The label content.
-     */
-    label: PropTypes.node,
-    /**
-     * Locale for components texts.
-     * Allows overriding texts coming from `LocalizationProvider` and `theme`.
-     */
-    localeText: PropTypes.object,
-    /**
-     * Maximal selectable time.
-     * The date part of the object will be ignored unless `props.disableIgnoringDatePartForTimeValidation === true`.
-     */
-    maxTime: PropTypes.object,
-    /**
-     * Minimal selectable time.
-     * The date part of the object will be ignored unless `props.disableIgnoringDatePartForTimeValidation === true`.
-     */
-    minTime: PropTypes.object,
-    /**
-     * Step over minutes.
-     * @default 1
-     */
-    minutesStep: PropTypes.number,
-    /**
-     * Name attribute used by the `input` element in the Field.
-     */
-    name: PropTypes.string,
-    /**
-     * Callback fired when the value is accepted.
-     * @template TValue The value type. Will be either the same type as `value` or `null`. Can be in `[start, end]` format in case of range value.
-     * @template TError The validation error type. Will be either `string` or a `null`. Can be in `[start, end]` format in case of range value.
-     * @param {TValue} value The value that was just accepted.
-     * @param {FieldChangeHandlerContext<TError>} context The context containing the validation result of the current value.
-     */
-    onAccept: PropTypes.func,
-    /**
-     * Callback fired when the value changes.
-     * @template TValue The value type. Will be either the same type as `value` or `null`. Can be in `[start, end]` format in case of range value.
-     * @template TError The validation error type. Will be either `string` or a `null`. Can be in `[start, end]` format in case of range value.
-     * @param {TValue} value The new value.
-     * @param {FieldChangeHandlerContext<TError>} context The context containing the validation result of the current value.
-     */
-    onChange: PropTypes.func,
-    /**
-     * Callback fired when the popup requests to be closed.
-     * Use in controlled mode (see `open`).
-     */
-    onClose: PropTypes.func,
-    /**
-     * Callback fired when the error associated to the current value changes.
-     * If the error has a non-null value, then the `TextField` will be rendered in `error` state.
-     *
-     * @template TValue The value type. Will be either the same type as `value` or `null`. Can be in `[start, end]` format in case of range value.
-     * @template TError The validation error type. Will be either `string` or a `null`. Can be in `[start, end]` format in case of range value.
-     * @param {TError} error The new error describing why the current value is not valid.
-     * @param {TValue} value The value associated to the error.
-     */
-    onError: PropTypes.func,
-    /**
-     * Callback fired when the popup requests to be opened.
-     * Use in controlled mode (see `open`).
-     */
-    onOpen: PropTypes.func,
-    /**
-     * Callback fired when the selected sections change.
-     * @param {FieldSelectedSections} newValue The new selected sections.
-     */
-    onSelectedSectionsChange: PropTypes.func,
-    /**
-     * Callback fired on view change.
-     * @template TView
-     * @param {TView} view The new view.
-     */
-    onViewChange: PropTypes.func,
-    /**
-     * Control the popup or dialog open state.
-     * @default false
-     */
-    open: PropTypes.bool,
-    /**
-     * The default visible view.
-     * Used when the component view is not controlled.
-     * Must be a valid option from `views` list.
-     */
-    openTo: PropTypes.oneOf(["hours", "minutes", "seconds"]),
-    /**
-     * Force rendering in particular orientation.
-     */
-    orientation: PropTypes.oneOf(["landscape", "portrait"]),
-    readOnly: PropTypes.bool,
-    /**
-     * If `true`, disable heavy animations.
-     * @default `@media(prefers-reduced-motion: reduce)` || `navigator.userAgent` matches Android <10 or iOS <13
-     */
-    reduceAnimations: PropTypes.bool,
-    /**
-     * The date used to generate the new value when both `value` and `defaultValue` are empty.
-     * @default The closest valid date-time using the validation props, except callbacks like `shouldDisable<...>`.
-     */
-    referenceDate: PropTypes.object,
-    /**
-     * The currently selected sections.
-     * This prop accepts four formats:
-     * 1. If a number is provided, the section at this index will be selected.
-     * 2. If a string of type `FieldSectionType` is provided, the first section with that name will be selected.
-     * 3. If `"all"` is provided, all the sections will be selected.
-     * 4. If `null` is provided, no section will be selected.
-     * If not provided, the selected sections will be handled internally.
-     */
-    selectedSections: PropTypes.oneOfType([PropTypes.oneOf(["all", "day", "empty", "hours", "meridiem", "minutes", "month", "seconds", "weekDay", "year"]), PropTypes.number]),
-    /**
-     * Disable specific time.
-     * @template TDate
-     * @param {TDate} value The value to check.
-     * @param {TimeView} view The clock type of the timeValue.
-     * @returns {boolean} If `true` the time will be disabled.
-     */
-    shouldDisableTime: PropTypes.func,
-    /**
-     * The props used for each component slot.
-     * @default {}
-     */
-    slotProps: PropTypes.object,
-    /**
-     * Overridable component slots.
-     * @default {}
-     */
-    slots: PropTypes.object,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-    /**
-     * Choose which timezone to use for the value.
-     * Example: "default", "system", "UTC", "America/New_York".
-     * If you pass values from other timezones to some props, they will be converted to this timezone before being used.
-     * @see See the {@link https://mui.com/x/react-date-pickers/timezone/ timezones documentation} for more details.
-     * @default The timezone of the `value` or `defaultValue` prop is defined, 'default' otherwise.
-     */
-    timezone: PropTypes.string,
-    /**
-     * The selected value.
-     * Used when the component is controlled.
-     */
-    value: PropTypes.object,
-    /**
-     * The visible view.
-     * Used when the component view is controlled.
-     * Must be a valid option from `views` list.
-     */
-    view: PropTypes.oneOf(["hours", "minutes", "seconds"]),
-    /**
-     * Define custom view renderers for each section.
-     * If `null`, the section will only have field editing.
-     * If `undefined`, internally defined view will be used.
-     */
-    viewRenderers: PropTypes.shape({
-      hours: PropTypes.func,
-      minutes: PropTypes.func,
-      seconds: PropTypes.func
-    }),
-    /**
-     * Available views.
-     */
-    views: PropTypes.arrayOf(PropTypes.oneOf(["hours", "minutes", "seconds"]).isRequired)
-  };
-  const _excluded = ["desktopModeMediaQuery"];
-  const TimePicker = /* @__PURE__ */ reactExports.forwardRef(function TimePicker2(inProps, ref) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiTimePicker"
-    });
-    const {
-      desktopModeMediaQuery = DEFAULT_DESKTOP_MODE_MEDIA_QUERY
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded);
-    const isDesktop = useMediaQuery(desktopModeMediaQuery, {
-      defaultMatches: true
-    });
-    if (isDesktop) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(DesktopTimePicker, _extends$1({
-        ref
-      }, other));
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(MobileTimePicker, _extends$1({
-      ref
-    }, other));
-  });
   var weekOfYear = { exports: {} };
   (function(module, exports) {
     !function(e2, t2) {
@@ -41263,6 +41081,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const [isMacroEnabled, setMacroEnabled] = reactExports.useState(false);
     const [isGodMode, setGodMode] = reactExports.useState(true);
     const [macroTime, setMacroTime] = reactExports.useState(changedTime);
+    const [toasts, setToasts] = reactExports.useState([]);
     reactExports.useEffect(() => {
       var _a;
       let el2 = (_a = document.getElementById("trigger")) == null ? void 0 : _a.style;
@@ -41285,10 +41104,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
           macroTime,
           setMacroTime,
           isGodMode,
-          setGodMode
+          setGodMode,
+          setToasts
         }
       },
-      /* @__PURE__ */ React$1.createElement(TimePicker, { value: macroTime }),
+      /* @__PURE__ */ React$1.createElement(Provider, { duration: 6e5 }, toasts.map((status, i) => /* @__PURE__ */ React$1.createElement(Root2, { key: i, className: `ToastRoot ${status}` }, /* @__PURE__ */ React$1.createElement(Title$1, { className: "ToastTitle" }, status === "success" ? "Success" : "Fail"))), /* @__PURE__ */ React$1.createElement(Viewport, { className: "ToastViewport" })),
       /* @__PURE__ */ React$1.createElement(Macro, null),
       /* @__PURE__ */ React$1.createElement(GodFeatures, null),
       /* @__PURE__ */ React$1.createElement(Root, null, /* @__PURE__ */ React$1.createElement(Trigger, { asChild: true, id: "trigger" }, /* @__PURE__ */ React$1.createElement("div", { className: "IconButton" }, /* @__PURE__ */ React$1.createElement(HamburgerMenuIcon, null))), /* @__PURE__ */ React$1.createElement(Portal$1, null, /* @__PURE__ */ React$1.createElement(Overlay, { className: "DialogOverlay" }), /* @__PURE__ */ React$1.createElement(Content, { className: "DialogContent" }, /* @__PURE__ */ React$1.createElement(Title, { className: "DialogTitle" }), /* @__PURE__ */ React$1.createElement(Description, { className: "DialogDescription" }, /* @__PURE__ */ React$1.createElement(MacroDialogContent, null)))))
@@ -41355,7 +41175,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
 ;
 (function(){
                     const el = document.createElement("style");
-                    el.innerText = "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\nbody {\n  margin: 0;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Roboto\", \"Oxygen\",\n    \"Ubuntu\", \"Cantarell\", \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\",\n    sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\ncode {\n  font-family: source-code-pro, Menlo, Monaco, Consolas, \"Courier New\",\n    monospace;\n}\n:root {\n  --black-a1: rgba(0, 0, 0, 0.05);\n  --black-a2: rgba(0, 0, 0, 0.1);\n  --black-a3: rgba(0, 0, 0, 0.15);\n  --black-a4: rgba(0, 0, 0, 0.2);\n  --black-a5: rgba(0, 0, 0, 0.3);\n  --black-a6: rgba(0, 0, 0, 0.4);\n  --black-a7: rgba(0, 0, 0, 0.5);\n  --black-a8: rgba(0, 0, 0, 0.6);\n  --black-a9: rgba(0, 0, 0, 0.7);\n  --black-a10: rgba(0, 0, 0, 0.8);\n  --black-a11: rgba(0, 0, 0, 0.9);\n  --black-a12: rgba(0, 0, 0, 0.95);\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root {\n      --black-a1: color(display-p3 0 0 0 / 0.05);\n      --black-a2: color(display-p3 0 0 0 / 0.1);\n      --black-a3: color(display-p3 0 0 0 / 0.15);\n      --black-a4: color(display-p3 0 0 0 / 0.2);\n      --black-a5: color(display-p3 0 0 0 / 0.3);\n      --black-a6: color(display-p3 0 0 0 / 0.4);\n      --black-a7: color(display-p3 0 0 0 / 0.5);\n      --black-a8: color(display-p3 0 0 0 / 0.6);\n      --black-a9: color(display-p3 0 0 0 / 0.7);\n      --black-a10: color(display-p3 0 0 0 / 0.8);\n      --black-a11: color(display-p3 0 0 0 / 0.9);\n      --black-a12: color(display-p3 0 0 0 / 0.95);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --green-1: #fbfefc;\n  --green-2: #f4fbf6;\n  --green-3: #e6f6eb;\n  --green-4: #d6f1df;\n  --green-5: #c4e8d1;\n  --green-6: #adddc0;\n  --green-7: #8eceaa;\n  --green-8: #5bb98b;\n  --green-9: #30a46c;\n  --green-10: #2b9a66;\n  --green-11: #218358;\n  --green-12: #193b2d;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --green-1: color(display-p3 0.986 0.996 0.989);\n      --green-2: color(display-p3 0.963 0.983 0.967);\n      --green-3: color(display-p3 0.913 0.964 0.925);\n      --green-4: color(display-p3 0.859 0.94 0.879);\n      --green-5: color(display-p3 0.796 0.907 0.826);\n      --green-6: color(display-p3 0.718 0.863 0.761);\n      --green-7: color(display-p3 0.61 0.801 0.675);\n      --green-8: color(display-p3 0.451 0.715 0.559);\n      --green-9: color(display-p3 0.332 0.634 0.442);\n      --green-10: color(display-p3 0.308 0.595 0.417);\n      --green-11: color(display-p3 0.19 0.5 0.32);\n      --green-12: color(display-p3 0.132 0.228 0.18);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --red-1: #fffcfc;\n  --red-2: #fff7f7;\n  --red-3: #feebec;\n  --red-4: #ffdbdc;\n  --red-5: #ffcdce;\n  --red-6: #fdbdbe;\n  --red-7: #f4a9aa;\n  --red-8: #eb8e90;\n  --red-9: #e5484d;\n  --red-10: #dc3e42;\n  --red-11: #ce2c31;\n  --red-12: #641723;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --red-1: color(display-p3 0.998 0.989 0.988);\n      --red-2: color(display-p3 0.995 0.971 0.971);\n      --red-3: color(display-p3 0.985 0.925 0.925);\n      --red-4: color(display-p3 0.999 0.866 0.866);\n      --red-5: color(display-p3 0.984 0.812 0.811);\n      --red-6: color(display-p3 0.955 0.751 0.749);\n      --red-7: color(display-p3 0.915 0.675 0.672);\n      --red-8: color(display-p3 0.872 0.575 0.572);\n      --red-9: color(display-p3 0.83 0.329 0.324);\n      --red-10: color(display-p3 0.798 0.294 0.285);\n      --red-11: color(display-p3 0.744 0.234 0.222);\n      --red-12: color(display-p3 0.36 0.115 0.143);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --mauve-1: #fdfcfd;\n  --mauve-2: #faf9fb;\n  --mauve-3: #f2eff3;\n  --mauve-4: #eae7ec;\n  --mauve-5: #e3dfe6;\n  --mauve-6: #dbd8e0;\n  --mauve-7: #d0cdd7;\n  --mauve-8: #bcbac7;\n  --mauve-9: #8e8c99;\n  --mauve-10: #84828e;\n  --mauve-11: #65636d;\n  --mauve-12: #211f26;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --mauve-1: color(display-p3 0.991 0.988 0.992);\n      --mauve-2: color(display-p3 0.98 0.976 0.984);\n      --mauve-3: color(display-p3 0.946 0.938 0.952);\n      --mauve-4: color(display-p3 0.915 0.906 0.925);\n      --mauve-5: color(display-p3 0.886 0.876 0.901);\n      --mauve-6: color(display-p3 0.856 0.846 0.875);\n      --mauve-7: color(display-p3 0.814 0.804 0.84);\n      --mauve-8: color(display-p3 0.735 0.728 0.777);\n      --mauve-9: color(display-p3 0.555 0.549 0.596);\n      --mauve-10: color(display-p3 0.514 0.508 0.552);\n      --mauve-11: color(display-p3 0.395 0.388 0.424);\n      --mauve-12: color(display-p3 0.128 0.122 0.147);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --violet-1: #fdfcfe;\n  --violet-2: #faf8ff;\n  --violet-3: #f4f0fe;\n  --violet-4: #ebe4ff;\n  --violet-5: #e1d9ff;\n  --violet-6: #d4cafe;\n  --violet-7: #c2b5f5;\n  --violet-8: #aa99ec;\n  --violet-9: #6e56cf;\n  --violet-10: #654dc4;\n  --violet-11: #6550b9;\n  --violet-12: #2f265f;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --violet-1: color(display-p3 0.991 0.988 0.995);\n      --violet-2: color(display-p3 0.978 0.974 0.998);\n      --violet-3: color(display-p3 0.953 0.943 0.993);\n      --violet-4: color(display-p3 0.916 0.897 1);\n      --violet-5: color(display-p3 0.876 0.851 1);\n      --violet-6: color(display-p3 0.825 0.793 0.981);\n      --violet-7: color(display-p3 0.752 0.712 0.943);\n      --violet-8: color(display-p3 0.654 0.602 0.902);\n      --violet-9: color(display-p3 0.417 0.341 0.784);\n      --violet-10: color(display-p3 0.381 0.306 0.741);\n      --violet-11: color(display-p3 0.383 0.317 0.702);\n      --violet-12: color(display-p3 0.179 0.15 0.359);\n    }\n  }\n}\n\n.App {}\n\n.IconButton {\n    position: fixed;\n    bottom: 15px;\n    right: 15px;\n    font-family: inherit;\n    border-radius: 100%;\n    height: 50px;\n    width: 50px;\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    color: var(--violet-11);\n    background-color: white;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);\n    cursor: pointer;\n}\n\n.App-logo {\n    height: 40vmin;\n}\n\n.App-header {\n    background-color: #282c34;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center;\n    font-size: calc(10px + 2vmin);\n    color: white;\n}\n\n.App-link {\n    text-decoration: underline;\n}\n\n.DialogOverlay {\n    z-index: 10000;\n    background-color: var(--black-a9);\n    position: fixed;\n    inset: 0;\n    animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);\n}\n\n.DialogContent {\n    z-index: 10000;\n    background-color: white;\n    border-radius: 6px;\n    box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;\n    position: fixed;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    width: 90vw;\n    max-width: 450px;\n    max-height: 85vh;\n    padding: 25px;\n    animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);\n}\n\n.DialogTitle {\n    margin: 0;\n    font-weight: 500;\n    color: var(--mauve-12);\n    font-size: 17px;\n}\n\n.DialogDescription {\n    margin: 10px 0 20px;\n    color: var(--mauve-11);\n    font-size: 15px;\n    line-height: 1.5;\n}\n\n.Button {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    border-radius: 4px;\n    padding: 0 15px;\n    font-size: 15px;\n    line-height: 1;\n    font-weight: 500;\n    height: 35px;\n    border: 0;\n}\n\n.Button.green {\n    background-color: var(--green-4);\n    color: var(--green-11);\n}\n\n:root {\n    font-size: 100%;\n}:root {\n  --black-a1: rgba(0, 0, 0, 0.05);\n  --black-a2: rgba(0, 0, 0, 0.1);\n  --black-a3: rgba(0, 0, 0, 0.15);\n  --black-a4: rgba(0, 0, 0, 0.2);\n  --black-a5: rgba(0, 0, 0, 0.3);\n  --black-a6: rgba(0, 0, 0, 0.4);\n  --black-a7: rgba(0, 0, 0, 0.5);\n  --black-a8: rgba(0, 0, 0, 0.6);\n  --black-a9: rgba(0, 0, 0, 0.7);\n  --black-a10: rgba(0, 0, 0, 0.8);\n  --black-a11: rgba(0, 0, 0, 0.9);\n  --black-a12: rgba(0, 0, 0, 0.95);\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root {\n      --black-a1: color(display-p3 0 0 0 / 0.05);\n      --black-a2: color(display-p3 0 0 0 / 0.1);\n      --black-a3: color(display-p3 0 0 0 / 0.15);\n      --black-a4: color(display-p3 0 0 0 / 0.2);\n      --black-a5: color(display-p3 0 0 0 / 0.3);\n      --black-a6: color(display-p3 0 0 0 / 0.4);\n      --black-a7: color(display-p3 0 0 0 / 0.5);\n      --black-a8: color(display-p3 0 0 0 / 0.6);\n      --black-a9: color(display-p3 0 0 0 / 0.7);\n      --black-a10: color(display-p3 0 0 0 / 0.8);\n      --black-a11: color(display-p3 0 0 0 / 0.9);\n      --black-a12: color(display-p3 0 0 0 / 0.95);\n    }\n  }\n}\n\n.SwitchRoot {\r\n  width: 42px;\r\n  height: 25px;\r\n  background-color: var(--black-a9);\r\n  border-radius: 9999px;\r\n  position: relative;\r\n  box-shadow: 0 2px 10px var(--black-a7);\r\n  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\r\n}\n\n.SwitchRoot:focus {\r\n  box-shadow: 0 0 0 2px black;\r\n}\n\n.SwitchRoot[data-state='checked'] {\r\n  background-color: black;\r\n}\n\n.SwitchThumb {\r\n  display: block;\r\n  width: 21px;\r\n  height: 21px;\r\n  background-color: white;\r\n  border-radius: 9999px;\r\n  box-shadow: 0 2px 2px var(--black-a7);\r\n  transition: transform 100ms;\r\n  transform: translateX(2px);\r\n  will-change: transform;\r\n}\n\n.SwitchThumb[data-state='checked'] {\r\n  transform: translateX(19px);\r\n}";
+                    el.innerText = "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\nbody {\n  margin: 0;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Roboto\", \"Oxygen\",\n    \"Ubuntu\", \"Cantarell\", \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\",\n    sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\ncode {\n  font-family: source-code-pro, Menlo, Monaco, Consolas, \"Courier New\",\n    monospace;\n}\n:root {\n  --black-a1: rgba(0, 0, 0, 0.05);\n  --black-a2: rgba(0, 0, 0, 0.1);\n  --black-a3: rgba(0, 0, 0, 0.15);\n  --black-a4: rgba(0, 0, 0, 0.2);\n  --black-a5: rgba(0, 0, 0, 0.3);\n  --black-a6: rgba(0, 0, 0, 0.4);\n  --black-a7: rgba(0, 0, 0, 0.5);\n  --black-a8: rgba(0, 0, 0, 0.6);\n  --black-a9: rgba(0, 0, 0, 0.7);\n  --black-a10: rgba(0, 0, 0, 0.8);\n  --black-a11: rgba(0, 0, 0, 0.9);\n  --black-a12: rgba(0, 0, 0, 0.95);\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root {\n      --black-a1: color(display-p3 0 0 0 / 0.05);\n      --black-a2: color(display-p3 0 0 0 / 0.1);\n      --black-a3: color(display-p3 0 0 0 / 0.15);\n      --black-a4: color(display-p3 0 0 0 / 0.2);\n      --black-a5: color(display-p3 0 0 0 / 0.3);\n      --black-a6: color(display-p3 0 0 0 / 0.4);\n      --black-a7: color(display-p3 0 0 0 / 0.5);\n      --black-a8: color(display-p3 0 0 0 / 0.6);\n      --black-a9: color(display-p3 0 0 0 / 0.7);\n      --black-a10: color(display-p3 0 0 0 / 0.8);\n      --black-a11: color(display-p3 0 0 0 / 0.9);\n      --black-a12: color(display-p3 0 0 0 / 0.95);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --green-1: #fbfefc;\n  --green-2: #f4fbf6;\n  --green-3: #e6f6eb;\n  --green-4: #d6f1df;\n  --green-5: #c4e8d1;\n  --green-6: #adddc0;\n  --green-7: #8eceaa;\n  --green-8: #5bb98b;\n  --green-9: #30a46c;\n  --green-10: #2b9a66;\n  --green-11: #218358;\n  --green-12: #193b2d;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --green-1: color(display-p3 0.986 0.996 0.989);\n      --green-2: color(display-p3 0.963 0.983 0.967);\n      --green-3: color(display-p3 0.913 0.964 0.925);\n      --green-4: color(display-p3 0.859 0.94 0.879);\n      --green-5: color(display-p3 0.796 0.907 0.826);\n      --green-6: color(display-p3 0.718 0.863 0.761);\n      --green-7: color(display-p3 0.61 0.801 0.675);\n      --green-8: color(display-p3 0.451 0.715 0.559);\n      --green-9: color(display-p3 0.332 0.634 0.442);\n      --green-10: color(display-p3 0.308 0.595 0.417);\n      --green-11: color(display-p3 0.19 0.5 0.32);\n      --green-12: color(display-p3 0.132 0.228 0.18);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --red-1: #fffcfc;\n  --red-2: #fff7f7;\n  --red-3: #feebec;\n  --red-4: #ffdbdc;\n  --red-5: #ffcdce;\n  --red-6: #fdbdbe;\n  --red-7: #f4a9aa;\n  --red-8: #eb8e90;\n  --red-9: #e5484d;\n  --red-10: #dc3e42;\n  --red-11: #ce2c31;\n  --red-12: #641723;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --red-1: color(display-p3 0.998 0.989 0.988);\n      --red-2: color(display-p3 0.995 0.971 0.971);\n      --red-3: color(display-p3 0.985 0.925 0.925);\n      --red-4: color(display-p3 0.999 0.866 0.866);\n      --red-5: color(display-p3 0.984 0.812 0.811);\n      --red-6: color(display-p3 0.955 0.751 0.749);\n      --red-7: color(display-p3 0.915 0.675 0.672);\n      --red-8: color(display-p3 0.872 0.575 0.572);\n      --red-9: color(display-p3 0.83 0.329 0.324);\n      --red-10: color(display-p3 0.798 0.294 0.285);\n      --red-11: color(display-p3 0.744 0.234 0.222);\n      --red-12: color(display-p3 0.36 0.115 0.143);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --mauve-1: #fdfcfd;\n  --mauve-2: #faf9fb;\n  --mauve-3: #f2eff3;\n  --mauve-4: #eae7ec;\n  --mauve-5: #e3dfe6;\n  --mauve-6: #dbd8e0;\n  --mauve-7: #d0cdd7;\n  --mauve-8: #bcbac7;\n  --mauve-9: #8e8c99;\n  --mauve-10: #84828e;\n  --mauve-11: #65636d;\n  --mauve-12: #211f26;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --mauve-1: color(display-p3 0.991 0.988 0.992);\n      --mauve-2: color(display-p3 0.98 0.976 0.984);\n      --mauve-3: color(display-p3 0.946 0.938 0.952);\n      --mauve-4: color(display-p3 0.915 0.906 0.925);\n      --mauve-5: color(display-p3 0.886 0.876 0.901);\n      --mauve-6: color(display-p3 0.856 0.846 0.875);\n      --mauve-7: color(display-p3 0.814 0.804 0.84);\n      --mauve-8: color(display-p3 0.735 0.728 0.777);\n      --mauve-9: color(display-p3 0.555 0.549 0.596);\n      --mauve-10: color(display-p3 0.514 0.508 0.552);\n      --mauve-11: color(display-p3 0.395 0.388 0.424);\n      --mauve-12: color(display-p3 0.128 0.122 0.147);\n    }\n  }\n}\n\n:root, .light, .light-theme {\n  --violet-1: #fdfcfe;\n  --violet-2: #faf8ff;\n  --violet-3: #f4f0fe;\n  --violet-4: #ebe4ff;\n  --violet-5: #e1d9ff;\n  --violet-6: #d4cafe;\n  --violet-7: #c2b5f5;\n  --violet-8: #aa99ec;\n  --violet-9: #6e56cf;\n  --violet-10: #654dc4;\n  --violet-11: #6550b9;\n  --violet-12: #2f265f;\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root, .light, .light-theme {\n      --violet-1: color(display-p3 0.991 0.988 0.995);\n      --violet-2: color(display-p3 0.978 0.974 0.998);\n      --violet-3: color(display-p3 0.953 0.943 0.993);\n      --violet-4: color(display-p3 0.916 0.897 1);\n      --violet-5: color(display-p3 0.876 0.851 1);\n      --violet-6: color(display-p3 0.825 0.793 0.981);\n      --violet-7: color(display-p3 0.752 0.712 0.943);\n      --violet-8: color(display-p3 0.654 0.602 0.902);\n      --violet-9: color(display-p3 0.417 0.341 0.784);\n      --violet-10: color(display-p3 0.381 0.306 0.741);\n      --violet-11: color(display-p3 0.383 0.317 0.702);\n      --violet-12: color(display-p3 0.179 0.15 0.359);\n    }\n  }\n}\n\n.App {}\n\n.IconButton {\n    position: fixed;\n    bottom: 15px;\n    right: 15px;\n    font-family: inherit;\n    border-radius: 100%;\n    height: 50px;\n    width: 50px;\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    color: var(--violet-11);\n    background-color: white;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);\n    cursor: pointer;\n}\n\n.App-logo {\n    height: 40vmin;\n}\n\n.App-header {\n    background-color: #282c34;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center;\n    font-size: calc(10px + 2vmin);\n    color: white;\n}\n\n.App-link {\n    text-decoration: underline;\n}\n\n.DialogOverlay {\n    z-index: 10000;\n    background-color: var(--black-a9);\n    position: fixed;\n    inset: 0;\n    animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);\n}\n\n.DialogContent {\n    z-index: 10000;\n    background-color: white;\n    border-radius: 6px;\n    box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;\n    position: fixed;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    width: 90vw;\n    max-width: 450px;\n    max-height: 85vh;\n    padding: 25px;\n    animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);\n}\n\n.DialogTitle {\n    margin: 0;\n    font-weight: 500;\n    color: var(--mauve-12);\n    font-size: 17px;\n}\n\n.DialogDescription {\n    margin: 10px 0 20px;\n    color: var(--mauve-11);\n    font-size: 15px;\n    line-height: 1.5;\n}\n\n.Button {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    border-radius: 4px;\n    padding: 0 15px;\n    font-size: 15px;\n    line-height: 1;\n    font-weight: 500;\n    height: 35px;\n    border: 0;\n}\n\n.Button.green {\n    background-color: var(--green-4);\n    color: var(--green-11);\n}\n\n.ToastViewport {\n    position: fixed;\n    bottom: 0;\n    right: 0;\n    display: flex;\n    flex-direction: column;\n    padding: 25px;\n    padding-bottom: 100px;\n    gap: 10px;\n    width: 390px;\n    max-width: 100vw;\n    margin: 0;\n    list-style: none;\n    z-index: 2147483647;\n    outline: none;\n}\n\n.ToastRoot {\n    background-color: white;\n    border-radius: 6px;\n    box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;\n    padding: 15px;\n    display: grid;\n    grid-template-areas: 'title action' 'description action';\n    grid-template-columns: auto max-content;\n    column-gap: 15px;\n    align-items: center;\n}\n\n.ToastRoot.success {\n    background-color: #5fc276;\n    color: #ffffff;\n}\n\n.ToastRoot.fail {\n    background-color: #ee6b6e;\n    color: #ffffff;\n}\n\n.ToastTitle {\n    font-size: 20px;\n}\n\n:root {\n    font-size: 100%;\n}:root {\n  --black-a1: rgba(0, 0, 0, 0.05);\n  --black-a2: rgba(0, 0, 0, 0.1);\n  --black-a3: rgba(0, 0, 0, 0.15);\n  --black-a4: rgba(0, 0, 0, 0.2);\n  --black-a5: rgba(0, 0, 0, 0.3);\n  --black-a6: rgba(0, 0, 0, 0.4);\n  --black-a7: rgba(0, 0, 0, 0.5);\n  --black-a8: rgba(0, 0, 0, 0.6);\n  --black-a9: rgba(0, 0, 0, 0.7);\n  --black-a10: rgba(0, 0, 0, 0.8);\n  --black-a11: rgba(0, 0, 0, 0.9);\n  --black-a12: rgba(0, 0, 0, 0.95);\n}\n\n@supports (color: color(display-p3 1 1 1)) {\n  @media (color-gamut: p3) {\n    :root {\n      --black-a1: color(display-p3 0 0 0 / 0.05);\n      --black-a2: color(display-p3 0 0 0 / 0.1);\n      --black-a3: color(display-p3 0 0 0 / 0.15);\n      --black-a4: color(display-p3 0 0 0 / 0.2);\n      --black-a5: color(display-p3 0 0 0 / 0.3);\n      --black-a6: color(display-p3 0 0 0 / 0.4);\n      --black-a7: color(display-p3 0 0 0 / 0.5);\n      --black-a8: color(display-p3 0 0 0 / 0.6);\n      --black-a9: color(display-p3 0 0 0 / 0.7);\n      --black-a10: color(display-p3 0 0 0 / 0.8);\n      --black-a11: color(display-p3 0 0 0 / 0.9);\n      --black-a12: color(display-p3 0 0 0 / 0.95);\n    }\n  }\n}\n\n.SwitchRoot {\r\n  width: 42px;\r\n  height: 25px;\r\n  background-color: var(--black-a9);\r\n  border-radius: 9999px;\r\n  position: relative;\r\n  box-shadow: 0 2px 10px var(--black-a7);\r\n  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\r\n}\n\n.SwitchRoot:focus {\r\n  box-shadow: 0 0 0 2px black;\r\n}\n\n.SwitchRoot[data-state='checked'] {\r\n  background-color: black;\r\n}\n\n.SwitchThumb {\r\n  display: block;\r\n  width: 21px;\r\n  height: 21px;\r\n  background-color: white;\r\n  border-radius: 9999px;\r\n  box-shadow: 0 2px 2px var(--black-a7);\r\n  transition: transform 100ms;\r\n  transform: translateX(2px);\r\n  will-change: transform;\r\n}\n\n.SwitchThumb[data-state='checked'] {\r\n  transform: translateX(19px);\r\n}";
                     el.type = "text/css";
                     document.head.appendChild(el);
                 })();
